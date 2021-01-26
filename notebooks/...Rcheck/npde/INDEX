@@ -1,0 +1,50 @@
+NpdeData-class          Class "NpdeData" representing the structure of
+                        the longitudinal data
+NpdeObject-class        Class "NpdeObject"
+NpdeSimData-class       Class "NpdeSimData" representing the structure
+                        of the longitudinal data
+[,NpdeSimData-method    Get/set methods for NpdeData object
+dist.pred.sim           Compute distribution of pd/npde using
+                        simulations
+gof.test                Goodness-of-fit tests for npde
+kurtosis                Kurtosis
+npde                    Compute normalised prediction distribution
+                        errors
+npde-package            Normalised prediction distribution errors for
+                        nonlinear mixed-effect models
+npde.cens.method        Method used to handle censored data
+npde.decorr.method      Decorrelation methods in npde
+npde.graphs             Save the graphs for a NpdeObject object to a
+                        file
+npde.plot.covariates    Covariate plots for a NpdeObject object
+npde.plot.data          Plot a NpdeData object
+npde.plot.default       Diagnostic plots
+npde.plot.dist          Plots of pd/npde versus their theoretical
+                        distribution
+npde.plot.loq           Plot of the probability that the observations
+                        are below the LOQ
+npde.plot.npde          Plots for pd and npde
+npde.plot.select        Select plot for a NpdeObject object
+npde.plot.vpc           Visual Predictive Check (VPC)
+npde.save               Save the results contained in a NpdeObject
+                        object to a file
+npdeControl             Set options for an NpdeObject
+npdeData                Creates a NpdeData object
+npdeSimData             Creates a NpdeSimData object
+plot.NpdeData           Plots a NpdeData object
+plot.NpdeObject         Plots a NpdeObject object
+print.NpdeData          Prints objects from the npde package
+remifent                Pharmacokinetics of Remifentanil
+set.plotoptions         Set graphical preferences
+show                    Displays npde objects
+showall                 Contents of an object
+simtheopp               Simulated data for the computation of
+                        normalised prediction distribution errors
+simvirload              Simulated data for the computation of
+                        normalised prediction distribution errors,
+                        viral load example
+skewness                Skewness
+subset.NpdeData         Subsetting a NpdeData object
+summary.NpdeData        Summary of a NpdeData object
+theopp                  Pharmacokinetics of theophylline
+virload                 Simulated HIV viral loads in HIV patients

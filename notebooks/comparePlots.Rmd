@@ -1,0 +1,85 @@
+---
+title: "Compare plots before and after changes"
+author: "Emmanuelle Comets"
+date: "19/01/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## Introduction
+
+## Notes
+
+### Objective
+
+- compare plots before and after Eco changes
+
+### Defining folders, loading libraries
+
+```{r setup, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(devtools)
+library(ggplot2)
+library(gridExtra)
+library(grid)
+library(mclust)
+library(testthat)
+workDir<-"/home/eco/work/npde/romain/romain2101"
+notesDir<-file.path(workDir,"notebooks")
+testsDir<-file.path(workDir,"npde","tests","testthat")
+provDir<-file.path(workDir,"kompareCode") # Code change, temporary folder and files (Eco)
+setwd(workDir)
+createDat<-FALSE
+
+#source(file.path(workDir,"npde","R","computePI.R"))
+source(file.path(workDir,"npde","R","plotNpde-unitFunctionsPI.R"))
+source(file.path(workDir,"npde","R","plotNpde-unitFunctionsRef.R")) # aux.npde.plot(), version Romain
+source(file.path(workDir,"npde","R","npdeControl.R"))
+
+```
+
+### Read data
+
+```{r readData, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+# Version Romain
+obsmat.romain <- readRDS(file.path(testsDir, "obs_mat_xtheo_cens.rds"))
+pimat.romain <- readRDS(file.path(testsDir, "pi_mat_xtheo_cens.rds"))
+plot.opt<-readRDS(file.path(notesDir,"eco_plotopt_xtheoWt.rds")) # Graphical options
+
+# modifying dataframes to fit new functions
+obsmat.eco<-obsmat.romain
+obsmat.eco$category <- factor(obsmat.eco$cov, labels=levels(pimat.romain$category))
+
+pimat.eco<-pimat.romain[, c(1,4,2,5:16)]
+colnames(pimat.eco)<-c("grp","xcent","category","pinf.lower","pmid.lower","psup.lower","pinf.median", "pmid.median", "psup.median","pinf.upper","pmid.upper","psup.upper","obs.inf","obs.median","obs.sup")
+```
+
+### Plot version Romain
+
+- problems
+  - dotline computed as +/- 1.96 plotted, but not 
+  - it seems everything is shown as censored data whereas censored data should only occur at the boundaries (~ 0 and 24h)
+
+```{r plotRomain, include=TRUE, echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+aux.npdeplot.plot(obsmat.romain, pimat.romain, plot.opt)
+```
+
+### Plot version Eco
+
+- similar
+  - PI boundaries seem similar
+  - median value plotted similar (but not sure if it is theoretical )
+  - no more dotline
+  - dots seem at the same place, and censored data are now limited to 0 and 24 hours like in dataset
+- problems
+  - issue with computing the upper and lower percentiles of observed data (but maybe was already there before but wasn't plotted before) => check if corrected when computing the PI myself (eg here obs.sup for some bins is 0.12 or even negative when they should be around 1.96 or even higher given the data) **maybe not a problem (more of a computation error previously)**
+  - same: value of median of PI seems too narrow (ie pinf.median is too high and psup.median is too low) => check if computation error
+
+```{r setupEco, include=TRUE, echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+# Modified version, Eco
+source(file.path(provDir,"computePI.R")) # aux.npdeplot.computepi(), aux.npdeplot.meanprof(), transform PI
+source(file.path(provDir,"aux.npde.plot.R")) # aux.npde.plot(), version Eco
+
+aux.npdeplot.plot.eco(obsmat.eco, pimat.eco, plot.opt)
+```

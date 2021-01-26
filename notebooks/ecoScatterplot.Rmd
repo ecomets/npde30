@@ -1,0 +1,258 @@
+---
+title: "Code merge - Scatterplots"
+author: "Emmanuelle Comets"
+date: "26/01/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## Summary
+
+### Objective
+
+Check scatterplots produced by **npde.plot.scatter** and auxiilary functions.
+
+### Current issues
+
+- sorting the covariates in the facet plot
+- labels on axes, titles
+- box.plot: the width of the boxplots doesn't seem right (much thicker at the beginning but the groups should be equal size)
+
+### Requirements
+
+- main function  **npde.plot.scatterplot()**
+  - input: npdeObject, which.x, which.y (X and Y variables to plot), ref.prof (refrence profile), "..."
+  - output: one plot
+- auxiliary functions **aux.npdeplot.scatter()** 
+  - input:
+    - a dataframe obs.mat: matrix of Y observations to plot (Y= yobs, npde, npd, pd, tnpde, tnpd) versus X (X=independent variable (eg time), predictions (pred), covariates (cov)), with the following columns
+      - x,y: values of X and Y
+      - grp: grouping factor - used to sort groups if plot.box=TRUE
+      - cens: 1 if censored, 0 otherwise
+      - loq: value of LOQ for the observation (used in VPC plot to optionally plot the line y=LOQ)
+      - category: value of the category ("all" or "none" if not split by a covariate)
+    -  pi.mat: matrix of PI and empirical percentiles to plot for each bin, with columns
+      - grp: grouping factor (same as obs.mat) - not used
+      - xcent: X-value used as center of each bin (one value of xcent per grp)
+      - category: covariate category ("all" if over all)
+      - 3 prediction intervals: pinf, pmid, psup (mid=middle, inf, sup= extreme PIs)
+        - for each PI, 3 quantiles: lower, median, upper (ie usually 0.025, 0.5, 0.975)
+        - for each PI, the empirical percentile for the observed data: obs.inf, obs.median, obs.sup
+      - plot.opt: a list of graphical options used in the plot
+  - output
+    - distribution plots: histogram (aux.plot.hist), ecdf or qqplot (aux.plot.dist)
+    - note: QQ-plot for uniform variable is similar to ecdf (theoretical quantiles correspond to the cumulative density function)
+
+### Defining folders, loading libraries
+
+```{r setup, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(devtools)
+library(ggplot2)
+library(gridExtra)
+library(grid)
+library(mclust)
+library(testthat)
+workDir<-"/home/eco/work/npde/npde30"
+notesDir<-file.path(workDir,"notebooks")
+datDir<-file.path(workDir,"npde","data")
+testsDir<-file.path(workDir,"npde","tests","testthat")
+setwd(workDir)
+```
+
+### Loading functions
+
+```{r setupOldPackage, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+# Classes from the package
+source(file.path(workDir,"npde","R","aaa_generics.R"))
+source(file.path(workDir,"npde","R","npdeControl.R"))
+source(file.path(workDir,"npde","R","NpdeData.R"))
+source(file.path(workDir,"npde","R","NpdeSimData.R"))
+source(file.path(workDir,"npde","R","NpdeData-methods.R"))
+source(file.path(workDir,"npde","R","NpdeRes.R"))
+source(file.path(workDir,"npde","R","NpdeRes-methods.R"))
+source(file.path(workDir,"npde","R","NpdeObject.R"))
+source(file.path(workDir,"npde","R","NpdeObject-methods.R"))
+
+# Computational functions from the package
+source(file.path(workDir,"npde","R","compute_distribution.R"))
+source(file.path(workDir,"npde","R","compute_npde.R"))
+source(file.path(workDir,"npde","R","compute_pd.R"))
+source(file.path(workDir,"npde","R","compute_ploq.R"))
+source(file.path(workDir,"npde","R","mainNpde.R"))
+source(file.path(workDir,"npde","R","npde.R"))
+
+# Plot functions from the package - kept, some changes
+source(file.path(workDir,"npde","R","plotNpde-methods.R"))
+source(file.path(workDir,"npde","R","plotNpde-plotFunctions.R"))
+source(file.path(workDir,"npde","R","plotNpde-binningPI.R")) # renamed from plotNpde-unitFunctionsPI.R
+
+# Scatterplots
+source(file.path(workDir,"npde","R","plotNpde-auxScatter.R")) # replaces plotNpde-unitFunctionsRef.R
+source(file.path(workDir,"npde","R","plotNpde-auxScatterPlot.R"))
+source(file.path(workDir,"npde","R","plotNpde-scatterplot.R")) # replaces plotNpde-meanProf.R
+
+# Distribution plots
+source(file.path(workDir,"npde","R","plotNpde-auxDistPlot.R")) # renamed from plotNpde-unitFunctionsAux.R
+source(file.path(workDir,"npde","R","plotNpde-distributionPlot.R")) # extracted "main" for distribution plots from plotNpde-plotFunctions.R
+
+```
+
+### Run npde
+
+```{r runNpde, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+# Warfarin data, using files on disk
+wbase<-autonpde(namobs=file.path(datDir, "warfarin.tab"),namsim=file.path(datDir, "simwarfarinBase.tab"), iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
+
+wcov<-autonpde(namobs=file.path(datDir, "warfarin.tab"),namsim=file.path(datDir, "simwarfarinCov.tab"), iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
+```
+
+### Prepare obsmat for npde/pd versus x, with or without covariates sex and weight
+
+```{r prepareObsmat, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+npdeObject<-wbase
+plot.opt<-npdeObject["prefs"]
+###################
+# Binning on x
+xbin<-npde.binning(wbase@data@data$time, wbase@prefs, verbose=FALSE)
+matbin<-data.frame(grp=1:length(xbin$xcent), xcent=xbin$xcent, binlabel = names(xbin$xcent))
+
+###################
+# no covariate
+obs.nocov<-data.frame(x=wbase@data@data$time, y=wbase@results@res[,"npde"], grp=xbin$xgrp)
+obs.nocov$cens<-0
+obs.nocov$category<-factor("all")
+
+###################
+# Covariate sex
+obs.sex<-obs.nocov
+obs.sex$category<-paste("sex:", wbase@data@data$sex)
+obs.sex$category <- factor(obs.sex$category)
+
+###################
+## covariate weight
+obs.weight<-data.frame(x=wbase@data@data$time, y=wbase@results@res[,"npde"], grp=xbin$xgrp)
+obs.weight$cens<-0
+
+idobs <- npdeObject["data"]["data"][npdeObject["data"]["not.miss"], npdeObject["data"]["name.group"]]
+zecov<-wbase@data@data$wt
+lcov<-"Weight"
+ucov = zecov[match(unique(idobs),idobs)]
+if(is.numeric(ucov) & length(unique(ucov))>plot.opt$ncat){ # Continuous covariatewith more than plot.opt$ncat (default 3)
+  if(plot.opt$ncat!=3) { # 3 categories or less
+    ncat<-plot.opt$ncat
+    seqcat<-seq(0,1,length.out=(ncat+1))
+    zecov.cat<-cut(zecov,breaks=quantile(ucov,seqcat), include.lowest=TRUE, ordered_result=TRUE)
+    nam1<-paste("q",format(seqcat[-(ncat+1)],digits=2),"-q",format(seqcat[-1],digits=2),sep="")
+    namcat<-paste(namcov,nam1,sep=": ")
+    zecov.cat<-factor(zecov.cat, labels=namcat)
+  } else { # if more than 3 categories, split in 3 ranges
+    zecov.cat<-cut(zecov,breaks=quantile(ucov,c(0,0.25,0.75,1)), include.lowest=TRUE, ordered_result=TRUE)
+    namcat<-paste(lcov,c("<Q1","Q1-Q3",">Q3"),sep=": ")
+    zecov.cat<-factor(zecov.cat, labels=namcat)
+  }
+} else { # Categorical covariate defined as factor, or covariate with less than plot.opt$ncat categories
+  namcat<-paste(lcov,unique(ucov), sep=": ")
+  zecov.cat<-paste(lcov, zecov, sep=": ")
+  zecov.cat<-factor(zecov.cat, labels=namcat)
+}
+obs.weight$category<-zecov.cat
+
+# with pd
+obspd.sex<-obs.sex
+obspd.sex$y<-wbase@results@res[,"pd"]
+```
+
+### Prepare obsmat for npde/pd versus x, with or without covariates sex and weight
+
+```{r preparePImat, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+# One pimat is no covariate
+pimat.nocov<-aux.npdeplot.pimat(obs.nocov, xcent=matbin$xcent, distrib="norm", approx.pi=TRUE, sim.ypl=NULL)
+
+# Covariate sex
+obsmat<-obs.sex
+pimat<-NULL
+for(icat in levels(obsmat$category)) {
+  obsmat.cov<-obsmat[obsmat$category==icat,]
+  pimat.cov<-aux.npdeplot.pimat(obsmat.cov, xcent=matbin$xcent, distrib="norm", approx.pi=TRUE, sim.ypl=NULL)
+  pimat<-rbind(pimat,pimat.cov)
+}
+pimat.sex<-pimat
+
+# Covariate weight
+obsmat<-obs.weight
+pimat<-NULL
+for(icat in levels(obsmat$category)) {
+  obsmat.cov<-obsmat[obsmat$category==icat,]
+  pimat.cov<-aux.npdeplot.pimat(obsmat.cov, xcent=matbin$xcent, distrib="norm", approx.pi=TRUE, sim.ypl=NULL)
+  pimat<-rbind(pimat,pimat.cov)
+}
+pimat.weight<-pimat
+
+# Covariate sex, y=pd
+obsmat<-obspd.sex
+pimat<-NULL
+for(icat in levels(obsmat$category)) {
+  obsmat.cov<-obsmat[obsmat$category==icat,]
+  pimat.cov<-aux.npdeplot.pimat(obsmat.cov, xcent=matbin$xcent, distrib="unif", approx.pi=TRUE, sim.ypl=NULL)
+  pimat<-rbind(pimat,pimat.cov)
+}
+pimat.pdsex<-pimat
+```
+
+## Debug functions
+
+### Debug auxiliary plots
+
+```{r auxScatterPlot}
+plot.opt2<-plot.opt
+aux.npdeplot.scatter(obs.nocov, pimat.nocov, plot.opt2)
+
+plot.opt2<-plot.opt
+plot.opt2$which.cov<-c("sex")
+plot.opt2$covsplit<-TRUE
+aux.npdeplot.scatter(obs.sex, pimat.sex, plot.opt2)
+
+plot.opt2<-plot.opt
+plot.opt2$which.cov<-c("wt")
+plot.opt2$covsplit<-TRUE
+aux.npdeplot.scatter(obs.weight, pimat.weight, plot.opt2)
+
+plot.opt2<-plot.opt
+plot.opt2$which.cov<-c("sex")
+plot.opt2$covsplit<-TRUE
+aux.npdeplot.scatter(obspd.sex, pimat.pdsex, plot.opt2)
+
+# box plots
+plot.opt2<-plot.opt
+plot.opt2$plot.box<-TRUE
+aux.npdeplot.scatter(obs.nocov, pimat.nocov, plot.opt2)
+
+plot.opt2$which.cov<-c("sex")
+plot.opt2$covsplit<-TRUE
+aux.npdeplot.scatter(obspd.sex, pimat.pdsex, plot.opt2)
+
+```
+
+### Debug main scatterplot function
+
+```{r mainScatterPlot}
+source(file.path(workDir,"npde","R","plotNpde-scatterplot.R")) # renamed from plotNpde-unitFunctionsAux.R
+npde.plot.scatterplot(wbase,  which.x="x", which.y="npde")
+
+npde.plot.scatterplot(wbase,  which.x="x", which.y="npde", covsplit=TRUE, which.cov=c("wt"))
+npde.plot.scatterplot(wbase,  which.x="x", which.y="npde", covsplit=TRUE, which.cov=c("sex"))
+npde.plot.scatterplot(wbase,  which.x="x", which.y="npde", covsplit=TRUE, which.cov=c("all"))
+
+npde.plot.scatterplot(wbase,  which.x="x", which.y="yobs")
+
+npde.plot.scatterplot(wbase,  which.x="x", which.y="yobs", covsplit=TRUE)
+
+npde.plot.scatterplot(wbase,  which.x="x", which.y="yobs", plot.box=TRUE)
+
+npde.plot.scatterplot(wbase,  which.x="x", which.y="pd")
+
+npde.plot.scatterplot(wbase,  which.x="x", which.y="npde", ref.prof=list(id=1))
+
+```

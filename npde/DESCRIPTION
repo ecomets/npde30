@@ -1,0 +1,37 @@
+Package: npde
+Title: Normalised Prediction Distribution Errors for Nonlinear Mixed-Effect Models
+Version: 3.0
+Date: 2020-12-08
+Author: Emmanuelle Comets, Romain Leroux, Karl Brendel, Thi Huyen Tram Nguyen, France Mentre.
+Maintainer: Emmanuelle Comets <emmanuelle.comets@inserm.fr>
+Description: Provides routines to compute normalised prediction distribution errors, a metric designed to evaluate non-linear mixed effect models such as those used in pharmacokinetics and pharmacodynamics.
+License: GPL (>= 2)
+Encoding: UTF-8
+LazyLoad: yes
+LazyData: yes
+Imports: methods, scales, gridExtra, ggplot2, mclust, here, grid,
+        testthat
+RoxygenNote: 7.1.1
+Collate: 
+    'NpdeSimData.R'
+    'NpdeData.R'
+    'aaa_generics.R'
+    'NpdeData-methods.R'
+    'NpdeRes.R'
+    'NpdeRes-methods.R'
+    'NpdeObject.R'
+    'NpdeObject-methods.R'
+    'compute_distribution.R'
+    'compute_npde.R'
+    'compute_pd.R'
+    'compute_ploq.R'
+    'mainNpde.R'
+    'npde.R'
+    'npdeControl.R'
+    'plotNpde-meanProf.R'
+    'plotNpde-methods.R'
+    'plotNpde-plotFunctions.R'
+    'plotNpde-unitFunctionsAux.R'
+    'plotNpde-unitFunctionsPI.R'
+    'plotNpde-unitFunctionsRef.R'
+NeedsCompilation: no

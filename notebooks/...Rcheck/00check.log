@@ -1,0 +1,342 @@
+* using log directory ‘/home/eco/work/npde/romain/romain11/notebooks/...Rcheck’
+* using R version 3.6.3 (2020-02-29)
+* using platform: x86_64-pc-linux-gnu (64-bit)
+* using session charset: UTF-8
+* using option ‘--as-cran’
+* checking for file ‘../DESCRIPTION’ ... OK
+* this is package ‘npde’ version ‘3.0’
+* package encoding: UTF-8
+* checking CRAN incoming feasibility ... NOTE
+Maintainer: ‘Emmanuelle Comets <emmanuelle.comets@inserm.fr>’
+
+New submission
+
+Package was archived on CRAN
+
+CRAN repository db overrides:
+  X-CRAN-Comment: Archived on 2018-04-16 as check problems were not
+    corrected in time.
+
+The build time stamp is missing.
+* checking package namespace information ... OK
+* checking package dependencies ... OK
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+* checking for executable files ... OK
+* checking for hidden files and directories ... NOTE
+Found the following hidden files and directories:
+  .gitignore
+  .Rproj.user
+  .git
+  notebooks/...Rcheck
+  notebooks/..Rcheck
+These were most likely included in error. See section ‘Package
+structure’ in the ‘Writing R Extensions’ manual.
+
+CRAN-pack does not know about
+  .git
+  notebooks/...Rcheck
+  notebooks/..Rcheck
+* checking for portable file names ... OK
+* checking for sufficient/correct file permissions ... OK
+* checking serialization versions ... OK
+* checking whether package ‘npde’ can be installed ... OK
+* checking installed package size ... NOTE
+  installed size is 11.1Mb
+  sub-directories of 1Mb or more:
+    data  10.4Mb
+* checking package directory ... OK
+* checking for future file timestamps ... OK
+* checking DESCRIPTION meta-information ... NOTE
+Checking should be performed on sources prepared by ‘R CMD build’.
+* checking top-level files ... NOTE
+Non-standard files/directories found at top level:
+  ‘PackageNpdeBetaVersion.Rproj’ ‘README.txt’ ‘init_and_data.R’
+  ‘notebooks’ ‘npde_3.0.tar.gz’
+* checking for left-over files ... OK
+* checking index information ... OK
+* checking package subdirectories ... WARNING
+Found the following directories with names of check directories:
+  ./notebooks/...Rcheck
+  ./notebooks/..Rcheck
+Most likely, these were included erroneously.
+Found the following directory with the name of a version control directory:
+  ./.git
+These should not be in a package tarball.
+* checking R files for non-ASCII characters ... OK
+* checking R files for syntax errors ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking whether the package can be unloaded cleanly ... OK
+* checking whether the namespace can be loaded with stated dependencies ... OK
+* checking whether the namespace can be unloaded cleanly ... OK
+* checking loading without being on the library search path ... OK
+* checking use of S3 registration ... OK
+* checking dependencies in R code ... OK
+* checking S3 generic/method consistency ... OK
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... NOTE
+aux.npdeplot.main: no visible global function definition for
+  ‘rbindlist’
+aux.npdeplot.plot: no visible global function definition for ‘ggplot’
+aux.npdeplot.plot: no visible global function definition for ‘aes’
+aux.npdeplot.plot: no visible binding for global variable ‘y’
+aux.npdeplot.plot: no visible global function definition for ‘theme_bw’
+aux.npdeplot.plot: no visible global function definition for ‘theme’
+aux.npdeplot.plot: no visible global function definition for
+  ‘element_text’
+aux.npdeplot.plot: no visible global function definition for
+  ‘element_rect’
+aux.npdeplot.plot: no visible global function definition for
+  ‘element_line’
+aux.npdeplot.plot: no visible global function definition for
+  ‘stat_boxplot’
+aux.npdeplot.plot: no visible global function definition for
+  ‘expand_limits’
+aux.npdeplot.plot: no visible global function definition for
+  ‘geom_boxplot’
+aux.npdeplot.plot: no visible global function definition for
+  ‘geom_jitter’
+aux.npdeplot.plot: no visible global function definition for
+  ‘stat_summary’
+aux.npdeplot.plot: no visible binding for global variable ‘..y..’
+aux.npdeplot.plot: no visible global function definition for ‘xlab’
+aux.npdeplot.plot: no visible global function definition for
+  ‘scale_y_continuous’
+aux.npdeplot.plot: no visible global function definition for
+  ‘expand_scale’
+aux.npdeplot.plot: no visible binding for global variable ‘xcent’
+aux.npdeplot.plot: no visible global function definition for
+  ‘element_blank’
+aux.npdeplot.plot: no visible global function definition for ‘ggtitle’
+aux.npdeplot.plot: no visible global function definition for
+  ‘coord_cartesian’
+aux.npdeplot.plot: no visible global function definition for
+  ‘geom_ribbon’
+aux.npdeplot.plot: no visible binding for global variable ‘binf0025’
+aux.npdeplot.plot: no visible binding for global variable ‘bsup0025’
+aux.npdeplot.plot: no visible binding for global variable ‘binf05’
+aux.npdeplot.plot: no visible binding for global variable ‘bsup05’
+aux.npdeplot.plot: no visible binding for global variable ‘binf0975’
+aux.npdeplot.plot: no visible binding for global variable ‘bsup0975’
+aux.npdeplot.plot: no visible binding for global variable ‘x_area_0.25’
+aux.npdeplot.plot: no visible binding for global variable ‘y_area_0.25’
+aux.npdeplot.plot: no visible binding for global variable ‘Y0.025.1’
+aux.npdeplot.plot: no visible binding for global variable ‘Y0.025’
+aux.npdeplot.plot: no visible binding for global variable ‘x_area_0.5’
+aux.npdeplot.plot: no visible binding for global variable ‘y_area_0.5’
+aux.npdeplot.plot: no visible binding for global variable ‘Y0.5.1’
+aux.npdeplot.plot: no visible binding for global variable ‘Y0.5’
+aux.npdeplot.plot: no visible binding for global variable
+  ‘x_area_0.975’
+aux.npdeplot.plot: no visible binding for global variable
+  ‘y_area_0.975’
+aux.npdeplot.plot: no visible binding for global variable ‘Y0.975.1’
+aux.npdeplot.plot: no visible binding for global variable ‘Y0.975’
+aux.npdeplot.plot: no visible global function definition for
+  ‘geom_line’
+aux.npdeplot.plot: no visible binding for global variable ‘per.min’
+aux.npdeplot.plot: no visible binding for global variable ‘per.med’
+aux.npdeplot.plot: no visible binding for global variable ‘per.max’
+aux.npdeplot.plot: no visible binding for global variable ‘dotline.min’
+aux.npdeplot.plot: no visible binding for global variable ‘dotline.med’
+aux.npdeplot.plot: no visible binding for global variable ‘dotline.max’
+aux.npdeplot.plot: no visible global function definition for
+  ‘geom_point’
+aux.npdeplot.plot: no visible binding for global variable ‘x1’
+aux.npdeplot.plot: no visible binding for global variable ‘y1’
+aux.npdeplot.plot: no visible binding for global variable ‘x2’
+aux.npdeplot.plot: no visible binding for global variable ‘y2’
+aux.npdeplot.plot: no visible binding for global variable ‘x’
+aux.npdeplot.plot: no visible binding for global variable ‘ipred’
+aux.npdeplot.plot: no visible global function definition for
+  ‘scale_x_continuous’
+aux.npdeplot.plot: no visible global function definition for
+  ‘scale_x_log10’
+aux.npdeplot.plot: no visible binding for global variable ‘.x’
+aux.npdeplot.plot: no visible global function definition for
+  ‘scale_y_log10’
+aux.npdeplot.plot: no visible global function definition for
+  ‘annotation_logticks’
+aux.npdeplot.plot: no visible global function definition for
+  ‘grid.arrange’
+aux.npdeplot.plot: no visible global function definition for ‘textGrob’
+aux.npdeplot.plot: no visible global function definition for ‘gpar’
+aux.plot.dist: no visible global function definition for ‘ggplot’
+aux.plot.dist: no visible global function definition for ‘theme’
+aux.plot.dist: no visible global function definition for ‘element_text’
+aux.plot.dist: no visible global function definition for ‘element_line’
+aux.plot.dist: no visible global function definition for ‘element_rect’
+aux.plot.dist: no visible global function definition for ‘ggtitle’
+aux.plot.dist: no visible global function definition for
+  ‘coord_cartesian’
+aux.plot.dist: no visible global function definition for ‘geom_ribbon’
+aux.plot.dist: no visible global function definition for ‘aes’
+aux.plot.dist: no visible binding for global variable ‘y’
+aux.plot.dist: no visible binding for global variable ‘bnd_min’
+aux.plot.dist: no visible binding for global variable ‘bnd_max’
+aux.plot.dist: no visible global function definition for ‘geom_line’
+aux.plot.dist: no visible binding for global variable ‘x’
+aux.plot.dist: no visible global function definition for ‘geom_point’
+aux.plot.dist: no visible binding for global variable ‘y_obs’
+aux.plot.dist: no visible binding for global variable ‘x_obs’
+aux.plot.dist: no visible binding for global variable ‘y_censored’
+aux.plot.dist: no visible binding for global variable ‘x_censored’
+aux.plot.dist: no visible binding for global variable ‘bnd’
+aux.plot.dist: no visible global function definition for
+  ‘scale_x_continuous’
+aux.plot.dist: no visible global function definition for
+  ‘scale_y_continuous’
+aux.plot.dist: no visible binding for global variable ‘xcent’
+aux.plot.dist: no visible global function definition for ‘labs’
+aux.plot.dist: no visible global function definition for
+  ‘scale_x_log10’
+aux.plot.dist: no visible binding for global variable ‘.x’
+aux.plot.dist: no visible global function definition for
+  ‘scale_y_log10’
+aux.plot.dist: no visible global function definition for
+  ‘annotation_logticks’
+aux.plot.dist: no visible global function definition for
+  ‘element_blank’
+aux.plot.dist: no visible global function definition for ‘grid.arrange’
+aux.plot.dist: no visible global function definition for ‘textGrob’
+aux.plot.dist: no visible global function definition for ‘gpar’
+aux.plot.hist: no visible global function definition for ‘ggplot’
+aux.plot.hist: no visible global function definition for ‘theme’
+aux.plot.hist: no visible global function definition for ‘element_text’
+aux.plot.hist: no visible global function definition for ‘element_rect’
+aux.plot.hist: no visible global function definition for ‘element_line’
+aux.plot.hist: no visible global function definition for
+  ‘element_blank’
+aux.plot.hist: no visible global function definition for ‘ggtitle’
+aux.plot.hist: no visible global function definition for
+  ‘coord_cartesian’
+aux.plot.hist: no visible global function definition for
+  ‘geom_crossbar’
+aux.plot.hist: no visible global function definition for ‘aes’
+aux.plot.hist: no visible binding for global variable ‘name’
+aux.plot.hist: no visible binding for global variable ‘bnds_mean’
+aux.plot.hist: no visible binding for global variable ‘bnds_min’
+aux.plot.hist: no visible binding for global variable ‘bnds_max’
+aux.plot.hist: no visible global function definition for ‘geom_bar’
+aux.plot.hist: no visible binding for global variable ‘value’
+aux.plot.hist: no visible global function definition for
+  ‘scale_x_continuous’
+aux.plot.hist: no visible global function definition for
+  ‘scale_y_continuous’
+aux.plot.hist: no visible global function definition for
+  ‘scale_x_log10’
+aux.plot.hist: no visible binding for global variable ‘.x’
+aux.plot.hist: no visible global function definition for
+  ‘scale_y_log10’
+aux.plot.hist: no visible global function definition for
+  ‘annotation_logticks’
+aux.plot.hist: no visible global function definition for ‘grid.arrange’
+aux.plot.hist: no visible global function definition for ‘textGrob’
+aux.plot.hist: no visible global function definition for ‘gpar’
+aux.plot.hist: no visible global function definition for ‘labs’
+npde.plot.data: no visible global function definition for ‘ggplot’
+npde.plot.data: no visible global function definition for ‘aes’
+npde.plot.data: no visible global function definition for ‘theme’
+npde.plot.data: no visible global function definition for
+  ‘element_text’
+npde.plot.data: no visible global function definition for
+  ‘element_rect’
+npde.plot.data: no visible global function definition for
+  ‘element_line’
+npde.plot.data: no visible global function definition for ‘ggtitle’
+npde.plot.data: no visible global function definition for
+  ‘coord_cartesian’
+npde.plot.data: no visible global function definition for ‘geom_point’
+npde.plot.data: no visible global function definition for ‘geom_line’
+npde.plot.data: no visible binding for global variable ‘group’
+npde.plot.data: no visible global function definition for
+  ‘scale_x_continuous’
+npde.plot.data: no visible global function definition for
+  ‘scale_y_continuous’
+npde.plot.data: no visible global function definition for ‘xlab’
+npde.plot.data: no visible global function definition for ‘ylab’
+npde.plot.default: no visible global function definition for
+  ‘grid.arrange’
+npde.plot.loq: no visible global function definition for ‘ggplot’
+npde.plot.loq: no visible global function definition for ‘aes’
+npde.plot.loq: no visible global function definition for ‘theme’
+npde.plot.loq: no visible global function definition for ‘element_text’
+npde.plot.loq: no visible global function definition for ‘element_rect’
+npde.plot.loq: no visible global function definition for ‘element_line’
+npde.plot.loq: no visible global function definition for ‘labs’
+npde.plot.loq: no visible global function definition for
+  ‘coord_cartesian’
+npde.plot.loq: no visible global function definition for ‘geom_ribbon’
+npde.plot.loq: no visible binding for global variable ‘X2.5.’
+npde.plot.loq: no visible binding for global variable ‘X97.5.’
+npde.plot.loq: no visible global function definition for ‘geom_line’
+npde.plot.loq: no visible binding for global variable ‘X50.’
+npde.plot.loq: no visible global function definition for
+  ‘scale_x_continuous’
+npde.plot.loq: no visible global function definition for
+  ‘scale_y_continuous’
+npde.plot.meanprofile: no visible binding for global variable ‘namcov’
+npde.plot.meanprofile: no visible global function definition for
+  ‘complete.cases’
+npde.plot.meanprofile: no visible global function definition for
+  ‘rbindlist’
+npde.plot.vpc: no visible global function definition for ‘abline’
+plot.NpdeObject: no visible global function definition for
+  ‘npde.plot.scatter’
+plot.NpdeRes: no visible global function definition for ‘abline’
+plot.NpdeRes: no visible binding for global variable ‘xrem’
+Undefined global functions or variables:
+  ..y.. .x X2.5. X50. X97.5. Y0.025 Y0.025.1 Y0.5 Y0.5.1 Y0.975
+  Y0.975.1 abline aes annotation_logticks binf0025 binf05 binf0975 bnd
+  bnd_max bnd_min bnds_max bnds_mean bnds_min bsup0025 bsup05 bsup0975
+  complete.cases coord_cartesian dotline.max dotline.med dotline.min
+  element_blank element_line element_rect element_text expand_limits
+  expand_scale geom_bar geom_boxplot geom_crossbar geom_jitter
+  geom_line geom_point geom_ribbon ggplot ggtitle gpar grid.arrange
+  group ipred labs namcov name npde.plot.scatter per.max per.med
+  per.min rbindlist scale_x_continuous scale_x_log10 scale_y_continuous
+  scale_y_log10 stat_boxplot stat_summary textGrob theme theme_bw value
+  x x1 x2 x_area_0.25 x_area_0.5 x_area_0.975 x_censored x_obs xcent
+  xlab xrem y y1 y2 y_area_0.25 y_area_0.5 y_area_0.975 y_censored
+  y_obs ylab
+Consider adding
+  importFrom("graphics", "abline")
+  importFrom("stats", "complete.cases")
+to your NAMESPACE file.
+* checking Rd files ... OK
+* checking Rd metadata ... WARNING
+Rd files with duplicated alias 'npde':
+  ‘npde-package.Rd’ ‘npde.Rd’
+* checking Rd line widths ... OK
+* checking Rd cross-references ... OK
+* checking for missing documentation entries ... WARNING
+Undocumented code objects:
+  ‘warfarine_pk’ ‘warfarine_simBase’ ‘warfarine_simCov’
+Undocumented data sets:
+  ‘warfarine_pk’ ‘warfarine_simBase’ ‘warfarine_simCov’
+All user-level objects in a package should have documentation entries.
+See chapter ‘Writing R documentation files’ in the ‘Writing R
+Extensions’ manual.
+* checking for code/documentation mismatches ... WARNING
+Codoc mismatches from documentation object 'npde.plot.vpc':
+npde.plot.vpc
+  Code: function(npdeObject, npc = FALSE, ...)
+  Docs: function(npdeObject, ...)
+  Argument names in code not in docs:
+    npc
+  Mismatches in argument names:
+    Position: 2 Code: npc Docs: ...
+
+* checking Rd \usage sections ... OK
+* checking Rd contents ... OK
+* checking for unstated dependencies in examples ... OK
+* checking contents of ‘data’ directory ... OK
+* checking data for non-ASCII characters ... OK
+* checking data for ASCII and uncompressed saves ... OK
+* checking examples ... OK
+* checking PDF version of manual ... OK
+* checking for detritus in the temp directory ... OK
+* DONE
+Status: 4 WARNINGs, 6 NOTEs

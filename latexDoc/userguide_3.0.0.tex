@@ -1,0 +1,270 @@
+% Output
+% dvips userguide_2.0
+% ps2pdf userguide_2.0.ps;mv userguide_2.0.pdf userguide_npde2.0.pdf
+
+\documentclass[12pt,a4paper]{article}
+\usepackage{epsfig}
+%\usepackage{graphicx}
+\usepackage[dvipsnames]{color}
+\DeclareGraphicsExtensions{.jpg, .eps}
+\DeclareGraphicsRule{.jpg}{eps}{.jpg.bb}{`jpeg2ps -h -r 600#1}
+\usepackage{amsmath,amssymb,amsthm,indentfirst,array,bbm}
+\usepackage{lscape}
+\usepackage{longtable}
+\usepackage{dcolumn}
+\setlength{\LTcapwidth}{\textwidth} % caption length for longtable
+
+\usepackage[T1]{fontenc}
+\usepackage{pslatex}
+%\usepackage{calc}
+
+\usepackage{fancyheadings}
+%\usepackage{fancyhdr}
+%\usepackage{color}
+%\usepackage{/home/eco/xtex/Lib/figreport}
+\usepackage{/home/eco/cours/coursR/zemanuel/manuelfig}
+\usepackage[dvips,colorlinks,hyperindex]{hyperref}
+
+\definecolor{mycol}{rgb}{0.5,0.1,0.6}
+
+\hypersetup{pdftitle="Userguide for npde 2.0",pdfauthor="Emmanuelle Comets",
+linkcolor=mycol,urlcolor=mycol,citecolor=mycol}
+%--
+%-- Dimensions
+%--
+\setlength{\topmargin}{-0.5cm}
+\setlength{\textheight}{23cm}
+\setlength{\textwidth}{17cm} 
+\setlength{\oddsidemargin}{0.5cm}
+
+%Typographie
+\renewcommand{\baselinestretch}{1.3}
+\renewcommand{\topfraction}{0.99}
+\renewcommand{\bottomfraction}{0.99}
+
+\setlength{\itemsep}{0pt}
+\parindent 18pt
+
+\def\Y{{\rm Y}}
+%\def\var{{\rm var}}
+\def\var{\hbox{var}}
+\def\npde{{\rm npde}}
+\def\pde{{\rm pde}}
+\def\npd{{\rm npd}}
+\def\pd{{\rm pd}}
+\def\vec{{\rm vec}}
+\def\ypred{{\rm ypred}}
+\def\R{{\sf R}}
+\def\true{{\sf TRUE}}
+\def\false{{\sf FALSE}}
+
+
+%\makeindex
+\begin{document}
+\definecolor{violet}{rgb}{0.25,0.1,0.75}
+%\definecolor{mycol}{rgb}{0.5,0.1,0.6}
+
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{1pt}
+%\renewcommand{\footrulewidth}{0pt}
+\lhead{}
+\chead{}
+\rhead{}
+\lfoot{\itshape E. Comets, \today}
+\cfoot{User Guide for npde 2.0}
+\rfoot{\thepage}
+
+\newcommand{\D}{\displaystyle} \normalsize
+\renewcommand{\thetable}{\Roman{Contents}}
+\renewcommand{\refname}{References}
+\renewcommand{\listfigurename}{{\bfseries \sc Legends for figures}}
+\renewcommand{\labelitemi}{$\bullet$}
+
+\parindent 18pt
+$\phantom{minime}$
+
+\vskip 3cm
+\begin{center}
+{\setlength{\baselineskip}{2\baselineskip}
+{\Large \bfseries User guide for npde 2.0}
+
+{\Large \bfseries August 2012}
+
+\bigskip 
+
+{\Large \itshape \bfseries Emmanuelle Comets}
+
+{\large \itshape \bfseries Karl Brendel~\footnote[1]{\itshape Karl Brendel was a student during part of this work, supported by a grant from the Institut de recherches internationales Servier, Courbevoie, France, and has now a permanent position in Servier.}, Thi Huyen Tram Nguyen, France Mentr\'e}
+
+\bigskip
+{\it
+INSERM, UMR 738, Paris, France
+
+Université Paris Diderot, Sorbonne Paris Cité, Paris, France.
+}
+\par}
+\end{center}
+
+\vskip 8cm
+\begin{center}
+{\large \bfseries npde website: www.npde.biostat.fr}
+\end{center}
+
+\newpage
+%{\setlength{\baselineskip}{0.8\baselineskip}
+\tableofcontents
+%}\par
+\newpage
+
+\hskip 18pt  This is the User's guide for the add-on package {\sf npde} (version 2.0, August 2012) for the {\sf R} language. It is distributed in the \texttt{inst} directory of the package. 
+
+{\sf npde} computes normalised prediction distribution errors, a metric to evaluate nonlinear mixed-effect models such as those used in population pharmacokinetic or pharmacodynamic studies. Prediction distribution errors were developed under the name prediction discrepancies by Mentr\'e and Escolano~\cite{MentrePDE}. Brendel et al~\cite{BrendelPDE} proposed an improved version taking into account repeated observations within each subject, which were called prediction distribution errors.
+
+The program is an add-on package (or library) running under the {\sf R} software~\cite{R}. Please install and launch {\sf R} to use {\sf npde}.
+
+\bigskip
+
+In section~\ref{sec:npde}, we describe briefly the method referenced in~\cite{BrendelPDE}. Details concerning the context and the methods can be found in this publication. In section~\ref{sec:progdesc}, we describe how to use the program to compute, plot and test prediction distribution errors. Finally, in section~\ref{sec:npde.examples}, we illustrate the use of the package through two examples (included in the package).
+
+An additional document is distributed along with the package. Using the same examples as in section~\ref{sec:npde.examples}, it contains a table of graphical options and shows many graphs to illustrate how to use these options and produce specific graphs. This companion document, \verb+ demo_npde2.0.pdf+, is also located in the \texttt{inst} directory of the package.
+
+\section{Installation and Legalese}
+
+\subsection{Download and installation}
+
+\hskip 18pt {\sf npde} can be obtained at the following URL: 
+\href{http://www.npde.biostat.fr/}{\texttt{http://www.npde.biostat.fr/}}. The website also contains information concerning the updates to {\sf npde}, the most recent version of this User Guide, and references to some publications describing and using {\sf npde}. The current version is 2.0. 
+
+The program is distributed as an add-on package (library) for R, and is available on the CRAN, from the menu or using the command {\sf install.packages()} from within {\sf R}. Superuser privileges may be required for a system-wide installation.
+
+Please consult the {\it R Installation and Administration} manual (section 6) provided with {\sf R} (or available from the CRAN) for further details concerning the installation of packages.
+
+\begin{description}
+\item[{\bf Uninstalling:}] under Windows, please remove the directory {\sf npde} from the library directory (path RHOME$\backslash$library). Under Linux, use the remove option (usually requires superuser privileges), assuming the variable \$RHOME contains the path to R:
+\end{description}
+\begin{verbatim}
+sudo R CMD REMOVE -l $RHOME/library/ npde 
+\end{verbatim}
+Note that when using the \texttt{install.packages()} function to update the package, it is generally not necessary to uninstall prior versions of {\sf npde}.
+
+Loading the library is done as usual in R by typing:
+\begin{verbatim}
+library("npde")
+\end{verbatim}
+in the {\sf R} command window. As of version 1.1, downloaded after July 27th, 2007, a message will be printed stating the version and date of the library.
+
+\subsection{License}
+
+\hskip 18pt {\sf npde} is a software distributed under the terms of the GNU GENERAL PUBLIC LICENSE Version 2, June 1991.  The terms of this license are in a file called COPYING which you should have received with this software.
+
+If you have not received a copy of this file, you can obtain one via the world wide web at http://www.gnu.org/copyleft/gpl.html, or by writing to:
+\begin{quotation}
+\noindent The Free Software Foundation, Inc.,\\
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+\end{quotation}
+
+\subsection{Citing {\sf npde}}
+
+\hskip 18pt If you use this program in a scientific publication, we would like you to cite the following reference:
+\begin{quotation}
+\noindent Comets E, Brendel K, Mentré F. Computing normalised prediction distribution errors to evaluate nonlinear mixed-effect models: the npde add-on package for R. {\it Computer Methods and Programs in Biomedicine} 2008, 90:154-66.
+\end{quotation}
+
+A BibTeX entry for \LaTeX$\;$ users is:
+\begin{verbatim}
+@Article{Comets08,
+author	={Emmanuelle Comets and Karl Brendel and France Mentr{\'e}},
+title	={Computing normalised prediction distribution errors to evaluate
+nonlinear mixed-effect models: the npde add-on package for {R}},
+volume	={90},
+pages	={154--66},
+journal	={Computer Methods and Programs in Biomedicine},
+year	=2008	}
+\end{verbatim}
+
+Additional references are:
+\begin{quotation}
+\noindent Brendel K, Comets E, Laffont CM, Laveille C, Mentré F. Metrics for
+external model evaluation with an application to the population pharmacokinetics
+of gliclazide. {\it Pharmaceutical Research} 2006, 23: 2036--2049.
+
+\noindent Comets E, Brendel K, Mentré F. Computing normalised prediction distribution errors to evaluate nonlinear mixed-effect models: the npde add-on package for R. {\it Computer Methods and Programs in Biomedicine} 2008, 90: 154-66.
+
+\noindent Comets E, Brendel K, Mentré F. Model evaluation in nonlinear mixed effect models, with applications to pharmacokinetics. {\it Journal de la Societe Francaise de Statistique} 2010, 151: 106-28.
+
+\noindent Nguyen TH, Comets E, Mentré F. Extension of NPDE for evaluation of nonlinear mixed effect models in presence of data below the quantification limit with applications to HIV dynamic model. {\it Journal of Pharmacokinetics and Pharmacodynamics} 2012, 39: 499-518.
+\end{quotation}
+
+with the corresponding BibTeX entries:
+\begin{verbatim}
+@Article{,
+author	={Karl Brendel and Emmanuelle Comets and C{\'e}line Laffont and Christian Laveille and France Mentr{\'e}},
+title	={Metrics for external model evaluation with an application to the
+population pharmacokinetics of gliclazide},
+volume	={23},
+pages	={2036--49},
+journal	={Pharmaceutical Research},
+year	=2006	}
+
+@Article{,
+author	={Emmanuelle Comets and Karl Brendel and France Mentr{\'e}},
+title	={Model evaluation in nonlinear mixed effect models, with applications
+to pharmacokinetics},
+volume	={151},
+pages	={106--28},
+journal	={Journal de la Société Française de Statistique},
+year	=2010	}
+
+@Article{,
+author = {Thi Huyen Tram Nguyen and Emmanuelle Comets and France Mentr{\'e}},
+title   ={{Prediction discrepancies (pd) for evaluation of models with data
+under limit of quantification}},
+volume	={39},
+pages	={499--518},
+journal ={Journal of Pharmacokinetics and Biopharmaceutics},
+year    =2012	}
+\end{verbatim}
+
+\input{method}
+
+\clearpage
+\input{package}
+
+\clearpage
+\input{examples}
+
+\clearpage
+\newpage
+\addcontentsline{toc}{section}{References}
+\bibliographystyle{acm}
+\bibliography{npde_library}
+
+\input{appendix}
+
+\end{document}
+
+{\begin{tabular}{l D{.}{.}{-1} D{.}{.}{-1} D{.}{.}{-1} D{.}{.}{-1} D{.}{.}{-1}}
+id & xobs & yobs & ypred & npde & pd\\
+1 & 0.25 & 2.84 & 2.9238643 & 0.125661346855074 & 0.55\\
+1 & 0.57 & 6.57 & 4.6822991 & 2.05374891063182 & 0.85\\
+1 & 1.12 & 10.5 & 6.264357 & 2.32634787404084 & 0.99\\
+1 & 2.02 & 9.66 & 6.986255 & 0.524400512708041 & 0.98\\
+1 & 3.82 & 8.58 & 6.511039 & 0.253347103135800 & 0.93\\
+1 & 5.1 & 8.36 & 5.895675 & 0.674489750196082 & 0.96\\
+1 & 7.03 & 7.47 & 5.064736 & 1.64485362695147 & 0.97\\
+1 & 9.05 & 6.89 & 4.302909 & 0.772193214188685 & 0.99\\
+1 & 12.12 & 5.94 & 3.29402 & 1.75068607125217 & 0.99\\
+1 & 24.37 & 3.28 & 1.16874348 & 2.32634787404084 & 0.99\\
+2 & 0.27 & 1.72 & 3.39568076 & -0.994457883209753 & 0.16\\
+2 & 0.52 & 7.91 & 5.222963 & 2.32634787404084 & 0.9\\
+2 & 1 & 8.31 & 6.984615 & 0.674489750196082 & 0.71\\
+2 & 1.92 & 8.33 & 7.707843 & -0.305480788099397 & 0.64\\
+2 & 3.5 & 6.85 & 7.47791 & -1.55477359459685 & 0.33\\
+2 & 5.02 & 6.08 & 6.43454 & -0.80642124701824 & 0.43\\
+2 & 7.03 & 5.4 & 5.612031 & -0.279319034447454 & 0.48\\
+2 & 9 & 4.55 & 4.862751 & 0.100433720511470 & 0.43\\
+2 & 12 & 3.01 & 3.771684 & -0.279319034447454 & 0.26\\
+2 & 24.3 & 0.9 & 1.2906205 & -0.553384719555673 & 0.31\\
+\end{tabular}
+}

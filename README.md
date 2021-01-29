@@ -1,2 +1,2 @@
 # npde30
-Paclage npde for R (normalised prediction distribution errors)
+Package npde for R (normalised prediction distribution errors)

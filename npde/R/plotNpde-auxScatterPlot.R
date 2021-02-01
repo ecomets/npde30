@@ -48,6 +48,7 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
   numberCategories =  length(namesCategories)  # nombre de catégories pour la covariable
 
   # set xlim & ylim - add a scale_free option
+
   if ("xlim" %in% names(plot.opt) & length(plot.opt$xlim)==2)
     x.limits = c(plot.opt$xlim[1],plot.opt$xlim[2])  else
       x.limits = c(min(obsmat$x,na.rm=TRUE),max(obsmat$x,na.rm=TRUE))

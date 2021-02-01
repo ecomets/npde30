@@ -90,13 +90,13 @@ setMethod(
     .Object@name.ipred<-name.ipred
 
 
-  .avoid_code = function() {
+  #.avoid_code = function() {
 
 
     # name.groupe
     if (missing(name.group)) {.Object@name.group <- character()}
     if (!missing(name.group) && is.character(name.group)==TRUE){
-      if((nchar(name.group)==0)){
+      if((length(name.group)==0)){
         print("name group is empty")
         FALSE}
       else{.Object@name.group <- name.group}
@@ -105,7 +105,7 @@ setMethod(
     # name.predictor
     if (missing(name.predictor)) {.Object@name.predictor <- character()}
     if (!missing(name.predictor) && is.character(name.predictor)==TRUE){
-      if((nchar(name.predictor)==0)){
+      if((length(name.predictor)==0)){
         print("name predictor is empty")
         FALSE}
       else{.Object@name.predictor <- name.predictor}
@@ -114,7 +114,7 @@ setMethod(
     # name.response
     if (missing(name.response)) {.Object@name.predictor <- character()}
     if (!missing(name.response) && is.character(name.response)==TRUE){
-      if((nchar(name.response)==0)){
+      if((length(name.response)==0)){
         print("name response is empty")
         FALSE}
       else{.Object@name.response <- name.response}
@@ -123,7 +123,7 @@ setMethod(
     # name.covariates
     if (missing(name.covariates)) {.Object@name.covariates <- character()}
     if (!missing(name.covariates) && is.character(name.covariates)==TRUE){
-      if((nchar(name.covariates)==0)){
+      if((length(name.covariates)==0)){
         print("name covariates is empty")
         FALSE}
       else{.Object@name.covariates <- name.covariates}
@@ -132,7 +132,8 @@ setMethod(
     # name.cens
     if (missing(name.cens)) {.Object@name.cens <- character()}
     if (!missing(name.cens) && is.character(name.cens)==TRUE){
-      if((nchar(name.cens)==0)){
+      
+      if((length(name.cens)==0)){
         print("name cens is empty")
         FALSE}
       else{.Object@name.cens <- name.cens}
@@ -141,7 +142,7 @@ setMethod(
     # name.miss
     if (missing(name.miss)) {.Object@name.miss <- character()}
     if (!missing(name.miss) && is.character(name.miss)==TRUE){
-      if((nchar(name.miss)==0)){
+      if((length(name.miss)==0)){
         print("name miss is empty")
         FALSE}
       else{.Object@name.miss <- name.miss}
@@ -150,13 +151,13 @@ setMethod(
     # name.ipred
     if (missing(name.ipred)) {.Object@name.ipred <- character()}
     if (!missing(name.ipred) && is.character(name.ipred)==TRUE){
-      if((nchar(name.ipred)==0)){
+      if((length(name.ipred)==0)){
         print("name ipred is empty")
         FALSE}
       else{.Object@name.ipred <- name.ipred}
     }
 
-  }
+#}
 
     if(missing(units)) units<-list(x="-",y="-")
     if(is.null(units$x)) units$x<-"-"

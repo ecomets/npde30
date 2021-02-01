@@ -19,7 +19,7 @@
 #' @details Scatterplots of npde/pd/npd/observations can be obtained versus covariates by setting the which.x argument to "cov" and selecting the appropriate which.y. The function will use the covariates in the which.cov element of the prefs slot. This can be overriden to cycle over all the covariates in the dataset by supplying the argument which.cov="all" in the call to the function.
 #' @details Reference profile: a reference profile can be added to scatterplots of npd and npde versus the independent variable (see Comets et al. 2013)
 #' @details If ref.prof="covariate" and an additional argument covsplit is given (covsplit=TRUE), the reference plot will be adjusted for each covariate category over all the covariates in the which.cov element of the prefs slot (see  \code{\link{npdeControl}} for details on the prefs slot of the npdeObject).
-#' @ðetails If ref.prof is given as a named list (eg list(ID=c(1,5)) or list(sex=0, dose=c(50,100)), where names should refer to columns in the data file (eg ID should be a column in the data)), the reference profile will be obtained by combining (in the first example above, the reference profile will be obtained using the simulated data for subjects 1 and 5, while in the second example it will be computed using the subjects with sex=0 given doses 50 or 100).
+#' @details If ref.prof is given as a named list (eg list(ID=c(1,5)) or list(sex=0, dose=c(50,100)), where names should refer to columns in the data file (eg ID should be a column in the data)), the reference profile will be obtained by combining (in the first example above, the reference profile will be obtained using the simulated data for subjects 1 and 5, while in the second example it will be computed using the subjects with sex=0 given doses 50 or 100).
 #'
 #' @author Emmanuelle Comets <emmanuelle.comets@@bichat.inserm.fr>
 #' @seealso \code{\link{npde}}, \code{\link{autonpde}}, \code{\link{set.plotoptions}}, \code{\link{npdeControl}}
@@ -114,10 +114,21 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
 
   # axis : labels and units
   plot.opt$xaxis<-which.x # used in aux.npdeplot.scatter (maybe pass an other way)
-  plot.opt$xlab <- switch(which.x, "x"=paste0( npdeObject@data@name.predictor," ", "(", npdeObject@data@units$x,")" ), "pred"=paste0("Predicted ", npdeObject@data@name.response," (", npdeObject@data@units$y,")" ), "cov"="", "npde"="npde", "npd"="npd", "pd"="pd") # cov, npde, npd, pd: not valid options; cov: to be implemented
-  plot.opt$ylab <- switch(which.y, "npde"="npde", "npd"="npd", "pd"="pd", "yobs"=paste0( npdeObject@data@name.response," (", npdeObject@data@units$y,")" ),  "cov"="") # cov not a valid option (yet ?)
-
-  alpha <- (1 - plot.opt$vpc.interval) / 2 # vpc.interval controls which percentiles we want PI for
+  
+  # test empty string for x-y labels
+  nchar.xlab = nchar(gsub("[[:blank:]]", "", npdeObject@data@units$x))
+  nchar.ylab = nchar(gsub("[[:blank:]]", "", npdeObject@data@units$y))
+  
+  if (npdeObject@data@units$x !=0)
+    plot.opt$xlab <- switch(which.x, "x"=paste0( npdeObject@data@name.predictor," ", "(", npdeObject@data@units$x,")" ), "pred"=paste0("Predicted ", npdeObject@data@name.response," (", npdeObject@data@units$y,")" ), "cov"="", "npde"="npde", "npd"="npd", "pd"="pd") # cov, npde, npd, pd: not valid options; cov: to be implemented
+  plot.opt$xlab <- switch(which.x, "x"=paste0( npdeObject@data@name.predictor ), "pred"=paste0("Predicted ", npdeObject@data@name.response ), "cov"="", "npde"="npde", "npd"="npd", "pd"="pd") # cov, npde, npd, pd: not valid options; cov: to be implemented
+  
+  if (npdeObject@data@units$y !=0)
+    plot.opt$ylab <- switch(which.y, "npde"="npde", "npd"="npd", "pd"="pd", "yobs"=paste0( npdeObject@data@name.response," (", npdeObject@data@units$y,")" ),  "cov"="") # cov not a valid option (yet ?)
+  plot.opt$ylab <- switch(which.y, "npde"="npde", "npd"="npd", "pd"="pd", "yobs"=paste0( npdeObject@data@name.response),  "cov"="") # cov not a valid option (yet ?)
+  
+  # vpc.interval controls which percentiles we want PI for
+  alpha <- (1 - plot.opt$vpc.interval) / 2 
   if(alpha>0.5) alpha<-(1-alpha)
   nrep<-npdeObject["sim.data"]["nrep"]
 

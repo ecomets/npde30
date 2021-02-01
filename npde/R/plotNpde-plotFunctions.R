@@ -401,8 +401,8 @@ npde.plot.default<-function(npdeObject,  ...) {
 
   pred.scatter <- npde.plot.scatterplot(new_npdeObject, which.x="pred", which.y=plot.opt$which, plot.default=TRUE,...)
 
-  grid.arrange(hist, qqplot, x.scatter, pred.scatter, nrow=2, ncol=2,top="")
-
+  do.call(grid.arrange, c(hist, qqplot, x.scatter, pred.scatter, list( nrow=2, ncol=2 ), top=""))
+  
 } # end function npde.plot.default
 
 

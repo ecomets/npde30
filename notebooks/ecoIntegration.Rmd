@@ -69,7 +69,7 @@ library(gridExtra)
 library(grid)
 library(mclust)
 library(testthat)
-workDir<-"/home/eco/work/npde/npde30"
+workDir<-"D:/RECHERCHES/_NPDE/Npde-2021/npde30-main"
 notesDir<-file.path(workDir,"notebooks")
 datDir<-file.path(workDir,"npde","data")
 testsDir<-file.path(workDir,"npde","tests","testthat")

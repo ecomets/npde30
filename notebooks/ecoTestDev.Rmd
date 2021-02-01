@@ -1,0 +1,526 @@
+---
+title: "Test package with devtools"
+author: "Emmanuelle"
+date: "30/11/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## Notes before release
+
+- package
+  -  **TODO** automatically load ggplot libraries when loading *npde* () : OK
+  - changed rbindlist to do.call so we don't need to depend on data.table package : OK 
+    - **Romain**: peut-être réecrire les parties du code générant pimat pour ne pas avoir de liste et faire directement des rbind quand on génére les pimat pour chaque catégorie de covariables : OK
+- compilation: compiled package as npde 3.0 : OK
+  - version number 3.0 because reference profiles included : OK
+  - lots of error messages for "no visible binding for global variable" in variables related to ggplot2 (Undefined global functions or variables) => hope this does not block us for CRAN : ces messages ne s'affichent plus maintenant
+  - **TODO** remove remifentanil example as much too large in size for CRAN => maybe replace with warfarine covariate model (add doc for these as currently raises a warning) 
+- code **TODO**
+  - add an option to remove all output when required and remove warnings if requested
+  - modify name of npde.plot.meanprofile to something else like npde.plot.scatter (not that, as we already have one)
+- *npde website* (bookdown, Eco)
+- **TODO** simplify output for *show()* function (v3.0 or v3.1 ?)
+
+## Setup, loading libraries
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(devtools)
+library(ggplot2)
+library(gridExtra)
+library(grid)
+library(mclust)
+workDir<-"D:/RECHERCHES/_NPDE/Npde-2021/npde30-main"
+setwd(workDir)
+docFigs<-"D:/RECHERCHES/_NPDE/Npde-2021/npde30-mainfigs"
+saveDocPlots<-FALSE
+```
+
+
+### Install package in development mode
+  
+```{r devModeInstall}
+setwd(workDir)
+dev_mode() # development mode
+install.packages(pkgs=file.path(workDir,"npde_3.0.tar.gz"),repos=NULL)
+library(npde)
+```
+
+## Running examples from documentation
+
+### Checking help files work
+
+OK
+
+```{r helpFiles, echo=FALSE}
+?theopp
+?autonpde
+```
+###  Computing npde for theophylline data
+
+Checking that the results are the same when we use data frames versus files on disk: OK
+
+```{r theoRun, echo=FALSE}
+data(theopp)
+data(simtheopp)
+
+# Calling autonpde with dataframes
+theofit1<-autonpde(theopp,simtheopp,1,3,4,boolsave=FALSE, units=list(x="hr",y="mg/L"))
+theofit1
+
+# Calling autonpde with names of files to be read from disk
+write.table(theopp,"theopp.tab",quote=FALSE,row.names=FALSE)
+write.table(simtheopp,"simtheopp.tab",quote=FALSE,row.names=FALSE)
+theofit<-autonpde(namobs="theopp.tab", namsim="simtheopp.tab", iid = 1,
+            ix = 3, iy = 4, imdv=0, boolsave = FALSE, units=list(x="hr",y="mg/L"))
+head(theofit["results"]["res"])
+cat("Same results with data frame and with data on disk:",identical(theofit,theofit1),"\n")
+
+
+```
+
+Show and print function :
+
+- modified so that print(theofit) shows the results of gof.test applied to the object
+- show displays the first 10 lines of the results dataframe
+- **TODO** simplify output for *show()* function (v3.0 or v3.1 ?) : faire une classe � part ? 
+
+```{r theShow, echo=FALSE}
+show(theofit)
+
+print(theofit)
+```
+
+###  Computing npde for viral load data
+
+For censored viral load data (20 or 50 cp/mL), we compute the npde using the different methods implemented in the package. We expect:
+
+- NS for yvir1, yvir20, yvir50 (complete datasets, and censored datasets with imputed BQL)
+- significant for omit and ppred method
+  - **TODO** check why NS for omit method ??? => because we also omit BQL data in the simulations (so OK)
+- NS for ipred method
+
+```{r virloadRun, echo=FALSE}
+#Viral load data
+data(virload)
+data(virload50)
+data(simvirload)
+
+#Plotting the data
+par(mfrow=c(1,2))
+plot(Log_VL~Time,data=virload,xlab="Time (d)",ylab="Viral loads, base 10 log-scale (cp/mL)")
+plot(Log_VL~Time,data=virload50,xlab="Time (d)",ylab="Viral loads, base 10 log-scale (cp/mL)")
+
+# Calling autonpde with dataframes
+yvir1<-autonpde(virload,simvirload,iid=1,ix=2,iy=3,boolsave=FALSE, units=list(x="hr", y="cp/mL, log 10 base"))
+
+yvir20<-autonpde(virload20,simvirload,iid=1,ix=2,iy=3, icens=4, boolsave=FALSE)
+
+yvir2<-autonpde(virload50,simvirload,iid=1,ix=2,iy=3,boolsave=FALSE)
+
+yvir50<-autonpde(virload50,simvirload,iid=1,ix=2,iy=3, icens=4,boolsave=FALSE)
+
+# Different methods to handle LOQ
+yvir50.omit<-autonpde(virload50,simvirload,iid=1,ix=2,iy=3, icens=4,boolsave=FALSE, cens.method="omit")
+
+yvir50.ppred<-autonpde(virload50,simvirload,iid=1,ix=2,iy=3, icens=4,boolsave=FALSE, cens.method="ppred")
+
+yvir50.ipred<-autonpde(virload50,simvirload,iid=1,ix=2,iy=3, icens=4, iipred=5, boolsave=FALSE, cens.method="ipred")
+
+if(FALSE) {
+  paperFigs<-"/home/eco/xtex/npde/aaps20/figs"
+  namfile<-file.path(paperFigs,"npdeDefault.eps")
+  cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+  plot(yvir1,bin.method="optimal")
+  dev.off()  
+}
+```
+
+###  Computing npde for remifentanil dataset with covariates
+
+- **BUGS**
+  - columns 6 to 12 set as covariates but only 6:11 actually kept  : ok maintenant
+  - \textcolor{red}{(à résoudre Romain)} est-ce que c'est à cause de la fonction "avoid_code" rajoutée dans setMethod(f="initialize",signature="NpdeData",  ? Cette fonction n'existe pas dans le code originel : dans NpdeData.R : avoid_code removed nchar(string)==0 replaced by length(string)==0
+
+```{r remifentanilRun, echo=FALSE}
+data(remifent)
+data(simremifent)
+xrem<-autonpde(namobs=remifent,namsim=simremifent,iid=1,ix=2,iy=3,icov=c(6:12),namsav="remibase", units=list(x="hr",y="ug/L", covariates=c("yr","-","cm","kg","m2","kg","yr")))
+```
+
+## Test plots - default options
+  
+### Default plots for theophylline data
+
+- **Corrections** (changed Romain)
+  - option *which* passe (yes !)
+  - titre des axes dans les graphes: marchent et s'adaptent au cas pd/npd/npde (cool)
+  - corrigé le problème des limites d'axes pour npde vs pred
+- **Corrections** (changed Eco)
+  - default size for QQ-plot reduced for consistency in the default plot 2x2 (multiplied psize.pobs and psize.pcens by 2/3 inside the aux.plot.dist function, after the plot.opt vector is set, and added a note in the documentation) **check**
+  - **but** a bit weird, when scatterplots are done individually the size seems very small (should be 1.5) and smaller than the scaling from the default plots appears to be... => plutôt un problème de ggplot2, on n'y peut rien :-/
+- **Problems**  \textcolor{red}{(à résoudre Romain)}
+  - sécuriser les erreurs quand on référence un **argument non autorisé**
+    - ex: which='pde', semble corrigé ? (semble ne plus planter mais continue à donner un message d'erreur lié objet introuvable)
+    - *note:* pas nécessaire d'avoir pde, mais nécessaire d'empêcher que ça plante :-) (ie capturer le which et tester qu'il correspond à soit pd, soit npd, soit npde, et faire ça pour tous les arguments à choix multiples)
+  - **unités**: quand l'élément units est vide pour x et/ou y, on met juste le "nom" et pas "nom ()" : ok pour les scatter plots
+  - **titre** à centrer au-dessus des 4 graphes et pas seulement du premier (mais super qu'il y ait un titre :-) )
+    - comme ça le graphe histogramme ne sera pas aplati par rapport aux autres 
+  - **global options** don't pass on to the functions
+    - size
+      - normalement si l'utilisateur spécifie "size=2" sans spécifier size.pobs, size.pobs devrait passer à 1.5, et là ça ne semble rien changer
+      - ni dans le graphe par défault (ie les 4 graphes), ni individuellement 
+    - colours
+      - when only col is specified, it should affect other elements (but not sure which we had decided), here only affects histogram and col.lobs for qqplot
+      - TBD: col => col.pobs, col.lobs, col.pcens ?
+      - col.lobs ne change rien, devrait changer les lignes correspondant aux percentiles et les lignes dans l'histograme
+  - **X-range on PI** est-ce qu'on étend les bandes des PI jusqu'aux bornes du graphe (eg graphe des npd) ?
+
+```{r theoPlots, echo=FALSE}
+
+# dont work with theofit1
+# dont work == try(...)
+try(plot(theofit1, main="Theophylline data"))
+try(plot(theofit1, which="pd"))
+try(plot(theofit1, which="npd"))
+
+# ci-dessous le passage de size ne semble pas marhcer
+if(F) { # la taille de size.pobs (et size.pcens) n'est pas modifiée
+  plot(theofit1,size=5)
+  plot(theofit1,col="green")
+}
+
+```
+
+### Default plots for viral load data
+
+- computation of the PI: seems appropriate in the different cases
+- **Problems**  \textcolor{red}{(Eco)}
+  - PI for omit aren't consistent with the VPC later on
+    - **documentation** explain how PI are computed in the omit case
+
+```{r virloadPlots, echo=FALSE}
+plot(yvir1, main="Complete dataset") # complete data
+plot(yvir50, main="Dataset censored 50 cp/mL") # imputing LOQ data using cdf (recommended)
+# dont work : plot(yvir50.omit, main="Censored 50, censoring=omit") # omitting LOQ data
+try(plot(yvir50.omit, main="Censored 50, censoring=omit")) # omitting LOQ data
+plot(yvir50.ipred, main="Censored 50, censoring=ipred") # imputing to individual predictions
+plot(yvir50.ppred, main="Censored 50, censoring=ppred") # imputing to population predictions
+
+plot(yvir1, which="pd")
+```
+
+## Plots with default options
+
+### Scatterplots
+
+- **Corrigé (marche)**
+  - quand on change size.pcens le symbole des données manquantes change aussi => OK
+  - changé la taille par défaut de pcens à 0.5 sinon on a l'impression qu'il y a plus de données censurées qu'il ne devrait
+- **Problems**  \textcolor{red}{(à résoudre Romain)}
+  - titles for scatterplots
+    - (redite): enlever les unités si absentes du jeu de données (ie "Predicted Log_VL" et pas "Predicted Log_VL ()") : OK pour plotNpde-scatterplot.R
+  - **size** ne passe pas (devrait changer à la fois size.pobs et size.pcens) : size.pobs et size.pcens passent s�parement et les 2 � la fois si on met les deux comme options
+    - même pb que dans le graphe par défault (ie les 4 graphes)
+
+```{r theoPlotsScatter, echo=FALSE}
+plot(yvir20, plot.type="x.scatter")
+plot(yvir20, plot.type="pred.scatter")
+
+plot(yvir50, plot.type="x.scatter",size.pobs=5)
+plot(yvir50, plot.type="x.scatter",size.pcens=6)
+plot(yvir50, plot.type="x.scatter",size.pobs=5, size.pcens=6)
+
+plot(theofit1, plot.type="x.scatter", which="pd")
+plot(theofit1, plot.type="pred.scatter", which="pd")
+
+# ci-dessous le passage de size ne semble pas marcher
+if(F) { # la taille de size.pobs (et size.pcens) n'est pas modifiée
+  plot(theofit1,size=5)
+  plot(theofit1, plot.type="x.scatter",size.pobs=2, main="title")
+  plot(yvir50, plot.type="x.scatter",size.pcens=2)
+}
+```
+
+### Distribution plots
+
+- **Corrections** 
+  - titles adjust to the metric
+- **Problems**  \textcolor{red}{(à résoudre Romain)}
+  - message bizarre sur qqplot:
+    - plot(theofit1, plot.type="qqplot",which="npde")
+ doTryCatch(return(expr), name, parentenv, handler):
+ liste de retraçage des affichages incomplète
+    - quand je trace pluseiurs graphes de suite, celui de qqplot a une tête bizarre (gros points rouges et pas de fill) alors qu'il passe très bien tout seul (affichage d'un truc intermédiaire de ggplot ??? comme pour les patterns l'autre jour ?)
+  - pb with **size** (comme plus haut, size ne passe pas, seul size.pobs passe)
+  - **axe title** for ecdf plot (should be: 'npde' on X-axis (/pd/npd) and 'Empirical distribution function' on Y-axis)
+
+```{r theoPlotsDist, echo=FALSE}
+if(F) { # redéfinir which avec un argument par défault à npde
+
+plot(theofit1, plot.type="hist")
+plot(theofit1, plot.type="qqplot")
+plot(theofit1, plot.type="ecdf")
+}
+
+plot(theofit1, plot.type="hist",which="npde")
+
+try(plot(theofit1, plot.type="qqplot",which="npde"))
+try(plot(theofit1, plot.type="ecdf",which="npde"))
+
+# Same plots for pd, OK
+plot(theofit1, plot.type="hist", which="pd")
+
+try(plot(theofit1, plot.type="qqplot", which="pd"))
+try(plot(theofit1, plot.type="ecdf", which="pd"))
+
+# ci-dessous le passage de size ne semble pas marcher
+if(F) { # la taille de size.pobs (et size.pcens) n'est pas modifiée
+  plot(theofit1, plot.type="qqplot", which="npde",size=5)
+  plot(theofit1, plot.type="qqplot", which="npde",size.pobs=5)
+}
+
+if(FALSE) { # ecdf of a uniform distribution (Eco check)
+  x1<-runif(1000)
+  plot(sort(x1),c(1:1000)/1000)
+}
+
+```
+
+### Data plots
+
+- **Corrections**
+  - plot.loq: works to remove the LOQ values
+- **Problems**  \textcolor{red}{(à résoudre Romain)}
+  - plot d'un **objet npdeData** ne marche pas
+    - par contre plot.type="data" de l'objet npdeObject fonctionne => bizarre, vérifier [normalement plot.type="data" devrait appeler plot(objet@data) mais là ça semble court-circuiter ceci => à rectifier, on veut plutôt l'inverse]
+  - with **LOQ data**, the data being plotted is the LOQ
+    - if applied directly to an objet npdeData (eg *plot(yivr50@data)*) => plot LOQ (ie censoring value)
+    - if applied to the object resulting from a run => data plotted should depend on the censoring method (same as VPC)
+      - for cdf, plot imputed y
+      - for omit, don't plot anything
+      - for ipred, plot ipred
+      - for ppred, plot ppred
+    - all other options should be the same [axis titles, axes, grid, default colours, etc...]
+  - **lines for axes** don't appear
+  - **size** 
+    - size should be controlled by size.pobs and size.pcens, currently too small (not the same defaults as for the other plots ?)
+    - size doesn't change size.pobs and size.lobs as it should
+    - size.lobs doesn't work
+  - **axis titles**
+    - missing for theofit, why ? (present for yvir50, so odd)
+  - **line.loq** doesn't work (no line appears at the LOQ)
+
+```{r theoPlotsData, echo=FALSE}
+#Plotting the theophylline data (R vanilla)
+plot(Conc~Time,data=theopp,xlab="Time after dose (hr)",ylab="Theophylline concentration (mg/L)")
+
+plot(theofit1@data) # ne marche pas
+plot(theofit1, plot.type="data") # marche mais manque les titres, les lignes sur les axes, la taille des points ne va pas
+
+plot(yvir50, plot.type="data") # marche mais manque les lignes sur les axes, la taille des points ne va pas
+plot(yvir50.omit, plot.type="data") # marche mais manque les lignes sur les axes, la taille des points ne va pas, et les données LOQ ne devraient pas être tracées
+
+plot(yvir50, plot.type="data",plot.loq=FALSE)
+plot(yvir50, plot.type="data",plot.loq=FALSE, line.loq=TRUE)
+
+# ci-dessous le passage de size ne semble pas marcher
+if(F) { # la taille de size.pobs (et size.pcens) n'est pas modifiée
+  plot(yvir50,plot.type="data",size=5) # should change size.pobs and size.pcens (? also size.lcol ?)
+  plot(yvir50,plot.type="data",size.pobs=5, size.pcens=2) # ok
+  plot(yvir50,plot.type="data",size.lobs=5) # doesn't change the size of the lines
+}
+```
+
+### VPC
+
+- **Corrections**
+  - PI seem ok for cdf, ipred, maybe check ppred ? (outlier band seems a bit large, but possible)
+- **Problems**  \textcolor{red}{(à résoudre Romain)}
+  - **Y-axis**  title "all" => change to the name (and unit if available), eg "Conc (mg/L)"
+  - **units** see above, don't use units when they are ""
+  - computation of the PI for **omit** is not consistent with the PI computed for npde
+    - compute the PI in this case by omitting the data>LOQ for the simulated data as well, to be consistent with the way the PI are computed for npde
+    - check also that the PI are computed consistently for ppred
+    - ipred ??? in this case can't be consistent (we have isim in the dataset but not ipred) so keep the simulations as is
+
+```{r theoPlotsVPC, echo=FALSE}
+plot(theofit1, plot.type="vpc")
+
+plot(yvir50.omit, plot.type="vpc") # correct except Y-axis title
+plot(yvir50, plot.type="vpc") 
+plot(yvir50.ipred, plot.type="vpc")
+plot(yvir50.ppred, plot.type="vpc")
+```
+
+## P(Y<LOQ)
+
+- **Problems**  \textcolor{red}{(à résoudre Romain)}
+  - **PI** on ne voit pas les bornes extérieures du PI (ça devrait être contrôlé par lty.bands et col.bands aussi)
+  - **axes** missing lines for axes
+  - **lwd.bands** should probably be increased for this plot :-/ (compared to the others), but never mind => show an example in Beautiful graphs
+
+```{r virPlotsPloq, echo=FALSE}
+
+try(plot(yvir20, plot.type="loq"))
+try(plot(yvir20, plot.type="loq", lwd.bands=0.75)) # more visible, show this in second documentation
+```
+
+## Covariate plots
+
+## Covariates
+
+### Splitting plots according to covariates
+
+- **Problems**  \textcolor{red}{(à résoudre Romain)}
+  - yes here we really need to extend PI to cover the whole X-range for x.scatter and pred.scatter (not VPC)
+    - just the PI (not the observed percentiles or outlier bands)
+  - **covsplit**
+    - vpc, x.scatter, pred.scatter:
+      - works both with a single covariate, and with a vector of covariates
+      - doesn't work with only covsplit => should use all covariates in the model
+    - doesn't work with the default plots
+      - we should get default plots for each category of the covariate
+  - **xlim** doesn't work (nor does **ylim**)
+
+```{r remiCov, echo=FALSE}
+plot(xrem, plot.type="x.scatter") # ok but see above and would like to see x-range extended : corrig�
+
+# Working
+plot(xrem, plot.type="x.scatter", covsplit=TRUE, which.cov=c("Gender"))
+plot(xrem, plot.type="x.scatter", covsplit=TRUE, which.cov=c("Age"))
+plot(xrem, plot.type="x.scatter", covsplit=TRUE, which.cov=c("Gender","Age"))
+plot(xrem, plot.type="pred.scatter", covsplit=TRUE, which.cov=c("Gender","Age"))
+plot(xrem, plot.type="vpc", covsplit=TRUE, which.cov=c("Gender","Age"))
+
+# Passing limits to the plot doesn't work : corrig�
+plot(xrem, plot.type="vpc", covsplit=TRUE, which.cov=c("Gender","Age"),xlim=c(0,80))
+plot(xrem, plot.type="vpc",xlim=c(0,80))
+
+plot(xrem, plot.type="vpc", covsplit=TRUE, which.cov=c("Gender"))
+
+# FAILS
+plot(xrem, plot.type="x.scatter", covsplit=TRUE) # fails, not sure why : la boucle sur les covariables + plots se font bien
+
+# fails with error
+try(plot(xrem, covsplit=TRUE, which.cov="Age")) # We should get default plots for each category of the covariate : la boucle pour �a n'est pas encore dans le code, mais il y a tout ce qu'il faut pour.
+```
+
+### Parameters versus covariates
+
+Not implemented yet
+
+- **Problems**  \textcolor{red}{(à résoudre Romain)}
+  - error when using plot.type="cov.scatter'
+  - normally we should get a plot of npde versus the covariates
+
+```{r remiParvsCov, echo=FALSE}
+# Working
+plot(xrem, plot.type="x.scatter", covsplit=TRUE, which.cov=c("Gender"))
+plot(xrem, plot.type="x.scatter", covsplit=TRUE, which.cov=c("Age"))
+plot(xrem, plot.type="x.scatter", covsplit=TRUE, which.cov=c("Gender","Age"))
+plot(xrem, plot.type="pred.scatter", covsplit=TRUE, which.cov=c("Gender","Age"))
+plot(xrem, plot.type="vpc", covsplit=TRUE, which.cov=c("Gender","Age"))
+try(plot(xrem, plot.type="vpc", covsplit=TRUE, which.cov=c("Gender")))
+
+plot(xrem, plot.type="x.scatter") # ok but see above and owuld like to see x-range extended : corrig�
+
+# All the plots below fail
+try(plot(xrem, plot.type="cov.scatter")) # le plot saffiche mais fail with y.limits missing
+
+plot(xrem, plot.type="cov.scatter", which.cov="Age") # c'est ok mais pas de label pour y axis
+
+try(plot(xrem, plot.type="cov.scatter", which.cov="Gender")) # fails with error
+
+plot(xrem, plot.type="cov.x.scatter") # boucle sur covariates + plots are ok
+
+```
+
+## Creating the plots for the user guide
+
+### Theophylline
+
+- Default plots and VPC: **OK pour doc**
+- **Problem** with plot of data (see above)  
+
+```{r doc.theo, echo=FALSE}
+if(saveDocPlots) {
+# Raw data
+  namfile<-file.path(docFigs,"xtheo_data_gg.eps")
+  cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+  plot(theofit1@data)
+  dev.off()
+# Diagnostics plots  
+  namfile<-file.path(docFigs,"theophylline_gg.eps")
+  cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+  plot(theofit1)
+  dev.off()
+# VPC
+  namfile<-file.path(docFigs,"theophylline_vpc_gg.eps")
+  cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+  plot(theofit1,plot.type="vpc")
+  dev.off()
+}
+```
+
+### Viral load data
+
+- **TODO**
+  - plot data
+  - est-ce que les fonctions graphiques 'de base' pourraient renvoyer les graphes comme objet pour pouvoir ensuite en faire un *grid.arrange()* (on avait parlé de cette option pour pouvoir faire ensuite ses propres graphes comme avant) ?
+    - 2 graphes de données (voire 3)
+    - 2 graphes de VPC côte à côte (=> donner code correspondant dans la doc)
+    - **note** si c'est l'option plot.default il faudrait en changer le nom (pas du tout explicite), en un truc comme return ou return.plot...
+  - corriger le graphe de VPC
+
+```{r doc.virload, echo=FALSE}
+# p1<-npde.plot.data(yvir50, plot.default=TRUE) # non, c'est pas ça
+
+if(saveDocPlots) {
+# Raw data
+  namfile<-file.path(docFigs,"doc_data50_gg.eps")
+  cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+  plot(yvir50@data, plot.loq=FALSE)
+  plot(yvir50@data, impute.loq=FALSE)
+  dev.off()
+# Diagnostics plots, cdf method (default)
+  namfile<-file.path(docFigs,"x50_cdf_gg.eps")
+  cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+  plot(yvir50)
+  dev.off()
+# Diagnostics plots, omit method
+  namfile<-file.path(docFigs,"x50_omit_gg.eps")
+  cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+  plot(yvir50.omit)
+  dev.off()
+# Diagnostics plots, ipred method
+  namfile<-file.path(docFigs,"x50_ipred_gg.eps")
+  cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+  plot(yvir50.ipred)
+  dev.off()
+# Diagnostics plots, ppred method
+  namfile<-file.path(docFigs,"x50_ppred_gg.eps")
+  cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+  plot(yvir50.ppred)
+  dev.off()
+# VPC
+  namfile<-file.path(docFigs,"doc_vpc50_gg.eps")
+  cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+  plot(yvir50,plot.type="vpc")
+  plot(yvir50.omit,plot.type="vpc")
+  dev.off()
+# P(Y<LOQ)
+  namfile<-file.path(docFigs,"virload_ploq_gg.eps")
+  cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+  plot(yvir50,plot.type="loq", main=" ")
+  dev.off()
+}
+```
+
+## End of file, deactivating development mode
+
+```{r deactivateDevMode, echo=FALSE, hide=T}
+dev_mode()
+```

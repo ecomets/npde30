@@ -65,7 +65,7 @@ library(gridExtra)
 library(grid)
 library(mclust)
 library(testthat)
-workDir<-"/home/eco/work/npde/npde30"
+workDir<-"D:/RECHERCHES/_NPDE/Npde-2021/npde30-main"
 notesDir<-file.path(workDir,"notebooks")
 datDir<-file.path(workDir,"npde","data")
 testsDir<-file.path(workDir,"npde","tests","testthat")
@@ -211,8 +211,11 @@ p1<-npde.plot.dist(wbase, dist.type="hist")
 p2<-npde.plot.dist(wbase, dist.type="ecdf")
 p3<-npde.plot.scatterplot(wbase)
 
-try(grid.arrange(list(p1,p2,p3), nrow=2))
+#try(grid.arrange(list(p1,p2,p3), nrow=2))
+#try(grid.arrange(p1, p2, nrow=2))
 
-try(grid.arrange(p1, p2, nrow=2))
+try(do.call(grid.arrange, c(p1, p2, p3, list( nrow=2, ncol=3))))
+
+
   
 ```

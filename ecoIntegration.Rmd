@@ -1,0 +1,147 @@
+---
+title: "Code integration"
+author: "Emmanuelle Comets"
+date: "21/01/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## Summary
+
+### Objective
+
+- test new function with the rest of the package by using the rest of the package to create a NpdeObject then loading the new code
+  - check structure of object
+    - does data always have cens and mdv ? => mdv yes, cens no
+    - does res always have ycomp and ydobs ? => yes
+
+### Code changes
+
+- **new functions in kompareCode**
+  - **plotNpde-scatterplot.R**: main mid-level function called using a NpdeObject
+  - **plotNpde-auxScatter.R**: auxiliary functions to compute and transform obsmat, pimat, ref profiles.
+    - **aux.npdeplot.computepi** : Compute prediction intervals, the size of which depends on the number of observations in each bin
+    - **aux.npdeplot.meanprof** : Compute a reference profile based on simulations from the model
+    - **aux.npdeplot.transformPI** : transform pimat with a reference profile **TODO** check if applies to pd (not sure it makes sense), and if there is a non-parametric version (using quantiles instead of E/SD)
+    - **aux.npdeplot.transformObs** : transform obsmat with a reference profile **TODO** same
+    - **aux.npdeplot.pimat** : create pimat for plot function
+  - **npde.scatterplot.R**: actual plot function => rename this file (plotNpde-auxPlotScatter.R ?) or include it in plotNpde-auxScatter.R
+- functions in npde/R
+  - plotNpde-unitFunctionsPI.R: bins the X data, creating plot.opt$bin.number bins, computing the mean value of x for each bin, and associating groups to the observed data
+- **functions renamed** => **TODO** for final version
+  - for consistency, aux.plot.hist and aux.plot.dist renamed to aux.npdeplot.hist and aux.npdeplot.dist
+  - aux.npdeplot.plot renamed to aux.npdeplot.scatter
+  - npde.plot.meanprofile renamed to npde.plot.scatterplot
+- **functions removed***
+  - **compute.vpc.pi** : old code to compute PI for VPC, now computed in the same way as the other PI using *aux.npdeplot.computepi*
+
+### Functions to create
+
+- plot functions
+  - **aux.npdeplot.scatter.facet** : not done yet, but should be a modified version of the plot with a facet layout (same y scales ? or add a graphical option ?) instead of a list of plots
+- testthat files for unitary tests
+  - **Romain TODO +++** : test replacement options (are we capturing the ..., are we capturing errors, are we superseding the right things ?)
+    - why is plot.opt part of the options in npde.plot.scatterplot ? (we should use the prefs element of the object npdeObject ???)
+
+## Notes
+
+- to investigate
+  - mclust library not loaded automatically (check when running the package)
+  - transformation using a reference profile
+    - check if applies to pd (not sure it makes sense), and if there is a non-parametric version (using quantiles instead of E/SD)
+    - check if need to compute the transformation after exponential transformation (probably not, the current plots seem to work also in log-scale)
+- improvements
+  - need an option to facet the plots split by covariate
+- bugs:
+  - plot.opt option **main** doesn't work in *aux.npdeplot.plot()*
+  - Romain **TODO +++** : reprendre la partie avec avoid_code() dabs NpdeData qui empêche de lire toutes les covariables 
+- note: test data was created with nrep=200 to have files that are not too large, but probably needs more simulations for stable npde (so some results may be artefactual)
+
+
+### Defining folders, loading libraries
+
+```{r setup, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(devtools)
+library(ggplot2)
+library(gridExtra)
+library(grid)
+library(mclust)
+library(testthat)
+workDir<-"D:/RECHERCHES/_NPDE/Npde-2021/npde30-main"
+notesDir<-file.path(workDir,"notebooks")
+datDir<-file.path(workDir,"npde","data")
+testsDir<-file.path(workDir,"npde","tests","testthat")
+setwd(workDir)
+```
+
+### Creating NpdeObject using the current version of the package
+
+```{r setupOldPackage, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+# Classes from the package
+source(file.path(workDir,"npde","R","aaa_generics.R"))
+source(file.path(workDir,"npde","R","npdeControl.R"))
+source(file.path(workDir,"npde","R","NpdeData.R"))
+source(file.path(workDir,"npde","R","NpdeSimData.R"))
+source(file.path(workDir,"npde","R","NpdeData-methods.R"))
+source(file.path(workDir,"npde","R","NpdeRes.R"))
+source(file.path(workDir,"npde","R","NpdeRes-methods.R"))
+source(file.path(workDir,"npde","R","NpdeObject.R"))
+source(file.path(workDir,"npde","R","NpdeObject-methods.R"))
+
+# Computational functions from the package
+source(file.path(workDir,"npde","R","compute_distribution.R"))
+source(file.path(workDir,"npde","R","compute_npde.R"))
+source(file.path(workDir,"npde","R","compute_pd.R"))
+source(file.path(workDir,"npde","R","compute_ploq.R"))
+source(file.path(workDir,"npde","R","mainNpde.R"))
+source(file.path(workDir,"npde","R","npde.R"))
+
+# Plot functions from the package - kept, some changes
+source(file.path(workDir,"npde","R","plotNpde-methods.R"))
+source(file.path(workDir,"npde","R","plotNpde-plotFunctions.R"))
+source(file.path(workDir,"npde","R","plotNpde-auxScatter.R")) 
+source(file.path(workDir,"npde","R","plotNpde-auxScatterPlot.R")) 
+source(file.path(workDir,"npde","R","plotNpde-auxDistPlot.R")) # renamed from plotNpde-unitFunctionsAux.R
+source(file.path(workDir,"npde","R","plotNpde-distributionPlot.R")) # extracted "main" for distribution plots from plotNpde-plotFunctions.R
+source(file.path(workDir,"npde","R","plotNpde-scatterplot.R")) # extracted "main" for scatter plots f
+source(file.path(workDir,"npde","R","plotNpde-binningPI.R")) # renamed from plotNpde-unitFunctionsPI.R
+
+# Deprecated (removed from package, integrated in the new functions)
+#source(file.path(deprecateDir,"plotNpde-unitFunctionsRef.R"))
+#source(file.path(deprecateDir,"plotNpde-meanProf.R"))
+```
+
+### Run npde with previous version of package
+
+
+```{r runNpde, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+# Warfarin data, using files on disk
+wbase<-autonpde(namobs=file.path(datDir, "warfarin.tab"),namsim=file.path(datDir, "simwarfarinBase.tab"), iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
+```
+
+
+### Graphs with the new functions to check if the methods work
+
+Works but
+- no observations not plotted, despite plot.obs being set to TRUE in @prefs
+- sorting problem in weight when using covsplit: need to sort level of categories properly
+- not sure box size is set correctly
+
+```{r setupChanges, echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+# New plot functions
+
+npde.plot.scatterplot(wbase, which.x="x", which.y="npde")
+
+npde.plot.scatterplot(wbase, which.x="x", which.y="yobs", main="VPC", plot.obs=TRUE)
+
+npde.plot.scatterplot(wbase, which.x="x", which.y="yobs", main="VPC", plot.box=TRUE)
+
+npde.plot.scatterplot(wbase, which.x="x", which.y="npde", covsplit=TRUE, which.cov=c("sex", "wt"))
+
+head(wbase@data@data)
+head(wbase@results@res)
+
+
+```

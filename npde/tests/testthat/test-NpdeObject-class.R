@@ -40,10 +40,10 @@ test_that("Successful creation of a NpdeObject object by hand", {
 
   xobj<-new(Class="NpdeObject", data=xdat, sim.data=xsim)
   expect_equal(length(xobj@options), 12)
-  expect_equal(length(xobj@prefs), 71)
+  expect_equal(length(xobj@prefs), 89)
   expect_equal(length(xobj@prefs$ilist), xobj@data@N)
   expect_equal(xobj@prefs$name.X,xobj@data@name.predictor)
 
   xobj@results<-xres
-  expect_equal(length(xobj@prefs), 71)
+  expect_equal(length(xobj@prefs), 89)
 })

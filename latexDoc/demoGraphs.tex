@@ -5,6 +5,8 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{color}
+\usepackage[nogin]{Sweave}
+
 
 \setlength{\topmargin}{-0.5cm}
 \setlength{\textheight}{23cm}
@@ -34,9 +36,12 @@
 %\definecolor{violet}{rgb}{0.25,0.1,0.75}
 %\definecolor{mycol}{rgb}{0.5,0.1,0.6}
 
-\usepackage{Sweave}
+
+
 \begin{document}
+\thispagestyle{empty}
 \input{demoGraphs-concordance}
+
 
 \pagestyle{fancy}
 \renewcommand{\headrulewidth}{0pt}
@@ -57,6 +62,7 @@
 \fvset{listparameters={\setlength{\topsep}{-1pt}}}
 \renewenvironment{Schunk}{\vspace{\topsep}}{\vspace{\topsep}}
 
+
 \parindent 18pt
 $\phantom{minime}$
 
@@ -65,7 +71,7 @@ $\phantom{minime}$
 {\setlength{\baselineskip}{2\baselineskip}
 {\Large \bfseries Beautiful graphs with npde 3.0}
 
-{\Large \bfseries September 2020}
+{\Large \bfseries F\'evrier 2021}
 
 \bigskip 
 
@@ -92,7 +98,18 @@ Universit\'e de Paris, Paris, France.
 \end{center}
 
 \newpage
-% Loading libraries:
+
+\begin{Schunk}
+\begin{Soutput}
+[1] "name group is empty"
+[1] "name predictor is empty"
+[1] "name response is empty"
+[1] "name covariates is empty"
+[1] "name cens is empty"
+[1] "name miss is empty"
+[1] "name ipred is empty"
+\end{Soutput}
+\end{Schunk}
 
 \section{Running npde }
 
@@ -105,21 +122,23 @@ Describe:
 Viral load data with 20% censored data
 \end{Soutput}
 \begin{Soutput}
-[1] "computenpde.loq<-function(npdeObject) {"
+[1] "name covariates is empty"
+[1] "name miss is empty"
+[1] "name ipred is empty"
 ---------------------------------------------
 Distribution of npde :
       nb of obs: 300 
-           mean= -0.03127   (SE= 0.053 )
-       variance= 0.8358   (SE= 0.068 )
-       skewness= 0.04592 
-       kurtosis= -0.3856 
+           mean= 0.03715   (SE= 0.058 )
+       variance= 0.9924   (SE= 0.081 )
+       skewness= 0.1229 
+       kurtosis= 0.02054 
 ---------------------------------------------
 
 Statistical tests
-  t-test                     : 0.554
-  Fisher variance test       : 0.0355 *
-  SW test of normality       : 0.499
-Global adjusted p-value      : 0.107
+  t-test                     : 0.519
+  Fisher variance test       : 0.947
+  SW test of normality       : 0.348
+Global adjusted p-value      : 1
 ---
 Signif. codes: '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 
 ---------------------------------------------
@@ -131,6 +150,9 @@ Warfarin PK data
       npde for the model without covariates
 \end{Soutput}
 \begin{Soutput}
+[1] "name cens is empty"
+[1] "name miss is empty"
+[1] "name ipred is empty"
 ---------------------------------------------
 Distribution of npde :
       nb of obs: 247 
@@ -149,6 +171,9 @@ Global adjusted p-value      : 0.471
 Signif. codes: '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 
 ---------------------------------------------
       npde for the model with covariates
+[1] "name cens is empty"
+[1] "name miss is empty"
+[1] "name ipred is empty"
 ---------------------------------------------
 Distribution of npde :
       nb of obs: 247 
@@ -354,6 +379,48 @@ Postcript doesn't handle the transparency used in the {\sf npde} plots made with
 \end{itemize}
 
 \section{Reference profile}
+
+\section{Waffle plot}
+
+% Warfarin data, using files on disk
+
+\begin{Schunk}
+\begin{Soutput}
+[1] "name cens is empty"
+[1] "name miss is empty"
+[1] "name ipred is empty"
+---------------------------------------------
+Distribution of npde :
+      nb of obs: 247 
+           mean= 0.03419   (SE= 0.06 )
+       variance= 0.8753   (SE= 0.079 )
+       skewness= -0.1149 
+       kurtosis= -0.0497 
+---------------------------------------------
+
+Statistical tests
+  t-test                     : 0.566
+  Fisher variance test       : 0.157
+  SW test of normality       : 0.371
+Global adjusted p-value      : 0.471
+---
+Signif. codes: '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 
+---------------------------------------------
+\end{Soutput}
+\end{Schunk}
+
+\begin{figure}[!h]
+\begin{center}
+\begin{Schunk}
+\begin{Sinput}
+> do.call(grid.arrange, c(p1, p2, p3, p1, p2, list( nrow=2, ncol=3)))
+\end{Sinput}
+\end{Schunk}
+\includegraphics{demoGraphs-013}
+\end{center}
+\par \kern -0.5cm
+\caption{Waffle plot for the warfarine data.} \label{fig:waffleWarfarine}
+\end{figure}
 
 \end{document}
 

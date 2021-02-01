@@ -5,6 +5,8 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{color}
+\usepackage[nogin]{Sweave}
+
 
 \setlength{\topmargin}{-0.5cm}
 \setlength{\textheight}{23cm}
@@ -34,8 +36,12 @@
 %\definecolor{violet}{rgb}{0.25,0.1,0.75}
 %\definecolor{mycol}{rgb}{0.5,0.1,0.6}
 
+
+
 \begin{document}
+\thispagestyle{empty}
 \SweaveOpts{concordance=TRUE}
+\SweaveOpts{keep.source=TRUE}
 
 \pagestyle{fancy}
 \renewcommand{\headrulewidth}{0pt}
@@ -55,7 +61,8 @@
 \DefineVerbatimEnvironment{Scode}{Verbatim}{xleftmargin=2em,fontshape=sl,fontfamily=tt}
 \fvset{listparameters={\setlength{\topsep}{-1pt}}}
 \renewenvironment{Schunk}{\vspace{\topsep}}{\vspace{\topsep}}
-<<echo=false>>=
+
+<<echo=FALSE>>=
 options(width=60)
 options(continue=" ")
 options(SweaveHooks=list(fig=function()
@@ -72,7 +79,7 @@ $\phantom{minime}$
 {\setlength{\baselineskip}{2\baselineskip}
 {\Large \bfseries Beautiful graphs with npde 3.0}
 
-{\Large \bfseries September 2020}
+{\Large \bfseries F\'evrier 2021}
 
 \bigskip 
 
@@ -99,64 +106,69 @@ Universit\'e de Paris, Paris, France.
 \end{center}
 
 \newpage
-% Loading libraries:
-<<loadinglibrary, echo=F, >>=
+
+<<loadinglibrary, echo=FALSE >>=
 library(xtable)
 library(devtools)
 library(ggplot2)
 library(gridExtra)
 library(grid)
+library(data.table)
+library(npde)
 
-fromLib<-FALSE # Toggle to compile from (installed) library
-if(fromLib) {
-  library(npde)
-} else {
-  chezRomain<-FALSE
+fromLib<-TRUE # Toggle to compile from (installed) library
+
+#chezRomain=TRUE
   #npdeDir<-"C:/Users/ADMIN Romain LEROUX/Documents/[R] - Package - NPDE/npde30-master/npde30-master"
-  if(chezRomain) {
-    npdeDir<-"D:/RECHERCHES/INSERM_IAME/[R] - Package - NPDE/npde30-master/npde30-master"
-    docDir<-file.path(npdeDir,"documentation")
-  } else {
-    workDir<-"/home/eco/work/npde/romain/romain0727/" # current working directory for the R package
-    docDir<-"/home/eco/work/npde/doclib" # directory where the npde documentation is stored (tex, bib files)
-  }
+ # if(chezRomain) {
+    workDir<-"D:/RECHERCHES/_NPDE/Npde-2021/npde30-main"
+    docDir<-file.path(workDir,"latexDoc")
+#  } else {
+ #   workDir<-"/home/eco/work/npde/romain/romain0727/" # current working directory for the R package
+  #  docDir<-"/home/eco/work/npde/doclib" # directory where the npde documentation is stored (tex, bib files)
+  #}
   #setwd(workDir)
-  npdeDir<-file.path(workDir,"PackageNpdeBetaVersion") # current directory for R functions (R subfolder)
-  dataDir<-file.path(npdeDir,"data") # data files, including remifentanil
-  docFigs<-file.path(docDir,"figs")
-  docTex<-file.path(docDir,"doc3.0")
+  npdeDir<-file.path(workDir,"npde/R") # current directory for R functions (R subfolder)
+  dataDir<-file.path(workDir,"npde/data") # data files, including remifentanil
+  docFigs<-file.path(workDir,"figs")
+  docTex<-file.path(workDir,"latexDoc")
   saveDocPlots<-FALSE # whether to save the plots 
   
   # Loading library functions
   # Classes
-  source(file.path(npdeDir,"R","aaa_generics.R"))
-  source(file.path(npdeDir,"R","NpdeData.R"))
-  source(file.path(npdeDir,"R","NpdeRes.R"))
-  source(file.path(npdeDir,"R","npdeControl.R"))
-  source(file.path(npdeDir,"R","NpdeSimData.R"))
-  source(file.path(npdeDir,"R","NpdeObject.R"))
-  
-  # Create, show, print methods for objects
-  source(file.path(npdeDir,"R","NpdeData-methods.R"))
-  source(file.path(npdeDir,"R","NpdeRes-methods.R"))
-  source(file.path(npdeDir,"R","NpdeObject-methods.R"))
-  
-  # Package methods
-  source(file.path(npdeDir,"R","compute_distribution.R"))
-  source(file.path(npdeDir,"R","compute_npde.R"))
-  source(file.path(npdeDir,"R","compute_pd.R"))
-  source(file.path(npdeDir,"R","compute_ploq.R"))
-  source(file.path(npdeDir,"R","npde.R"))
-  source(file.path(npdeDir,"R","mainNpde.R"))
-  
-  # Plot methods
-  source(file.path(npdeDir,"R","plotNpde-methods.R"))
-  source(file.path(npdeDir,"R","plotNpde-plotFunctions.R"))
-  source(file.path(npdeDir,"R","plotNpde-unitFunctionsAux.R"))
-  source(file.path(npdeDir,"R","plotNpde-unitFunctionsPI.R"))
-  source(file.path(npdeDir,"R","plotNpde-meanProf.R"))
-  source(file.path(npdeDir,"R","plotNpde-unitFunctionsRef.R"))
-}
+# Classes from the package
+source(file.path(workDir,"npde","R","aaa_generics.R"))
+source(file.path(workDir,"npde","R","npdeControl.R"))
+source(file.path(workDir,"npde","R","NpdeData.R"))
+source(file.path(workDir,"npde","R","NpdeSimData.R"))
+source(file.path(workDir,"npde","R","NpdeData-methods.R"))
+source(file.path(workDir,"npde","R","NpdeRes.R"))
+source(file.path(workDir,"npde","R","NpdeRes-methods.R"))
+source(file.path(workDir,"npde","R","NpdeObject.R"))
+source(file.path(workDir,"npde","R","NpdeObject-methods.R"))
+
+# Computational functions from the package
+source(file.path(workDir,"npde","R","compute_distribution.R"))
+source(file.path(workDir,"npde","R","compute_npde.R"))
+source(file.path(workDir,"npde","R","compute_pd.R"))
+source(file.path(workDir,"npde","R","compute_ploq.R"))
+source(file.path(workDir,"npde","R","mainNpde.R"))
+source(file.path(workDir,"npde","R","npde.R"))
+
+# Plot functions from the package - kept, some changes
+source(file.path(workDir,"npde","R","plotNpde-methods.R"))
+source(file.path(workDir,"npde","R","plotNpde-plotFunctions.R"))
+source(file.path(workDir,"npde","R","plotNpde-binningPI.R")) # renamed from plotNpde-unitFunctionsPI.R
+
+# Scatterplots
+source(file.path(workDir,"npde","R","plotNpde-auxScatter.R")) # replaces plotNpde-unitFunctionsRef.R
+source(file.path(workDir,"npde","R","plotNpde-auxScatterPlot.R"))
+source(file.path(workDir,"npde","R","plotNpde-scatterplot.R")) # replaces plotNpde-meanProf.R
+
+# Distribution plots
+source(file.path(workDir,"npde","R","plotNpde-auxDistPlot.R")) # renamed from plotNpde-unitFunctionsAux.R
+source(file.path(workDir,"npde","R","plotNpde-distributionPlot.R")) # extracted "main" for distribution plots from
+
 @
 
 \section{Running npde }
@@ -165,7 +177,7 @@ Describe:
 - viral load data example
   - 20\% 
 
-<<runNpde, echo=F=>>=
+<<runNpde, echo=F>>=
 cat("Viral load data with 20% censored data\n")
 if(fromLib) {
   data(virload20)
@@ -176,12 +188,12 @@ if(fromLib) {
 cat("Warfarin PK data\n")
 cat("      npde for the model without covariates\n")
 if(fromLib) {
-  data(warfarinPK)
-  data(warfarinSimBase)
-  data(warfarinSimCov)
-  ybase<-autonpde(namobs=warfarinPK, namsim=warfarinSimBase, iid=1, ix=2, iy=4, icov=c(6:8), units=list(x="hr", y="mg/L", cov=c("kg","-","yr")))
+  data(warfarin)
+  data(simwarfarinBase)
+  data(simwarfarinCov)
+  ybase<-autonpde(namobs=warfarin, namsim=simwarfarinBase, iid=1, ix=2, iy=4, icov=c(6:8), units=list(x="hr", y="mg/L", cov=c("kg","-","yr")))
   cat("      npde for the model with covariates\n")
-  ycov<-autonpde(namobs=warfarinPK, namsim=warfarinSimCov, iid=1, ix=2, iy=4, icov=c(6:8), units=list(x="hr", y="mg/L", cov=c("kg","-","yr")))
+  ycov<-autonpde(namobs=warfarin, namsim=simwarfarinCov, iid=1, ix=2, iy=4, icov=c(6:8), units=list(x="hr", y="mg/L", cov=c("kg","-","yr")))
   } else {
   ybase<-autonpde(namobs=file.path(dataDir,"warfarine_pk.tab"), namsim=file.path(dataDir,"warfarine_simBase.tab"), iid=1, ix=2, iy=4, icov=c(6:8), units=list(x="hr", y="mg/L", cov=c("kg","-","yr")))
   cat("      npde for the model with covariates\n")
@@ -370,6 +382,33 @@ Postcript doesn't handle the transparency used in the {\sf npde} plots made with
 \end{itemize}
 
 \section{Reference profile}
+
+\section{Waffle plot}
+
+% Warfarin data, using files on disk
+
+<<runNpde, echo=F>>=
+wbase<-autonpde(namobs=file.path(dataDir, "warfarin.tab"),namsim=file.path(dataDir, "simwarfarinBase.tab"), iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
+@
+<<echo=FALSE>>=
+p1<-npde.plot.dist(wbase, dist.type="hist")
+@
+<<echo=FALSE>>=
+p2<-npde.plot.dist(wbase, dist.type="ecdf")
+@
+<<echo=FALSE>>=
+p3<-npde.plot.scatterplot(wbase)
+@
+
+\begin{figure}[!h]
+\begin{center}
+<<echo=TRUE, fig=TRUE, fig.width=7, fig.height=6>>=
+do.call(grid.arrange, c(p1, p2, p3, p1, p2, list( nrow=2, ncol=3)))
+@
+\end{center}
+\par \kern -0.5cm
+\caption{Waffle plot for the warfarine data.} \label{fig:waffleWarfarine}
+\end{figure}
 
 \end{document}
 

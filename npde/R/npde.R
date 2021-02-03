@@ -8,12 +8,9 @@
 #' designed to evaluate non-linear mixed effect models such as those used in
 #' pharmacokinetics and pharmacodynamics
 #'
-#' \tabular{ll}{ Package: \tab npde\cr Type: \tab Package\cr Version: \tab
-#' 3.0\cr Date: \tab 2017-01-02\cr License: \tab GPL version 2 or later\cr }
-#' See the documentation for npde for details
-#'
 #' @name npde-package
 #' @docType package
+#' @aliases npde-package
 #' @author Emmanuelle Comets, Karl Brendel, Thi Huyen Tram Nguyen, France Mentre
 #'
 #' Maintainer: Emmanuelle Comets <emmanuelle.comets@@bichat.inserm.fr>
@@ -41,8 +38,9 @@
 #'
 #' print(x)
 #' }
-"_PACKAGE"
-#> [1] "_PACKAGE"
+
+NULL
+
 
 ############################# help files for datasets included with the package
 #' Pharmacokinetics of theophylline
@@ -187,7 +185,7 @@ NULL
 #' dataset.
 #' 
 #' Two datasets containing simulated data are associated with the \code{warfarin} data. For
-#' each dataset, 1000 simulations of the original data were performed.
+#' each dataset, 1000 simulations of the original data were performed for the computation of npde.
 #' \describe{
 #' \item{simwarfarinBase}{the data in this dataset was simulated according to a base model without covariates: the PK model was a two-compartment model, with first-order absorption and a time-delay. Interindividual variability was modelled as log-normal distributions for parameters Tlag, ka, Cl and V1, and the error model was a combined error model. The parameters were estimated by Monolix.}
 #' \item{simwarfarinCov}{the data in this dataset was simulated according to a model including several covariates: an age (centered on 30 yr) effect on Cl, a weight (centered on 70 kg) effect on Cl and V1, and a gender effect on V1. The covariate model was built in Monolix.}
@@ -220,6 +218,44 @@ NULL
 #' plot(dv~time,data=warfarin,xlab="Time after dose (hr)",
 #' ylab="Warfarin concentration (mg/L)")
 #'
+#'}
+NULL
+
+#' Simulated HIV viral loads in HIV patients
+#'
+#' This is simulated data, based on real data obtained in a phase II clinical trial supported by the French Agency for AIDS Research, the COPHAR 3-ANRS 134 trial (Goujard et al., 2010). The original study included 35 patients, who received a once daily dose containing atazanavir (300 mg), ritonavir (100 mg), tenofovir disoproxil (245 mg) and emtricitabine (200 mg) during 24 weeks. Viral loads were measured 6 times over a treatment period of 24 weeks (day 0, 28, 56, 84, 112, 168). 
+#' 
+#' The datasets were generated in a simulation study designed to evaluate the new method proposed to handle BQL data (Nguyen et al., 2011). Data was simulated using a simple bi-exponential HIV dynamic model describing the two-phase decline of viral load during anti-retroviral treatment.
+#' 
+#' The \code{virload} data frame has 300 rows and 4 columns of data. The dataset was then censored at two different LOQ levels (LOQ=20 or 50~copies/mL) to generate two datasets containing different proportions of BQL data, creating the data frames \code{virload20} and\code{virload50} respectively
+#' 
+#' The file simvirload contains 1000 simulations under the same model.
+#' 
+#' @docType data
+#' @name virload
+#' @aliases virload20 virloadMDV20 virload50 simvirload
+#' @usage virload
+#' @format This data frame contains the following columns: 
+#' \describe{
+#' \item{ID}{an ordered factor with levels \code{1}, \dots, \code{50} identifying the subject on whom the observation was made.  The ordering is by Time at which the observation was made.}
+#' \item{Time}{time since the beginning of the study (days)}
+#' \item{Log_VL}{logarithm (base 10) of the viral load (copies/L)}
+#' \item{cens}{ indicator variable (cens=1 for censored data, cens=0 for observed data)} 
+#' \item{ipred}{individual predictions}
+#' }
+#' 
+#' @source Goujard, C., Barrail-Train, A., Duval, X., Nembot, G., Panhard, X., Savic, R., Descamps, D., Vrijens, B., Taburet, A., Mentre, F., and the ANRS 134 study group (2010). 
+#' Virological response to atazanavir, ritonavir and tenofovir/emtricitabine: relation to individual pharmacokinetic parameters and adherence measured by medication events monitoring system (MEMS) in naive HIV-infected patients (ANRS134 trial). 
+#' \emph{International AIDS Society 2010}, Abstr WEPE0094.
+#' @keywords datasets
+#' @examples
+#' \dontrun{
+#'   data(virload)
+#'   str(virload)
+#'   data(virload50)
+#'   # Plotting the data
+#'   plot(Log_VL~Time,data=virload,xlab="Time (d)",ylab="Viral loads, base 10 log-scale (cp/mL)")
+#'   plot(Log_VL~Time,data=virload50,xlab="Time (d)",ylab="Viral loads, base 10 log-scale (cp/mL)")
 #'}
 NULL
 

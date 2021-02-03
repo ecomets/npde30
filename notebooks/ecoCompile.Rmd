@@ -1,0 +1,117 @@
+---
+title: "Package compilation"
+author: "Emmanuelle Comets"
+date: "02/02/2021"
+output:
+  pdf_document:
+    latex_engine: xelatex
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(devtools)
+library(roxygen2)
+workDir<-"/home/eco/work/npde/npde30"
+knitr::opts_chunk$set(root.dir = workDir)
+```
+
+## Mail Romain 11
+
+## Compilation
+
+- structure
+  - **tests** : removed all other folders and files except testthat from the package otherwise warnings about RDS files
+  - **data** : removed remifentanil example from data folder
+- **roxygen** documentation
+  - warnings for ggplot (no visible global function definition)
+  - added import command for pnorm (found in distribution plot) and median (found nowhere, so suspect it's the name median used in the ggplot plots, but added it all the same)
+- **package size**: still 5.9 Mb so much too large for CRAN 
+  - the 3 simulated data files for warfarin and viral load data are all around 5Mb, consider making them available only on bookdown/website
+- necessary files
+  - added a DESCRIPTION file
+  - added a CHANGES file
+- for compilation: 
+  - removed NAMESPACE
+  - removed man pages
+- Compilation steps from Build menu
+  - Document => create NAMESPACE, DESCRIPTION (update collate directive), create man pages
+  - Check => update documentation, create NAMESPACE
+
+```{r compilation}
+setwd(file.path(workDir,"npde"))
+system("rm man/*")
+roxygenise()
+setwd(workDir)
+system("R CMD build npde")
+system("R CMD check --as-cran npde_3.0.tar.gz")
+```
+
+Apres correction, la compilation du package passe sans erreurs et avec 2 notes restantes.
+
+- **notes**
+  - package size too large (recommended size less than 5Mb): reduce nb of simulations for warfarin ?
+  - ggplot variables (rien a faire pour ça)
+- **warnings** corriges
+  - jeux de donnees non documentes: removed remifentanil, added virload documentation (used to be a specific man page, reintegrated them into roxygen format in npde.R like warfarin)
+  - duplicated alias: fixed !
+
+### Warnings
+
+- ggplot warnings
+
+````
+ Undefined global functions or variables:
+    .x X2.5. X50. X97.5. Y0.025 Y0.025.1 Y0.5 Y0.5.1 Y0.975 Y0.975.1 aes
+    annotation_logticks category coord_cartesian coord_flip element_blank
+    element_line element_rect element_text expand_limits facet_wrap
+    geom_bar geom_boxplot geom_crossbar geom_line geom_point geom_ribbon
+    ggplot ggtitle grid.arrange group grp guides labs lower name obs.inf
+    obs.median obs.sup pinf.lower pinf.median pinf.upper pmid.lower
+    pmid.median pmid.upper psup.lower psup.median psup.upper
+    scale_fill_manual scale_x_continuous scale_x_log10 scale_y_continuous
+    scale_y_log10 theme upper value x x1 x2 x_area_0.25 x_area_0.5
+    x_area_0.975 xcent xlab y y1 y2 y_area_0.25 y_area_0.5 y_area_0.975
+    ylab
+````
+- Warnings in first compilation (solved)
+
+````
+W  checking Rd metadata ...
+   Rd files with duplicated alias 'aux.npdeplot.computepi':
+     ‘npde.plot.default.Rd’ ‘npde.plot.scatterplot.Rd’
+   Rd files with duplicated alias 'compute.bands':
+     ‘npde.plot.default.Rd’ ‘npde.plot.scatterplot.Rd’
+   Rd files with duplicated alias 'compute.bands.true':
+     ‘npde.plot.default.Rd’ ‘npde.plot.scatterplot.Rd’
+   Rd files with duplicated alias 'npde':
+     ‘npde-package.Rd’ ‘npde.Rd’
+✓  checking Rd line widths ...
+✓  checking Rd cross-references ...
+W  checking for missing documentation entries (346ms)
+   Undocumented code objects:
+     ‘remifent’ ‘simremifent’ ‘simremifent_base’ ‘simvirload’ ‘virload’
+     ‘virload20’ ‘virload50’ ‘virloadMDV20’
+   Undocumented data sets:
+     ‘remifent’ ‘simremifent’ ‘simremifent_base’ ‘simvirload’ ‘virload’
+     ‘virload20’ ‘virload50’ ‘virloadMDV20’
+   All user-level objects in a package should have documentation entries.
+   See chapter ‘Writing R documentation files’ in the ‘Writing R
+   Extensions’ manual.
+````
+
+### Bugs to sort
+
+#### plot.NpdeRes (dans plotNpde-methods.R)
+
+- **Romain TODO**: la fonction devrait prendre un objet NpdeRes et pas un objet NpdeObject (NpdeRes n'a pas d'element data, c'est juste le slot res d'un element NpdeObject !!!)
+  - il faut lui donner des defauts pour xlab, ylab (et la possiblite de passer outre en passant des arguments en ...)
+  - normalement il doit y avoir l'equivalent de xobs dans le dataframe res de l'objet
+  - pas sure qu'on ait not.miss mais dans ce cas le reconstruire (a tester +++)
+  - il n'y a pas de liste plot.opt donc prendre des defauts dans set.default.options()
+- faire un testthat pour verifier que cette fonction marche par elle-meme  (use testthat for class to generate an object npdeData and plot it)
+
+#### plot.NpdeData (dans plotNpde-methods.R)
+
+- **Romain TODO**: faire un testthat pour veeifier que la fonction et les options passent (use testthat for class to generate an object npdeData and plot it)
+

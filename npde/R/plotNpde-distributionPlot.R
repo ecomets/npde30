@@ -21,6 +21,7 @@
 #' \emph{Pharmaceutical Research}, 23:2036--49, 2006.
 #' @keywords plot
 #' @export
+#' @importFrom stats pnorm
 
 npde.plot.dist<-function(npdeObject, which="npde", dist.type="qqplot", ...) {
   # arguments
@@ -123,7 +124,7 @@ npde.plot.dist<-function(npdeObject, which="npde", dist.type="qqplot", ...) {
     }
   }
 
-  list_plot = list()   # list to stack the ggplot
+  list_plot = list()   # list to stack the ggplot (not needed ?)
 
   # -----------------------------------------------------------
   # Prepare observations
@@ -136,7 +137,14 @@ npde.plot.dist<-function(npdeObject, which="npde", dist.type="qqplot", ...) {
   obsmat<-data.frame(x=ypl)
   obsmat$category<-"all"
   if(length(npdeObject["data"]["icens"])>0) obsmat$cens<-npdeObject["data"]["data"]$cens else obsmat$cens<-0
-
+  not.miss = npdeObject["data"]["not.miss"] # not.miss : not missing data in the data TRUE/FALSE
+  obsmat<-obsmat[not.miss,]
+  if(length(sim.ypl)>0) sim.ypl<-sim.ypl[rep(not.miss, nsim)] # simulated data file also has MDV
+  if(sum(is.na(obsmat$x))>0) {# missing data because of omit method
+    not.miss2<-!(is.na(obsmat$x))
+    obsmat<-obsmat[not.miss2,]
+    if(!is.null(sim.ypl)) sim.ypl<-sim.ypl[rep(not.miss2, nsim)]
+  }  else not.miss2<-NULL
   # -----------------------------------------------------------
   # Set options to pass
 
@@ -146,12 +154,12 @@ npde.plot.dist<-function(npdeObject, which="npde", dist.type="qqplot", ...) {
     if(plot.opt$ylab=="") plot.opt$ylab <- "Counts"
   }
   if(dist.type=="ecdf") {
-    if(plot.opt$xlab=="") plot.opt$xlab <- which
-    if(plot.opt$ylab=="") plot.opt$ylab <- "Empirical cumulative density function"
+    if(plot.opt$xlab=="") plot.opt$ylab <- which
+    if(plot.opt$ylab=="") plot.opt$xlab <- "Empirical cumulative density function"
   }
   if(dist.type=="qqplot") {
-    if(plot.opt$xlab=="") plot.opt$xlab <- "Theoretical nnpde"
-    if(plot.opt$ylab=="") plot.opt$ylab <- "Empircal npde"
+    if(plot.opt$xlab=="") plot.opt$xlab <- paste("Theoretical",which)
+    if(plot.opt$ylab=="") plot.opt$ylab <- paste("Empirical",which)
   }
 
   # -----------------------------------------------------------
@@ -170,6 +178,7 @@ npde.plot.dist<-function(npdeObject, which="npde", dist.type="qqplot", ...) {
       plot.opt2<-plot.opt
       plot.opt2$which.cov<-lcov
       zecov = npdeObject["data"]["data"][npdeObject["data"]["not.miss"],lcov]
+      if(!is.null(not.miss2)) zecov<-zecov[not.miss2]
       ucov = zecov[match(unique(idobs),idobs)]
       if(is.numeric(ucov) & length(unique(ucov))>plot.opt$ncat){ # Continuous covariatewith more than plot.opt$ncat (default 3)
         if(plot.opt$ncat!=3) { # 3 categories or less
@@ -177,7 +186,7 @@ npde.plot.dist<-function(npdeObject, which="npde", dist.type="qqplot", ...) {
           seqcat<-seq(0,1,length.out=(ncat+1))
           zecov.cat<-cut(zecov,breaks=quantile(ucov,seqcat), include.lowest=TRUE, ordered_result=TRUE)
           nam1<-paste("q",format(seqcat[-(ncat+1)],digits=2),"-q",format(seqcat[-1],digits=2),sep="")
-          namcat<-paste(namcov,nam1,sep=": ")
+          namcat<-paste(lcov,nam1,sep=": ")
           zecov.cat<-factor(zecov.cat, labels=namcat)
         } else { # if more than 3 categories, split in 3 ranges
           zecov.cat<-cut(zecov,breaks=quantile(ucov,c(0,0.25,0.75,1)), include.lowest=TRUE, ordered_result=TRUE)

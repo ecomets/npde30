@@ -32,6 +32,7 @@
 #' @export
 #'
 #' @importFrom stats approx
+#' @importFrom stats median
 
 # -------------------------------------------------------------------------------------
 # npde.plot.meanprofile renamed to npde.plot.scatterplot
@@ -111,22 +112,18 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
   # a line at Y=LOQ does not make sense unless we are plotting VPC or transformed npde
   if(which.y %in% c("pd","pde")) plot.opt$line.loq<-FALSE
   if(which.y %in% c("npde","npd") & is.null(ref.prof)) plot.opt$line.loq<-FALSE
+  
+  if(plot.opt$xlab=="") {
+    plot.opt$xlab <- switch(which.x, "x"=paste0( npdeObject@data@name.predictor ), "pred"=paste0("Predicted ", npdeObject@data@name.response ), "cov"="", "npde"="npde", "npd"="npd", "pd"="pd") # cov, npde, npd, pd: not valid options; cov: to be implemented
+    if (which.x=="x" & npdeObject@data@units$x != "") plot.opt$xlab<-paste0(plot.opt$xlab, "(", npdeObject@data@units$x,")" )
+    if (which.x=="pred" & npdeObject@data@units$y != "") plot.opt$xlab<-paste0(plot.opt$xlab, "(", npdeObject@data@units$y,")" )
+  }
+  
+  if(plot.opt$ylab=="") {
+    plot.opt$ylab <- switch(which.y, "npde"="npde", "npd"="npd", "pd"="pd", "yobs"=paste0( npdeObject@data@name.response),  "cov"="") # cov not a valid option (yet ?)
+    if (which.y=="yobs" & npdeObject@data@units$y != "") plot.opt$ylab<-paste0(plot.opt$ylab, "(", npdeObject@data@units$y,")" )
+  }
 
-  # axis : labels and units
-  plot.opt$xaxis<-which.x # used in aux.npdeplot.scatter (maybe pass an other way)
-  
-  # test empty string for x-y labels
-  nchar.xlab = nchar(gsub("[[:blank:]]", "", npdeObject@data@units$x))
-  nchar.ylab = nchar(gsub("[[:blank:]]", "", npdeObject@data@units$y))
-  
-  if (npdeObject@data@units$x !=0)
-    plot.opt$xlab <- switch(which.x, "x"=paste0( npdeObject@data@name.predictor," ", "(", npdeObject@data@units$x,")" ), "pred"=paste0("Predicted ", npdeObject@data@name.response," (", npdeObject@data@units$y,")" ), "cov"="", "npde"="npde", "npd"="npd", "pd"="pd") # cov, npde, npd, pd: not valid options; cov: to be implemented
-  plot.opt$xlab <- switch(which.x, "x"=paste0( npdeObject@data@name.predictor ), "pred"=paste0("Predicted ", npdeObject@data@name.response ), "cov"="", "npde"="npde", "npd"="npd", "pd"="pd") # cov, npde, npd, pd: not valid options; cov: to be implemented
-  
-  if (npdeObject@data@units$y !=0)
-    plot.opt$ylab <- switch(which.y, "npde"="npde", "npd"="npd", "pd"="pd", "yobs"=paste0( npdeObject@data@name.response," (", npdeObject@data@units$y,")" ),  "cov"="") # cov not a valid option (yet ?)
-  plot.opt$ylab <- switch(which.y, "npde"="npde", "npd"="npd", "pd"="pd", "yobs"=paste0( npdeObject@data@name.response),  "cov"="") # cov not a valid option (yet ?)
-  
   # vpc.interval controls which percentiles we want PI for
   alpha <- (1 - plot.opt$vpc.interval) / 2 
   if(alpha>0.5) alpha<-(1-alpha)
@@ -149,7 +146,11 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
   if (length(npdeObject["data"]["icens"])>0) has.cens = TRUE else has.cens = FALSE
   not.miss = npdeObject["data"]["not.miss"] # not.miss : not missing data in the data TRUE/FALSE
   obsmat<-obsmat[not.miss,]
-
+  if(sum(is.na(obsmat$y))>0) {# missing data because of omit method
+    not.miss2<-!(is.na(obsmat$y))
+    obsmat<-obsmat[not.miss2,]
+  }  else not.miss2<-NULL
+  
   # ECO TODO: check dimensions when MDV=1 (same dimensions between obsmat and simulated data ? if not cut here, and also check res)
 
   # Binning
@@ -171,6 +172,7 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
        plot.opt$covsplit<-TRUE
        msim<-npdeObject["sim.data"]["datsim"]$ysim
        msim<-msim[rep(npdeObject["data"]["not.miss"], nrep)]
+       if(!is.null(not.miss2)) msim<-msim[rep(not.miss2, nrep)]
        msim<-data.frame(ysim=msim, grp=rep(obsmat$grp, nrep))
      } else {
        if(!is.list(ref.prof)) {
@@ -180,6 +182,7 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
        } else { # one reference profile for all the plots
          msim<-npdeObject["sim.data"]["datsim"]$ysim
          msim<-msim[rep(npdeObject["data"]["not.miss"], nrep)]
+         if(!is.null(not.miss2)) msim<-msim[rep(not.miss2, nrep)]
          msim<-data.frame(ysim=msim, grp=rep(obsmat$grp, nrep))
          iuse<-rep(0,dim(obsmat)[1])
          dat1<-npdeObject["data"]["data"][npdeObject["data"]["not.miss"],]
@@ -213,7 +216,10 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
     if(length(sim.ypl)==0) {
       if(which.y!="yobs") plot.opt$approx.pi<-TRUE else return()
       if(npdeObject@options$verbose) cat("No simulated values for",which.y," found in data, switching to approximate PI.")
-    } else sim.ypl<-sim.ypl[rep(not.miss, nrep)]
+    } else {
+      sim.ypl<-sim.ypl[rep(not.miss, nrep)]
+      if(!is.null(not.miss2)) sim.ypl<-sim.ypl[rep(not.miss2, nsim)]
+    }
   }
 
   if(!covsplit) { # Single plot
@@ -255,8 +261,9 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
           ncat<-plot.opt$ncat
           seqcat<-seq(0,1,length.out=(ncat+1))
           zecov.cat<-cut(zecov,breaks=quantile(ucov,seqcat), include.lowest=TRUE, ordered_result=TRUE)
+          if(!is.null(not.miss2)) zecov<-zecov[not.miss2]
           nam1<-paste("q",format(seqcat[-(ncat+1)],digits=2),"-q",format(seqcat[-1],digits=2),sep="")
-          namcat<-paste(namcov,nam1,sep=": ")
+          namcat<-paste(lcov,nam1,sep=": ")
           zecov.cat<-factor(zecov.cat, labels=namcat)
         } else { # if more than 3 categories, split in 3 ranges
           zecov.cat<-cut(zecov,breaks=quantile(ucov,c(0,0.25,0.75,1)), include.lowest=TRUE, ordered_result=TRUE)

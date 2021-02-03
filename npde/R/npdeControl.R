@@ -108,7 +108,7 @@ check.control.options<-function(opt) {
 #' This function is used to set options for graphs
 #'
 #' @name set.plotoptions
-#' @aliases set.plotoptions set.plotoptions.default set.plotoptions,NpdeData-method
+#' @aliases set.plotoptions set.plotoptions,NpdeData-method
 #' @aliases set.plotoptions,NpdeObject-method set.plotoptions.NpdeData
 #'
 #' @usage set.plotoptions(object)
@@ -127,6 +127,9 @@ set.plotoptions <- function(object) {
   if(missing(object)) set.plotoptions(0) else UseMethod("set.plotoptions",object)
 }
 
+#' @rdname  set.plotoptions
+#' @export
+#' 
 set.plotoptions.default <- function(object) {
 
   plot.opt<-list(
@@ -295,8 +298,8 @@ set.plotoptions.NpdeData<-function(object) {
   plot.opt$ilist <- c(1:object["N"])
   plot.opt$name.X <- object["name.predictor"]
   plot.opt$name.Y <- object["name.response"]
-  plot.opt$xlab <- paste(plot.opt$name.X," (",object["units"]$x,")", sep="")
-  plot.opt$ylab <- paste(plot.opt$name.Y," (", object["units"]$y,")",sep="")
+  if(object["units"]$x != "")  plot.opt$xlab <- paste(plot.opt$name.X," (",object["units"]$x,")", sep="") else plot.opt$xlab<-plot.opt$name.X
+  if(object["units"]$y != "")  plot.opt$ylab <- paste(plot.opt$name.Y," (", object["units"]$y,")",sep="") else plot.opt$ylab<-plot.opt$name.Y
   plot.opt$type.graph <- "eps"	# for compatibility with npde.graphs function
   return(plot.opt)
 }
@@ -310,8 +313,9 @@ set.plotoptions.NpdeObject<-function(object) {
   plot.opt$ilist <- c(1:object["data"]["N"])
   plot.opt$name.X <- object["data"]["name.predictor"]
   plot.opt$name.Y <- object["data"]["name.response"]
-  plot.opt$xlab <- paste(plot.opt$name.X," (",object["data"]["units"]$x,")", sep="")
-  plot.opt$ylab <- paste(plot.opt$name.Y," (", object["data"]["units"]$y,")",sep="")
+  # Eco: removed  because we want to set those in the functions, and it creates problem if we fix those here
+  # if(object["data"]["units"]$x != "")  plot.opt$xlab <- paste(plot.opt$name.X," (",object["data"]["units"]$x,")", sep="") else plot.opt$xlab<-plot.opt$name.X
+  # if(object["data"]["units"]$y != "")  plot.opt$ylab <- paste(plot.opt$name.Y," (", object["data"]["units"]$y,")",sep="") else plot.opt$ylab<-plot.opt$name.Y
   plot.opt$type.graph <- object["options"]$type.graph	# for compatibility with npde.graphs function
   return(plot.opt)
 }

@@ -1,0 +1,84 @@
+\newlength{\captionbis}
+
+%%%%%%%% Attention : Caption est generique, c'est a dire
+% qu'il marche pour les tables et les figures.
+% Comme il genere les tables des matieres et les tables
+% de figures au fur et a mesure, la presentation
+% de ces deux listes sera identique
+
+
+%%%%%%%%%%%%%%
+%==> #1 est l'intitule "figure + numero"
+%==> #3 est le titre de la caption dans \@caption
+%==> \@captype = type (figure, table), gere par Latex ???
+%
+% J'ai enleve la partie suivante : "\numberline{\csname the#1\endcsname}"
+% qui cree dans le fichier 'pharma.lof' un code en debut de ligne pour
+% indiquer de mettre le numero de caption (suivant le type de la caption)
+%
+
+%\def\caption{\refstepcounter\@captype \@dblarg{\@caption\@captype}}
+%\long\def\@caption#1[#2]#3{\par\addcontentsline{\csname
+%  ext@#1\endcsname}{#1}{\protect{\ignorespaces #2}}\begingroup
+%    \@parboxrestore
+%    \normalsize
+%    \@makecaption{\csname fnum@#1\endcsname}{\ignorespaces #3}\par
+%  \endgroup}
+\long\def\ECOfnum@table{Table~\thetable}
+\long\def\ECOfnum@figure{Figure~\thefigure}
+
+%%%% Version originale %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\def\caption{\refstepcounter\@captype \@dblarg{\@caption\@captype}}
+\long\def\@caption#1[#2]#3{\par\addcontentsline{\csname
+  ext@#1\endcsname}{#1}{\protect\numberline{\csname
+  the#1\endcsname}{\ignorespaces #2}}\begingroup
+    \@parboxrestore
+    \normalsize
+    \@makecaption{\csname ECOfnum@#1\endcsname}{\ignorespaces #3}\par
+  \endgroup}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\long\def\@makecaption#1#2{%
+%   \vskip 10\p@
+%   \setbox\@tempboxa\hbox{#1: #2}%
+%    { {\bf #1} {\it #2}\par}		
+%}
+ 
+\long\def\@makefigcaption#1#2{%
+   \vskip 10\p@
+   \setbox\@tempboxa\hbox{#1: #2}%
+    { {\bf #1 :} {\it #2}\par}		
+%    { {\bf #1 :}}		
+}
+ 
+%%%%%%%%%%%%%%
+%===> #1 = "lof"
+%===> #2 = "figure"
+%===> #3 = le titre de la caption
+%
+%\def\addcontentsline#1#2#3{%
+%	\def\DM{\csname the#2\endcsname}
+%  \addtocontents{#1}{\protect\contentsline{#2}{#3}{\DM}}%
+%}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Original : j'ai enleve le \thepage' qui indique de mettre le
+%            numero de page et je lui dis de mettre plutot le
+%            numero de la figure
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\def\addcontentsline#1#2#3{%
+%  \addtocontents{#1}{\protect\contentsline{#2}{#3}{\thepage}}}
+
+\long\def\addtocontents#1#2{%
+  \protected@write\@auxout
+      {\let\label\@gobble \let\index\@gobble \let\glossary\@gobble}%
+      {\string\@writefile{#1}{#2}}}
+\def\contentsline#1{\csname l@#1\endcsname}
+
+\renewcommand{\figure}
+	{\let\@makecaption\@makefigcaption\@float{figure}}
+\renewcommand{\l@figure}[2]{\par\noindent{\itshape {\bfseries Figure #2 :} #1}}
+
+\renewcommand{\table}
+	{\let\@makecaption\@makefigcaption\@float{table}}
+\renewcommand{\l@table}[2]{\par\noindent{\itshape {\bfseries Tableau #2 :} #1}}

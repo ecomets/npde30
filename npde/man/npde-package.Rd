@@ -2,16 +2,12 @@
 % Please edit documentation in R/npde.R
 \docType{package}
 \name{npde-package}
+\alias{npde-package}
 \title{Normalised prediction distribution errors for nonlinear mixed-effect models}
 \description{
 Routines to compute normalised prediction distribution errors, a metric
 designed to evaluate non-linear mixed effect models such as those used in
 pharmacokinetics and pharmacodynamics
-}
-\details{
-\tabular{ll}{ Package: \tab npde\cr Type: \tab Package\cr Version: \tab
-3.0\cr Date: \tab 2017-01-02\cr License: \tab GPL version 2 or later\cr }
-See the documentation for npde for details
 }
 \examples{
 \dontrun{

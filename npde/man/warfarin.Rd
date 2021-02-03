@@ -46,7 +46,7 @@ of simulx which was used to simulate data from two alternative models to fit thi
 dataset.
 
 Two datasets containing simulated data are associated with the \code{warfarin} data. For
-each dataset, 1000 simulations of the original data were performed.
+each dataset, 1000 simulations of the original data were performed for the computation of npde.
 \describe{
 \item{simwarfarinBase}{the data in this dataset was simulated according to a base model without covariates: the PK model was a two-compartment model, with first-order absorption and a time-delay. Interindividual variability was modelled as log-normal distributions for parameters Tlag, ka, Cl and V1, and the error model was a combined error model. The parameters were estimated by Monolix.}
 \item{simwarfarinCov}{the data in this dataset was simulated according to a model including several covariates: an age (centered on 30 yr) effect on Cl, a weight (centered on 70 kg) effect on Cl and V1, and a gender effect on V1. The covariate model was built in Monolix.}

@@ -111,12 +111,12 @@ plot.NpdeRes <- function(x, y, ...) {
     abline(h=ndat/nclass,lty=2,lwd=2)
 
     # residuals
-    plot(xobs,pd,xlab=paste(xrem@data@name.predictor,"(",xrem@data@units$x,")"),ylab="np",cex.lab=1.5)
+    plot(xobs,pd,xlab=paste(x@data@name.predictor,"(",x@data@units$x,")"),ylab="np",cex.lab=1.5)
     abline(h=0,lty=2)
     x1<-qnorm(0.05)
     abline(h=x1,lty=3);abline(h=(-x1),lty=3)
 
-    plot(xres$ypred,pd,xlab= paste(xrem@data@name.response,"(",xrem@data@units$y,")"),ylab="pd",cex.lab=1.5)
+    plot(xres$ypred,pd,xlab= paste(x@data@name.response,"(",x@data@units$y,")"),ylab="pd",cex.lab=1.5)
     abline(h=0,lty=2)
     abline(h=x1,lty=3);abline(h=(-x1),lty=3)
 

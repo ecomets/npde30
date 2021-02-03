@@ -3,15 +3,6 @@
 \name{npde.plot.default}
 \alias{npde.plot.default}
 \alias{plot}
-\alias{aux.scatter.box}
-\alias{aux.scatter}
-\alias{compute.bands.true}
-\alias{compute.bands}
-\alias{aux.npdeplot.meanprof}
-\alias{aux.npdeplot.computepi}
-\alias{aux.npdeplot.transform}
-\alias{aux.npdeplot.plot}
-\alias{aux.npdeplot.main}
 \title{Diagnostic plots}
 \usage{
 npde.plot.default(npdeObject, ...)

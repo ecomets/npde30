@@ -16,12 +16,14 @@
 #' messages are printed out, then pd are computed instead and graphs of pd are
 #' plotted so that the user may evaluate why the computation failed.
 #'
-#' @aliases autonpde npde
+#' @aliases autonpde
+#' 
 #' @usage autonpde(namobs, namsim, iid, ix, iy, imdv = 0, icens = 0,
 #' icov = 0, iipred = 0, boolsave = TRUE, namsav = "output", type.graph = "eps",
 #' verbose = FALSE, calc.npde=TRUE, calc.pd=TRUE, decorr.method = "cholesky",
 #'  cens.method = "cdf", units = list(x="",y=""), detect=FALSE, ties=TRUE, header=TRUE)
 #' @usage npde()
+#' 
 #' @param namobs name of the file containing the observed data, or a dataframe
 #' containing the observed data (in both cases, the column containing the
 #' various data required for the computation of the pde can be set using the
@@ -112,30 +114,6 @@
 #' head(x["results"]["res"])
 #' }
 
-npde<-function() {
-  xinput<-pdemenu()
-
-  xdat<-npdeData(name.data=xinput$namobs,header=TRUE,name.group=xinput$iid, name.predictor=xinput$ix,name.response=xinput$iy,name.miss=xinput$imdv, name.cens=xinput$icens,name.ipred=xinput$iipred,name.covariates=xinput$icov, detect=xinput$detect)
-  cat("Simulated data:",xinput$namsim,"\n")
-  xsim<-npdeSimData(npde.data=xdat,name.simdata=xinput$namsim)
-
-  opt<-list(boolsave=xinput$boolsave,namsav=xinput$namfile, type.graph=xinput$type.graph,verbose=xinput$verbose,calc.npde=xinput$calc.npde, calc.pd=xinput$calc.pd,decorr.method=xinput$decorr.method,cens.method=xinput$cens.method,ties=xinput$ties, header=xinput$header)
-  npde.obj<-new(Class="NpdeObject",data=xdat,sim.data=xsim,options=opt)
-
-
-  npde.obj["prefs"]<-set.plotoptions(npde.obj)
-
-  xret<-npde.main(npde.obj)
-  # Saving results
-  if(npde.obj["options"]$boolsave) {
-    npde.save(xret)
-    npde.graphs(xret)
-  }
-  invisible(xret)
-
-}
-
-#' @export
 autonpde<-function(namobs,namsim,iid,ix,iy,imdv=0,icens=0,icov=0, iipred=0,boolsave=TRUE,namsav="output",type.graph="eps",verbose=FALSE, calc.npde=TRUE,calc.pd=TRUE,decorr.method="cholesky",cens.method="cdf", units=list(x="",y=""), detect=FALSE, ties=TRUE,header=TRUE) {
 
    # output is deprecated, now using invisible
@@ -178,6 +156,32 @@ autonpde<-function(namobs,namsim,iid,ix,iy,imdv=0,icens=0,icov=0, iipred=0,bools
 
   invisible(xret)
 
+}
+
+#' @rdname autonpde
+#' @export
+
+npde<-function() {
+  xinput<-pdemenu()
+  
+  xdat<-npdeData(name.data=xinput$namobs,header=TRUE,name.group=xinput$iid, name.predictor=xinput$ix,name.response=xinput$iy,name.miss=xinput$imdv, name.cens=xinput$icens,name.ipred=xinput$iipred,name.covariates=xinput$icov, detect=xinput$detect)
+  cat("Simulated data:",xinput$namsim,"\n")
+  xsim<-npdeSimData(npde.data=xdat,name.simdata=xinput$namsim)
+  
+  opt<-list(boolsave=xinput$boolsave,namsav=xinput$namfile, type.graph=xinput$type.graph,verbose=xinput$verbose,calc.npde=xinput$calc.npde, calc.pd=xinput$calc.pd,decorr.method=xinput$decorr.method,cens.method=xinput$cens.method,ties=xinput$ties, header=xinput$header)
+  npde.obj<-new(Class="NpdeObject",data=xdat,sim.data=xsim,options=opt)
+  
+  
+  npde.obj["prefs"]<-set.plotoptions(npde.obj)
+  
+  xret<-npde.main(npde.obj)
+  # Saving results
+  if(npde.obj["options"]$boolsave) {
+    npde.save(xret)
+    npde.graphs(xret)
+  }
+  invisible(xret)
+  
 }
 
 #' Interactive menu to set the options for the npde() function

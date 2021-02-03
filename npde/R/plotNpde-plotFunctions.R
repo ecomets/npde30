@@ -340,7 +340,7 @@ npde.plot.data<-function(npdeObject,...) {
 #'
 #' @usage npde.plot.default(npdeObject, ...)
 #'
-#' @aliases plot compute.bands.true compute.bands aux.npdeplot.computepi
+#' @aliases plot 
 #' @param npdeObject an object returned by a call to \code{\link{npde}} or \code{\link{autonpde}}
 #' @param \dots additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}})
 #' @export

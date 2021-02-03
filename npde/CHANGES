@@ -1,4 +1,4 @@
-Version 3.0 - November 2020
+Version 3.0 - January 2021
 
  o Bugfixes
    * an option to specify that the input files do not contain headers (the default assumption is that both simulated and observed data files have headers naming columns) has been added to the autonpde function

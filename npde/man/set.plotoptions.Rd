@@ -2,14 +2,16 @@
 % Please edit documentation in R/npdeControl.R
 \name{set.plotoptions}
 \alias{set.plotoptions}
-\alias{set.plotoptions.default}
 \alias{set.plotoptions,NpdeData-method}
 \alias{set.plotoptions,NpdeObject-method}
 \alias{set.plotoptions.NpdeData}
+\alias{set.plotoptions.default}
 \alias{set.plotoptions.NpdeObject}
 \title{Set graphical preferences}
 \usage{
 set.plotoptions(object)
+
+\method{set.plotoptions}{default}(object)
 
 \method{set.plotoptions}{NpdeData}(object)
 

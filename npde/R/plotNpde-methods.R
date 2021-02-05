@@ -242,8 +242,8 @@ plot.NpdeObject <- function(x, y, ...) {
 
 
             "cov.scatter"={
-              if(verbose) cat("Plotting scatterplot versus covariates\n")
-              for(imet in typmet) npde.plot.scatterplot(x, which.x="cov", which.y=imet, new=force.new, ...) # do we need new ? if so
+              if(verbose) cat("Plotting boxplots versus covariates\n")
+              for(imet in typmet) npde.plot.covariate(x, which.y=imet, new=force.new, ...) # do we need new ? if so
             },
 
 

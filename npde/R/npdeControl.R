@@ -256,8 +256,8 @@ set.plotoptions.default <- function(object) {
 
     # parameters for loq plot line
     col.line.loq = "black",
-    lty.line.loq  = 3,
-    lwd.line.loq  = 1,
+    lty.line.loq  = 5,
+    lwd.line.loq  = 0.5,
 
     # type line for qqplot and scatter
     type = "b",# "b" = line + point

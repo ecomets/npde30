@@ -47,7 +47,7 @@ Metrics for external model evaluation with an application to the population phar
 \emph{Pharmaceutical Research}, 23:2036--49, 2006.
 
 E. Comets, T.H.T. Nguyen, and F. Mentré F. Additional features and graphs in the new npde library for R.
-\emph{22th meeting of the Population Approach Group in Europe}, Glasgow, United Kingdom, 2013,
+\emph{22th meeting of the Population Approach Group in Europe}, Glasgow, United Kingdom, 2013.
 }
 \seealso{
 \code{\link{npde}}, \code{\link{autonpde}}, \code{\link{set.plotoptions}}, \code{\link{npdeControl}}

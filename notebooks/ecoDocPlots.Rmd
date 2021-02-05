@@ -1,0 +1,230 @@
+---
+title: "Generating plots in the documentation (section Examples)"
+author: "Emmanuelle Comets"
+date: "02/02/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+## Objective
+
+Generate the plots for the LaTeX user guide
+
+## Setup
+
+### loading libraries
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(devtools)
+library(ggplot2)
+library(gridExtra)
+library(mclust)
+library(testthat)
+# library(grid)
+workDir<-"/home/eco/work/npde/npde30"
+fullDatDir<-file.path(workDir,"keep","data") # Full data files (some removed from package to decrease size on CRAN)
+knitr::opts_chunk$set(root.dir = workDir)
+docFigs<-"/home/eco/work/npde/doclib/figs"
+saveDocPlots<-FALSE
+```
+
+### Install package in development mode
+  
+```{r devModeInstall}
+dev_mode() # development mode
+install.packages(pkgs=file.path(workDir,"npde_3.0.tar.gz"),repos=NULL)
+library(npde)
+```
+
+### Run examples
+
+- remove warnings (name.ipred empty, etc...)  **Romain**
+
+```{r theoRun, echo=FALSE}
+# Calling autonpde with dataframes
+data(theopp)
+data(simtheopp)
+theofit<-autonpde(theopp,simtheopp,1,3,4,boolsave=FALSE, units=list(x="hr",y="mg/L"))
+
+# Viral load
+data(virload)
+data(virload20)
+data(virload50)
+data(simvirload)
+
+# full data
+if(FALSE) xvir<-autonpde(virload,simvirload,iid=1,ix=2,iy=3,boolsave=FALSE, units=list(x="hr", y="cp/mL, log 10 base"))
+# cdf method
+if(FALSE) x20<-autonpde(virload20,simvirload,iid=1,ix=2,iy=3, icens=4, boolsave=FALSE, units=list(x="hr", y="cp/mL, log 10 base"))
+x50<-autonpde(virload50,simvirload,iid=1,ix=2,iy=3, icens=4,boolsave=FALSE, units=list(x="hr", y="cp/mL, log 10 base"))
+
+# Different methods to handle LOQ
+x50.omit<-autonpde(virload50,simvirload,iid=1,ix=2,iy=3, icens=4,boolsave=FALSE, cens.method="omit", units=list(x="hr", y="cp/mL, log 10 base"))
+x50.ppred<-autonpde(virload50,simvirload,iid=1,ix=2,iy=3, icens=4,boolsave=FALSE, cens.method="ppred", units=list(x="hr", y="cp/mL, log 10 base"))
+x50.ipred<-autonpde(virload50,simvirload,iid=1,ix=2,iy=3, icens=4, iipred=5, boolsave=FALSE, cens.method="ipred", units=list(x="hr", y="cp/mL, log 10 base"))
+
+# Warfarine
+data(warfarin)
+data(simwarfarinCov)
+simbase<-read.table(file.path(fullDatDir, "simwarfarinBase.tab"), header=TRUE)
+
+wbase<-autonpde(namobs=warfarin,namsim=simbase, iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
+
+wcov<-autonpde(namobs=warfarin,namsim=simwarfarinCov, iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfCov", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
+
+```
+
+## Theophylline example
+
+- data  **Romain**
+  - manquent les titres des axes, les axes
+- VPC, scatterplot  **Eco fait**
+  - modifié pour que le tracé des percentiles observés soit fait avec les linetype et size de lobs (pas des bandes), par contre la couleur matche celle de la bande de prédiction correspondante
+
+```{r docTheo, echo=FALSE}
+
+# Raw data
+namfile<-file.path(docFigs,"doc_theodata_gg.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+#  plot(theofit@data, plot.loq=FALSE, size.pobs=2)
+plot(theofit, plot.type="data", size.pobs=2, xlab="Time (hr)",ylab="Theophylline concentrations (mg/L)")
+if(saveDocPlots) dev.off()
+
+# Default waffle plot
+namfile<-file.path(docFigs,"doc_theodefault_gg.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+plot(theofit)
+if(saveDocPlots) dev.off()
+
+# VPC
+namfile<-file.path(docFigs,"doc_theovpc_gg.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+plot(theofit, plot.type="vpc")
+if(saveDocPlots) dev.off()
+
+```
+
+## Viral load example
+
+- data
+  - mêmes problèmes que plus haut
+  - line.loq doesn't work  **Romain**
+  - besoin de faire un waffle plot avec les 4 objets data, **Romain TODO** possible ? (sinon sauver 4 graphes)
+
+```{r docVirloadData, echo=FALSE}
+# p1<-npde.plot.data(x50, plot.default=TRUE) # non, c'est pas ça
+# Raw data
+namfile<-file.path(docFigs,"doc_data50_gg.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", line.loq=TRUE, ylim=c(0,6.5))
+plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", plot.loq=FALSE, line.loq=TRUE, ylim=c(0,6.5))
+plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", impute.loq=FALSE, line.loq=TRUE, ylim=c(0,6.5))
+plot(x50.ipred, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", line.loq=TRUE, ylim=c(0,6.5))
+if(saveDocPlots) dev.off()
+
+# Romain ?
+if(FALSE) {
+  p1<-plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)")
+  p2<-plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", plot.loq=FALSE)
+  p3<-plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", impute.loq=FALSE)
+  p4<-plot(x50.ipred, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)")
+  grid.arrange(list(p1,p2,p3,p4), nrow=2, ncol=2)
+}
+
+```
+
+- scatterplots and VPC
+  - pb with VPC of x50  **Eco fait**
+- possibilité d'utiliser un grid.arrange pour les 2 derniers graphes  ?  **Romain**
+  
+```{r docVirload, echo=FALSE}
+# Diagnostics plots, cdf method (default)
+namfile<-file.path(docFigs,"x50_cdf_gg.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+plot(x50)
+if(saveDocPlots) dev.off()
+# Diagnostics plots, omit method
+namfile<-file.path(docFigs,"x50_omit_gg.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+plot(x50.omit)
+if(saveDocPlots) dev.off()
+# Diagnostics plots, ipred method
+namfile<-file.path(docFigs,"x50_ipred_gg.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+plot(x50.ipred)
+if(saveDocPlots) dev.off()
+# Diagnostics plots, ppred method
+namfile<-file.path(docFigs,"x50_ppred_gg.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+plot(x50.ppred)
+if(saveDocPlots) dev.off()
+# VPC
+namfile<-file.path(docFigs,"doc_vpc50_gg.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+plot(x50,plot.type="vpc", line.loq=TRUE)
+plot(x50.omit,plot.type="vpc")
+if(saveDocPlots) dev.off()
+
+# Scatterplot
+namfile<-file.path(docFigs,"virload_xscatter_gg.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+plot(x50.omit,plot.type="x.scatter")
+plot(x50,plot.type="x.scatter")
+if(saveDocPlots) dev.off()
+
+```
+
+- P(Y<LOQ) currently fails **Romain**
+
+```{r docVirloadLOQ, echo=FALSE}
+
+# P(Y<LOQ)
+namfile<-file.path(docFigs,"virload_ploq_gg.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+try(plot(x50,plot.type="loq", main=" "))
+if(saveDocPlots) dev.off()
+```
+
+## Warfarine
+
+
+- **TODO:**
+  - add to documentation
+  - default plot with cov.scatter should be boxplot => check why not working
+
+```{r docVirWarf, echo=FALSE}
+
+plot(wbase)
+
+plot(wbase, plot.type="cov.scatter")
+
+plot(wbase, plot.type="x.scatter", covsplit=TRUE, which.cov=c("sex","wt"))
+
+```
+
+## Remifentanil (data will be on website)
+
+Remove from documentation ?
+
+
+```{r docRemifentanil, echo=FALSE}
+if(FALSE) {
+  xrem<-autonpde(namobs=file.path(fullDatDir,"remifent.tab"),namsim=file.path(fullDatDir,"simremifent_base.tab"),
+iid=1,ix=2,iy=3,icov=c(6:12),namsav="remibase",units=list(x="hr",y="ug/L",
+covariates=c("yr","-","cm","kg","m2","kg","yr")))
+  plot(xrem)
+  
+  plot(xrem, plot.type="cov.scatter", which.cov=c("LBM"))
+  plot(xrem, plot.type="ecdf", covsplit=TRUE, which.cov=c("Age"))
+
+}
+```
+
+## End of file, deactivating development mode
+
+```{r deactivateDevMode, echo=FALSE, hide=T}
+dev_mode()
+```

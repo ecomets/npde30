@@ -106,10 +106,10 @@ Université Paris Diderot, Sorbonne Paris Cité, Paris, France.
 \par}
 \end{center}
 
-\vskip 8cm
-\begin{center}
-{\large \bfseries npde website: www.npde.biostat.fr}
-\end{center}
+\vskip 8cm % TODO: bookdown !
+% \begin{center}
+% {\large \bfseries npde website: www.npde.biostat.fr}
+% \end{center}
 
 \newpage
 %{\setlength{\baselineskip}{0.8\baselineskip}
@@ -117,9 +117,9 @@ Université Paris Diderot, Sorbonne Paris Cité, Paris, France.
 %}\par
 \newpage
 
-\hskip 18pt  This is the User's guide for the add-on package {\sf npde} (version 3.0, September 2020) for the {\sf R} language. It is distributed in the \texttt{inst} directory of the package. Version 3.0 includes a complete overhaul of the graphs, which have been moved to the {\sf ggplot2} philosophy~\cite{ggplot2} by Romain Leroux.
+\hskip 18pt  This is the User's guide for the add-on package {\sf npde} (version 3.0, January 2021) for the {\sf R} language. It is distributed in the \texttt{inst} directory of the package. Version 3.0 includes a complete overhaul of the graphs, which have been moved to the {\sf ggplot2} philosophy~\cite{ggplot2} by Romain Leroux, as well as the addition of reference plots.
 
-{\sf npde} computes normalised prediction distribution errors, a metric to evaluate nonlinear mixed-effect models such as those used in population pharmacokinetic or pharmacodynamic studies. Prediction distribution errors were developed under the name prediction discrepancies by Mentr\'e and Escolano~\cite{MentrePDE}. Brendel et al~\cite{BrendelPDE} proposed an improved version taking into account repeated observations within each subject, which were called prediction distribution errors.
+{\sf npde} computes normalised prediction distribution errors ($npde$), a metric to evaluate nonlinear mixed-effect models such as those used in population pharmacokinetic or pharmacodynamic studies. Prediction distribution errors were developed under the name prediction discrepancies by Mentr\'e and Escolano~\cite{MentrePDE}. Brendel et al~\cite{BrendelPDE} proposed an improved version taking into account repeated observations within each subject, which were called prediction distribution errors. Both prediction discrepancies and prediction distribution errors are usually transformed to a normal distribution for graphical diagnostics.
 
 The program is an add-on package (or library) running under the {\sf R} software~\cite{R}. Please install and launch {\sf R} to use {\sf npde}.
 
@@ -185,11 +185,13 @@ year	=2008	}
 
 Additional references are:
 \begin{quotation}
-\noindent Brendel K, Comets E, Laffont CM, Laveille C, Mentré F. Metrics for
+\noindent Brendel K, Comets E, Laffont CM, Laveille C, Mentr{\'e} F. Metrics for
 external model evaluation with an application to the population pharmacokinetics
 of gliclazide. {\it Pharmaceutical Research} 2006, 23: 2036--2049.
 
-\noindent Comets E, Brendel K, Mentré F. Model evaluation in nonlinear mixed effect models, with applications to pharmacokinetics. {\it Journal de la Societe Francaise de Statistique} 2010, 151: 106-28.
+\noindent Comets E, Brendel K, Mentré F. Model evaluation in nonlinear mixed effect models, with applications to pharmacokinetics. {\it Journal de la Soci{\'e}t{\'e} Fran\c{c}aise de Statistique} 2010, 151: 106-28.
+
+\noindent Brendel K,  Comets E, Laffont C, Mentr{\'e} F. Evaluation of different tests based on observations for external model evaluation of population analyses. {\it Journal of Pharmacokinetics and Pharmacodynamics} 2010, 37: 49--65.
 
 \noindent Nguyen TH, Comets E, Mentré F. Extension of NPDE for evaluation of nonlinear mixed effect models in presence of data below the quantification limit with applications to HIV dynamic model. {\it Journal of Pharmacokinetics and Pharmacodynamics} 2012, 39: 499-518.
 
@@ -214,16 +216,33 @@ title	={Model evaluation in nonlinear mixed effect models, with applications
 to pharmacokinetics},
 volume	={151},
 pages	={106--28},
-journal	={Journal de la Société Française de Statistique},
+journal	={Journal de la Soci{\'e}t{\'e} Fran\c{c}aise de Statistique},
 year	=2010	}
 
 @Article{,
+author  ={Karl Brendel and Emmanuelle Comets and Céline Laffont and France Mentré},
+title   ={Evaluation of different tests based on observations for external model evaluation of population analyses},
+volume  ={37},
+pages   ={49--65},
+journal ={Journal of Pharmacokinetics and Pharmacodynamics},
+year    =2010  }
+
+@Article{,
 author = {Thi Huyen Tram Nguyen and Emmanuelle Comets and France Mentr{\'e}},
-title   ={Extension of NPDE for evaluation of nonlinear mixed effect models in presence of data below the quantification limit with applications to {HIV} dynamic model},
+title   ={Extension of NPDE for evaluation of nonlinear mixed effect models in presence
+of data below the quantification limit with applications to {HIV} dynamic model},
 volume	={39},
 pages	={499--518},
 journal ={Journal of Pharmacokinetics and Pharmacodynamics},
 year    =2012	}
+
+@Article{,
+author = {Emmanuelle Comets and Thi Huyen Tram Nguyen and  France Mentr{\'e}},
+title   ={Additional features and graphs in the new npde library for R},
+journal ={22nd meeting of the {P}opulation {A}pproach {G}roup in {E}urope, Glasgow, UK},
+year    =2013	}
+
+
 \end{verbatim}
 
 \input{method}

@@ -1,8 +1,44 @@
 ####################################################################################################################################
+# Diagnostic plot for covariates (npde vs boxplots of covariates)
+####################################################################################################################################
+aux.npdeplot.boxcov <- function(obsmat, pimat, plot.opt) {
+  
+  if ("ylim" %in% names(plot.opt) & length(plot.opt$ylim)==2)
+    y.limits = c(plot.opt$ylim[1],plot.opt$ylim[2])  else
+      y.limits = c(min(pimat$pinf.lower),max(pimat$psup.upper))
+  
+  p<-ggplot(obsmat, aes(x=grp, y=y, group=factor(grp, ordered=TRUE))) + geom_boxplot(varwidth = TRUE) +
+    theme(plot.title = element_text(hjust = 0.5, size = plot.opt$size.sub),
+          axis.title.y = element_text(size = plot.opt$size.ylab),
+          axis.title.x = element_text(size = plot.opt$size.xlab),
+          axis.text.x = element_text(size=plot.opt$size.text.x),
+          axis.text.y = element_text(size=plot.opt$size.text.y),
+          axis.line.x = element_line(color=ifelse(plot.opt$xaxt==TRUE,"black","white")),
+          axis.line.y = element_line(color=ifelse(plot.opt$yaxt==TRUE,"black","white")),
+          panel.background=element_rect("white"),
+          panel.grid.major.x = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid),
+          panel.grid.minor.x = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid),
+          panel.grid.major.y = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid),
+          panel.grid.minor.y = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid))+
+    expand_limits(y = 0) +  guides( fill = FALSE ) +
+    { if(plot.opt$bands) geom_point(data = pimat, aes(x = grp, y = pmid.median), color=plot.opt$col.med, size=plot.opt$size.pobs)  }+
+    scale_y_continuous( plot.opt$ylab, limits = y.limits, scales::pretty_breaks(n = plot.opt$breaks.y) ) +
+    scale_x_discrete( plot.opt$xlab) +
+    {if (plot.opt$main!="") ggtitle(plot.opt$main)}
+  # to plot in the waffle plot
+  if (plot.opt$plot.default==TRUE){
+    return(p)
+  } else{
+    print(p)
+  }
+}
+
+####################################################################################################################################
 # aux.npdeplot.plot renamed to aux.npdeplot.scatter
 # function : plot scatterplots of y versus x with 3 PI around median and IIV quantiles (applies to vpc, x.scatter, pred.scatter)
 # with covsplit, called for each covariate separately
 ####################################################################################################################################
+
 aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
   # obsmat: matrix of Y observations to plot (Y= yobs, npde, npd, pd, tnpde, tnpd) versus X (X=independent variable (eg time), predictions (pred), covariates (cov)), with the following columns
   ### x,y: values of X and Y
@@ -100,13 +136,13 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
 
     if (plot.opt$plot.box==TRUE) {
 
-      p <- ggplot( obsmat, aes( x, y, fill = factor( grp ) ) ) +
+      p <- ggplot( obsmat, aes( x, y, fill = factor( grp, ordered=TRUE) ) ) +
         # Title and layout
         theme(plot.title = element_text(hjust = 0.5, size = plot.opt$size.sub),
-              axis.title.y = element_blank(), #element_text(size = plot.opt$size.ylab),
+              axis.title.y = element_text(size = plot.opt$size.ylab),
               axis.title.x = element_text(size = plot.opt$size.xlab),
               axis.text.x = element_text(size=plot.opt$size.text.x),
-              axis.text.y = element_blank(),#element_text(size=plot.opt$size.text.y),
+              axis.text.y = element_text(size=plot.opt$size.text.y),
               axis.line.x = element_line(color=ifelse(plot.opt$xaxt==TRUE,"black","white")),
               axis.line.y = element_line(color=ifelse(plot.opt$yaxt==TRUE,"black","white")),
               panel.background=element_rect("white"),
@@ -162,8 +198,8 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
                   linetype = plot.opt$lty.bands, colour = plot.opt$col.bands, size = plot.opt$lwd.bands) +
 
         # plot of data as boxplot
-        geom_boxplot(data=obsmat, aes( x, y,  fill= factor( grp )), varwidth=TRUE)+
-        scale_fill_manual( values = rep( plot.opt$col.pobs, max( obsmat$grp ) ) ) +
+        geom_boxplot(data=obsmat, aes( x, y,  fill= factor( grp, ordered=TRUE)), varwidth=TRUE)+
+        scale_fill_manual( values = rep( plot.opt$col.pobs, length(unique(obsmat$grp)) ) ) +
 
         scale_y_continuous( plot.opt$ylab, limits = y.limits,
                             scales::pretty_breaks(n = plot.opt$breaks.y) ) +
@@ -240,14 +276,14 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
                       mapping = aes(x = x_area_0.975,ymin = y_area_0.975,ymax = pmax(Y0.975, y_area_0.975)),
                       fill = plot.opt$fill.outliers.bands, alpha = plot.opt$alpha.outliers.bands) } +
 
-        # plot observed and model predicted percentiles
+        # plot observed and model predicted percentiles (for observed, use linetype and size from lobs instead of med/bands)
         #{if (plot.opt$type=="l" || plot.opt$type=="b")
-        geom_line(aes(y = obs.inf), linetype = plot.opt$lty.bands,colour = plot.opt$col.bands,size = plot.opt$lwd.band)+#} +
+        { if ( plot.opt$bands == TRUE ) geom_line(aes(y = obs.inf), linetype = plot.opt$lty.lobs, colour = plot.opt$col.bands, size = plot.opt$lwd.lobs) }+#} +
         #  {if (plot.opt$type=="l" || plot.opt$type=="b")
-        geom_line(aes(y = obs.median), linetype = plot.opt$lty.med,colour = plot.opt$col.med,size = plot.opt$lwd.med)+#} +
+        geom_line(aes(y = obs.median), linetype = plot.opt$lty.lobs, colour = plot.opt$col.med, size = plot.opt$lwd.lobs)+#} +
         # {if (plot.opt$type=="l" || plot.opt$type=="b")
-        { if ( plot.opt$bands == TRUE ) geom_line(aes(y = obs.sup), linetype = plot.opt$lty.bands,colour = plot.opt$col.bands,size = plot.opt$lwd.band) } +#} +
-        #{if (plot.opt$type=="l" || plot.opt$type=="b")
+        { if ( plot.opt$bands == TRUE ) geom_line(aes(y = obs.sup), linetype = plot.opt$lty.lobs, colour = plot.opt$col.lobs,size = plot.opt$lwd.lobs) } +#} +
+
         { if ( plot.opt$bands == TRUE ) geom_line(aes(y = pinf.lower), linetype = plot.opt$lty.bands,colour = plot.opt$col.bands,size = plot.opt$lwd.band) } +#} +
         #{if (plot.opt$type=="l" || plot.opt$type=="b")
         { if ( plot.opt$bands == TRUE ) geom_line(aes(y = pinf.upper), linetype = plot.opt$lty.bands,colour = plot.opt$col.bands,size = plot.opt$lwd.band)} +#} +
@@ -311,10 +347,9 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
         {if (plot.opt$main!="") ggtitle(plot.opt$main)}
 
       list_plot[[1]] <- p
-
     }
 
-  # to plot in thr waffle plot
+  # to plot in the waffle plot
   if (plot.opt$plot.default==TRUE){
     return(p)
   } else{
@@ -323,13 +358,3 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
 } #END FUNCTION
 
 ####################################################################################################################################
-
-####################################################################################################################################
-## aux.npdeplot.scatter
-## Same function but with the same Y-axis for the different categories TODO (maybe needs adding options for free scales on Y)
-####################################################################################################################################
-aux.npdeplot.scatter.facet <- function(obsmat, pimat, plot.opt) {
-
-
-} # END FUNCTION
-

@@ -32,6 +32,7 @@ Collate:
     'plotNpde-auxScatter.R'
     'plotNpde-auxScatterPlot.R'
     'plotNpde-binningPI.R'
+    'plotNpde-covplot.R'
     'plotNpde-distributionPlot.R'
     'plotNpde-methods.R'
     'plotNpde-plotFunctions.R'

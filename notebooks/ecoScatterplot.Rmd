@@ -54,7 +54,8 @@ library(gridExtra)
 library(grid)
 library(mclust)
 library(testthat)
-workDir<-"D:/RECHERCHES/_NPDE/Npde-2021/npde30-main"
+#workDir<-"D:/RECHERCHES/_NPDE/Npde-2021/npde30-main"
+workDir<-"/home/eco/work/npde/npde30"
 notesDir<-file.path(workDir,"notebooks")
 datDir<-file.path(workDir,"npde","data")
 testsDir<-file.path(workDir,"npde","tests","testthat")
@@ -92,6 +93,7 @@ source(file.path(workDir,"npde","R","plotNpde-binningPI.R")) # renamed from plot
 source(file.path(workDir,"npde","R","plotNpde-auxScatter.R")) # replaces plotNpde-unitFunctionsRef.R
 source(file.path(workDir,"npde","R","plotNpde-auxScatterPlot.R"))
 source(file.path(workDir,"npde","R","plotNpde-scatterplot.R")) # replaces plotNpde-meanProf.R
+source(file.path(workDir,"npde","R","plotNpde-covplot.R"))
 
 # Distribution plots
 source(file.path(workDir,"npde","R","plotNpde-auxDistPlot.R")) # renamed from plotNpde-unitFunctionsAux.R
@@ -135,7 +137,7 @@ obs.sex$category <- factor(obs.sex$category)
 obs.weight<-data.frame(x=wbase@data@data$time, y=wbase@results@res[,"npde"], grp=xbin$xgrp)
 obs.weight$cens<-0
 
-idobs <- npdeObject["data"]["data"][npdeObject["data"]["not.miss"], npdeObject["data"]["name.group"]]
+idobs <- wbase@data@data$id
 zecov<-wbase@data@data$wt
 lcov<-"Weight"
 ucov = zecov[match(unique(idobs),idobs)]
@@ -162,9 +164,36 @@ obs.weight$category<-zecov.cat
 # with pd
 obspd.sex<-obs.sex
 obspd.sex$y<-wbase@results@res[,"pd"]
+
+
+###################
+# Covariate weight as x, not yet binned
+obsxcov.weight<-obs.weight
+obsxcov.weight$category<-"all"
+obsxcov.weight$x<-wbase@data@data$wt
+
+###################
+# Quantiles of weight as x
+obsxcov.weight2<-obs.weight
+obsxcov.weight2$x<-match(obs.weight$category, namcat)
+obsxcov.weight2$category<-"all"
+obsxcov.weight2$grp<-obsxcov.weight2$x
+
+###################
+# Covariate sex as x, not yet binned
+obsxcov.sex<-obs.sex
+obsxcov.sex$x<-wbase@data@data$sex
+obsxcov.sex$grp<-as.integer(obsxcov.sex$x==1)+1
+obsxcov.sex$x<-as.integer(obsxcov.sex$x==1)+1
+
+obsxcov.sex$category<-"all"
+
+obsxcov.sex2<-obs.sex
+obsxcov.sex2$category<-"all"
+obsxcov.sex2$x<-factor(wbase@data@data$sex, levels=c(0,1), labels=c("Male", "Female"))
 ```
 
-### Prepare obsmat for npde/pd versus x, with or without covariates sex and weight
+### Prepare pimat for npde/pd versus x, with or without covariates sex and weight
 
 ```{r preparePImat, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
 # One pimat is no covariate
@@ -201,6 +230,61 @@ for(icat in levels(obsmat$category)) {
 pimat.pdsex<-pimat
 ```
 
+### Plots for npde/pd versus cov, for covariates sex and weight
+
+- 2 versions for continuous covariate
+  - with PI for weight, computed as if x=time
+  - without PI for weight, weight in 3 categories
+- for categorical covariate
+  - remove bands and interpolation ?
+  - boxplot for categorical covariate
+
+```{r preparePImatCov, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+# Scatterplot npde vs weight
+head(obsxcov.weight)
+binweight<-npde.binning(obsxcov.weight$x, plot.opt)
+obsxcov.weight$grp<-binweight$xgrp
+pimatxcov.weight<-aux.npdeplot.pimat(obsxcov.weight, xcent=binweight$xcent, distrib="norm", approx.pi=TRUE, sim.ypl=NULL)
+plot.opt2<-plot.opt
+plot.opt2$covsplit<-FALSE
+plot.opt2$xlab<-"Weight (kg)"
+plot.opt2$ylab<-"npde"
+aux.npdeplot.scatter(obsxcov.weight,pimatxcov.weight, plot.opt2)
+
+# Version with boxplots for weight
+pimatxcov.weight2<-aux.npdeplot.pimat(obsxcov.weight2, xcent=sort(unique(obsxcov.weight2$x)), distrib="norm", approx.pi=TRUE, sim.ypl=NULL)
+
+aux.npdeplot.boxcov(obsxcov.weight2,pimatxcov.weight2, plot.opt2)
+
+
+# Scatterplot npde vs sex
+head(obsxcov.sex)
+pimatxcov.sex<-aux.npdeplot.pimat(obsxcov.sex, xcent=c(1,2), distrib="norm", approx.pi=TRUE, sim.ypl=NULL)
+plot.opt2<-plot.opt
+plot.opt2$covsplit<-FALSE
+plot.opt2$xlab<-"Sex"
+plot.opt2$ylab<-"npde"
+aux.npdeplot.scatter(obsxcov.sex,pimatxcov.sex, plot.opt2)
+
+# Version with boxplots for sex
+aux.npdeplot.boxcov(obsxcov.sex,pimatxcov.sex, plot.opt2)
+
+ggplot(obsxcov.sex, aes(x=x, y=y, group=factor(grp, ordered=TRUE))) + geom_boxplot(varwidth = TRUE)+ 
+  geom_point(data = pimatxcov.sex, aes(x = grp, y = pmid.median), color=plot.opt$col.med) 
+
+#
+obs1<-obsxcov.sex
+pim1<-pimatxcov.sex
+obs1$grp<-factor(obs1$grp, labels=c("Sex:0", "Sex:1"))
+aux.npdeplot.boxcov(obs1,pimatxcov.sex, plot.opt2)
+pim1$grp<-factor(pim1$grp, labels=c("Sex:0", "Sex:1"))
+
+ggplot(obs1, aes(x=grp, y=y, group=grp)) + geom_boxplot(varwidth = TRUE)+ 
+  geom_point(data = pim1, aes(x = grp, y = pmid.median), color=plot.opt$col.med) 
+
+```
+
+
 ## Debug functions
 
 ### Debug auxiliary plots
@@ -235,24 +319,100 @@ aux.npdeplot.scatter(obspd.sex, pimat.pdsex, plot.opt2)
 
 ```
 
+Covariate plots
+
+```{r auxCovPlot}
+# Boxplot versus weight
+lcov<-"Wt"
+obsxcov.weight2$grp<-factor(obsxcov.weight2$grp, labels=paste(lcov,c("<Q1","Q1-Q3",">Q3"),sep=": "))
+pimatxcov.weight2$grp<-factor(pimatxcov.weight2$grp,labels=paste(lcov,c("<Q1","Q1-Q3",">Q3"),sep=": "))
+plot.opt2<-plot.opt
+plot.opt2$covsplit<-FALSE
+plot.opt2$xlab<-"Weight (kg)"
+plot.opt2$ylab<-"npde"
+aux.npdeplot.boxcov(obsxcov.weight2,pimatxcov.weight2, plot.opt2)
+
+# Boxplot versus sex
+obsxcov.sex$grp<-factor(obsxcov.sex$grp, labels=c("Sex:0", "Sex:1"))
+pimatxcov.sex$grp<-factor(pimatxcov.sex$grp, labels=c("Sex:0", "Sex:1"))
+plot.opt2<-plot.opt
+plot.opt2$xlab<-"Sex"
+plot.opt2$ylab<-"npde"
+aux.npdeplot.boxcov(obsxcov.sex,pimatxcov.sex, plot.opt2)
+
+if(FALSE) {
+  obsmat<-obsxcov.sex
+  pimat<-pimatxcov.sex
+}
+
+# Same, with observations (not sure that makes sense)
+obsycov.weight<-obsxcov.weight2
+obsycov.weight$y<-wbase@data@data$dv
+pimatycov.weight<-aux.npdeplot.pimat(obsycov.weight, xcent=sort(unique(obsxcov.weight$x)), distrib="norm", approx.pi=FALSE, sim.ypl=wbase@sim.data@datsim$ysim)
+
+plot.opt2<-plot.opt
+plot.opt2$xlab<-"Weight (kg)"
+plot.opt2$ylab<-"y"
+
+aux.npdeplot.boxcov(obsycov.weight,pimatycov.weight, plot.opt2)
+
+```
+
 ### Debug main scatterplot function
 
 ```{r mainScatterPlot}
 source(file.path(workDir,"npde","R","plotNpde-scatterplot.R")) # renamed from plotNpde-unitFunctionsAux.R
 npde.plot.scatterplot(wbase,  which.x="x", which.y="npde")
 
+# Split by covariate
 npde.plot.scatterplot(wbase,  which.x="x", which.y="npde", covsplit=TRUE, which.cov=c("wt"))
 npde.plot.scatterplot(wbase,  which.x="x", which.y="npde", covsplit=TRUE, which.cov=c("sex"))
 npde.plot.scatterplot(wbase,  which.x="x", which.y="npde", covsplit=TRUE, which.cov=c("all"))
 
+# PD vs time
+npde.plot.scatterplot(wbase,  which.x="x", which.y="pd")
+
+# Reference profile
+npde.plot.scatterplot(wbase,  which.x="x", which.y="npde", ref.prof=list(id=1))
+
+# VPC
 npde.plot.scatterplot(wbase,  which.x="x", which.y="yobs")
 
 npde.plot.scatterplot(wbase,  which.x="x", which.y="yobs", covsplit=TRUE)
 
 npde.plot.scatterplot(wbase,  which.x="x", which.y="yobs", plot.box=TRUE)
 
-npde.plot.scatterplot(wbase,  which.x="x", which.y="pd")
+# Scatterplot versus covariates
+npde.plot.scatterplot(wbase,  which.x="cov", which.y="npde", which.cov=c("wt","sex"))
 
-npde.plot.scatterplot(wbase,  which.x="x", which.y="npde", ref.prof=list(id=1))
+# Treating sex as factor
+wbase@data@data$sex<-factor(wbase@data@data$sex)
+npde.plot.scatterplot(wbase,  which.x="cov", which.y="npde", which.cov=c("sex"))
+
+if(FALSE) {
+  npdeObject<-wbase
+  which.x<-"cov"
+  which.y<-"npde"
+  plot.opt<-npdeObject@prefs
+  ref.prof<-NULL
+}
 
 ```
+
+### Debug boxplot of npde versus covariates (Brendel et al. 2010)
+
+```{r mainCovPlot}
+source(file.path(workDir,"npde","R","plotNpde-covplot.R"))
+
+npde.plot.covariate(wbase, which.y="npde", which.cov="sex")
+npde.plot.covariate(wbase, which.y="npde", which.cov=c("wt","sex"))
+npde.plot.covariate(wbase, which.y="yobs", which.cov=c("wt","sex"), ylab="Warfarin concentrations (mg/L)")
+
+
+if(FALSE) {
+  npdeObject<-wbase
+  which.y<-"npde"
+  plot.opt<-npdeObject@prefs
+}
+```
+

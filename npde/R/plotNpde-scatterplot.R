@@ -27,7 +27,7 @@
 #' Metrics for external model evaluation with an application to the population pharmacokinetics of gliclazide.
 #' \emph{Pharmaceutical Research}, 23:2036--49, 2006.
 #' @references  E. Comets, T.H.T. Nguyen, and F. Mentré F. Additional features and graphs in the new npde library for R.
-#' \emph{22th meeting of the Population Approach Group in Europe}, Glasgow, United Kingdom, 2013,
+#' \emph{22th meeting of the Population Approach Group in Europe}, Glasgow, United Kingdom, 2013.
 #' @keywords plot
 #' @export
 #'
@@ -94,7 +94,7 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
   # Only use reference profile for npd or npde versus time
   if(!is.null(ref.prof)) {
     if(!(which.y %in% c("npd","npde"))) ref.prof<-NULL
-    if(which.x %in% c("cov","pred")) ref.prof<-NULL
+    if(which.x %in% c("cov","pred")) ref.prof<-NULL # note: important that ref.prof set to NULL and covsplit set to TRUE if which.x="cov"
   }
 
   # -----------------------------------------------------------------------------------
@@ -137,7 +137,7 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
                      "pred"=npdeObject@results@res$ypred,
                      "cov"=npdeObject@data@data[,npdeObject@data@name.covariates[idx.cov[1]]] ))
   obsmat$y <- switch(which.y, "npde"=npdeObject@results@res$npde, "npd"=npdeObject@results@res$npd, "pd"=npdeObject@results@res$pd,
-                     "yobs"=npdeObject@data@data[,npdeObject@data@name.response])
+                     "yobs"=npdeObject@results@res$ycomp)
   if(length(npdeObject@data@icens)==0) obsmat$cens<-0 else obsmat$cens<-npdeObject@data@data$cens
 
   if(length(npdeObject@data@loq)>0) obsmat$loq <-npdeObject@data@loq
@@ -154,9 +154,11 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
   # ECO TODO: check dimensions when MDV=1 (same dimensions between obsmat and simulated data ? if not cut here, and also check res)
 
   # Binning
-  xbin<-npde.binning(obsmat$x,plot.opt,verbose=FALSE)
-  obsmat$grp <- xbin$xgrp
-  matbin<-data.frame(grp=1:length(xbin$xcent), xcent=xbin$xcent, binlabel = names(xbin$xcent)) # keep binning matrix
+  if(is.numeric(obsmat$x)) {
+    xbin<-npde.binning(obsmat$x,plot.opt,verbose=FALSE)
+    obsmat$grp <- xbin$xgrp
+    matbin<-data.frame(grp=1:length(xbin$xcent), xcent=xbin$xcent, binlabel = names(xbin$xcent)) # keep binning matrix
+  } else obsmat$grp <- 1 # for covariates in "cov.scatter", binning will be done later
 
   # -----------------------------------------------------------------------------------
   # Reference profile
@@ -218,7 +220,7 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
       if(npdeObject@options$verbose) cat("No simulated values for",which.y," found in data, switching to approximate PI.")
     } else {
       sim.ypl<-sim.ypl[rep(not.miss, nrep)]
-      if(!is.null(not.miss2)) sim.ypl<-sim.ypl[rep(not.miss2, nsim)]
+      if(!is.null(not.miss2)) sim.ypl<-sim.ypl[rep(not.miss2, nrep)]
     }
   }
 
@@ -247,34 +249,48 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
       if(length(npdeObject@data@units$cov)>0) lunit <- npdeObject["data"]["units"]$cov[npdeObject["data"]["name.covariates"]==lcov] else lunit<-""
       if(lunit!="") plot.opt2$xlab<-paste(plot.opt2$xlab," (", lunit,")",sep="")
       }
-      zecov = npdeObject["data"]["data"][npdeObject["data"]["not.miss"],lcov]
-
-      if(which.x=="cov") { # plot versus covariates
-        obsmat$x<-zecov
-        pimat<-aux.npdeplot.pimat(obsmat, xcent=matbin$xcent , quantiles=c(alpha, 0.5, 1-alpha), pi.size=plot.opt$pi.size, distrib=distrib, approx.pi=plot.opt$approx.pi, sim.ypl=sim.ypl)
-        p1<-aux.npdeplot.scatter(obsmat, pimat, plot.opt2)
-
-      } else { # plot split by covariates
+      zecov <- npdeObject["data"]["data"][npdeObject["data"]["not.miss"],lcov]
+      if(!is.null(not.miss2)) zecov<-zecov[not.miss2]
       ucov = zecov[match(unique(idobs),idobs)]
-      if(is.numeric(ucov) & length(unique(ucov))>plot.opt$ncat){ # Continuous covariatewith more than plot.opt$ncat (default 3)
-        if(plot.opt$ncat!=3) { # 3 categories or less
-          ncat<-plot.opt$ncat
-          seqcat<-seq(0,1,length.out=(ncat+1))
-          zecov.cat<-cut(zecov,breaks=quantile(ucov,seqcat), include.lowest=TRUE, ordered_result=TRUE)
-          if(!is.null(not.miss2)) zecov<-zecov[not.miss2]
-          nam1<-paste("q",format(seqcat[-(ncat+1)],digits=2),"-q",format(seqcat[-1],digits=2),sep="")
-          namcat<-paste(lcov,nam1,sep=": ")
-          zecov.cat<-factor(zecov.cat, labels=namcat)
-        } else { # if more than 3 categories, split in 3 ranges
-          zecov.cat<-cut(zecov,breaks=quantile(ucov,c(0,0.25,0.75,1)), include.lowest=TRUE, ordered_result=TRUE)
-          namcat<-paste(lcov,c("<Q1","Q1-Q3",">Q3"),sep=": ")
-          zecov.cat<-factor(zecov.cat, labels=namcat)
+ 
+      if(which.x=="cov") { # plot versus covariates
+        obsmat2<-obsmat
+        if(is.numeric(ucov)) {
+          obsmat2$x<-zecov
+          xbin2<-npde.binning(obsmat2$x,plot.opt,verbose=FALSE)
+          obsmat2$grp <- xbin2$xgrp
+          xcent2<-xbin2$xcent
+          } else {
+            namcat<-paste(lcov,unique(ucov), sep=": ")
+            zecov.cat<-paste(lcov, zecov, sep=": ")
+            zecov.cat<-factor(zecov.cat, labels=namcat, ordered=TRUE)
+            obsmat2$x<-match(zecov.cat,levels(zecov.cat))
+            obsmat2$grp<-zecov.cat
+            xcent2<-1:length(namcat)
         }
-      } else { # Categorical covariate defined as factor, or covariate with less than plot.opt$ncat categories
-        namcat<-paste(lcov,unique(ucov), sep=": ")
-        zecov.cat<-paste(lcov, zecov, sep=": ")
-        zecov.cat<-factor(zecov.cat, labels=namcat)
-      }
+        pimat<-aux.npdeplot.pimat(obsmat2, xcent=xcent2 , quantiles=c(alpha, 0.5, 1-alpha), pi.size=plot.opt$pi.size, distrib=distrib, approx.pi=plot.opt$approx.pi, sim.ypl=sim.ypl)
+        p1<-aux.npdeplot.scatter(obsmat2, pimat, plot.opt2)
+      } else { # plot split by covariates
+        if(is.numeric(ucov) & length(unique(ucov))>plot.opt$ncat){ # Continuous covariate with more than plot.opt$ncat (default 3)
+          if(plot.opt$ncat!=3) { # 3 categories or less
+            ncat<-plot.opt$ncat
+            seqcat<-seq(0,1,length.out=(ncat+1))
+            zecov.cat<-cut(zecov,breaks=quantile(ucov,seqcat), include.lowest=TRUE, ordered_result=TRUE)
+            if(!is.null(not.miss2)) zecov<-zecov[not.miss2]
+            nam1<-paste("q",format(seqcat[-(ncat+1)],digits=2),"-q",format(seqcat[-1],digits=2),sep="")
+            namcat<-paste(lcov,nam1,sep=": ")
+            zecov.cat<-factor(zecov.cat, labels=namcat, ordered=TRUE)
+          } else { # if more than 3 categories, split in 3 ranges
+            zecov.cat<-cut(zecov,breaks=quantile(ucov,c(0,0.25,0.75,1)), include.lowest=TRUE, ordered_result=TRUE)
+            namcat<-paste(lcov,c("<Q1","Q1-Q3",">Q3"),sep=": ")
+            zecov.cat<-factor(zecov.cat, labels=namcat, ordered=TRUE)
+          }
+        } else { # Categorical covariate defined as factor, or covariate with less than plot.opt$ncat categories
+          namcat<-paste(lcov,unique(ucov), sep=": ")
+          zecov.cat<-paste(lcov, zecov, sep=": ")
+          zecov.cat<-factor(zecov.cat, labels=namcat, ordered=TRUE)
+        }
+        
      obsmat$category<-zecov.cat
      if(length(sim.ypl)>0) sim.ypl.cat<-rep(obsmat$category, nrep) else sim.ypl.cat<-1
 

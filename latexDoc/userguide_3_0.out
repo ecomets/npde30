@@ -14,8 +14,8 @@
 \BOOKMARK [3][-]{subsubsection.2.4.2}{Tests for covariate models}{subsection.2.4}% 14
 \BOOKMARK [2][-]{subsection.2.5}{Graphs}{section.2}% 15
 \BOOKMARK [3][-]{subsubsection.2.5.1}{Diagnostic graphs}{subsection.2.5}% 16
-\BOOKMARK [3][-]{subsubsection.2.5.2}{Prediction intervals}{subsection.2.5}% 17
-\BOOKMARK [3][-]{subsubsection.2.5.3}{Graphs for covariate models}{subsection.2.5}% 18
+\BOOKMARK [3][-]{subsubsection.2.5.2}{Graphs for covariate models}{subsection.2.5}% 17
+\BOOKMARK [3][-]{subsubsection.2.5.3}{VPC}{subsection.2.5}% 18
 \BOOKMARK [3][-]{subsubsection.2.5.4}{Graphs with a reference profile}{subsection.2.5}% 19
 \BOOKMARK [1][-]{section.3}{The npde package}{}% 20
 \BOOKMARK [2][-]{subsection.3.1}{Preparation of the input}{section.3}% 21
@@ -51,11 +51,11 @@
 \BOOKMARK [2][-]{subsection.4.4}{Types of graphs}{section.4}% 51
 \BOOKMARK [2][-]{subsection.4.5}{Options for graphs}{section.4}% 52
 \BOOKMARK [1][-]{subsection.4.5}{References}{}% 53
-\BOOKMARK [1][-]{section*.14}{Appendix - Theophylline example}{}% 54
-\BOOKMARK [2][-]{section*.15}{R commands}{section*.14}% 55
-\BOOKMARK [2][-]{section*.16}{Data}{section*.14}% 56
-\BOOKMARK [2][-]{section*.17}{Control file used for the NONMEM analysis}{section*.14}% 57
-\BOOKMARK [2][-]{section*.18}{Results obtained with NONMEM}{section*.14}% 58
-\BOOKMARK [2][-]{section*.19}{NONMEM control file used for the simulations}{section*.14}% 59
-\BOOKMARK [2][-]{section*.20}{Simulated data}{section*.14}% 60
-\BOOKMARK [2][-]{section*.21}{Saved results}{section*.14}% 61
+\BOOKMARK [1][-]{section*.18}{Appendix - Theophylline example}{}% 54
+\BOOKMARK [2][-]{section*.19}{R commands}{section*.18}% 55
+\BOOKMARK [2][-]{section*.20}{Data}{section*.18}% 56
+\BOOKMARK [2][-]{section*.21}{Control file used for the NONMEM analysis}{section*.18}% 57
+\BOOKMARK [2][-]{section*.22}{Results obtained with NONMEM}{section*.18}% 58
+\BOOKMARK [2][-]{section*.23}{NONMEM control file used for the simulations}{section*.18}% 59
+\BOOKMARK [2][-]{section*.24}{Simulated data}{section*.18}% 60
+\BOOKMARK [2][-]{section*.25}{Saved results}{section*.18}% 61

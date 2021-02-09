@@ -134,12 +134,9 @@ aux.npdeplot.hist<-function(obsmat,  plot.opt, distrib="norm", nclass=10, sim.yp
     {if(numberCategories==1)
       theme(strip.background = element_blank(), strip.text.x = element_blank())
       } +
-    {if (plot.opt$main!="" && plot.opt$plot.default==FALSE) ggtitle(plot.opt$main)}
-  if (plot.opt$plot.default==TRUE){
-    return(p)
-  } else{
-    print(p)
-  }
+    {if (plot.opt$main!="") ggtitle(plot.opt$main)}
+
+  return(p)
 } # End function histogram
 
 ####################################################################################################
@@ -276,12 +273,8 @@ aux.npdeplot.dist<-function(obsmat,  plot.opt, dist.type="qqplot", distrib="norm
     {if(numberCategories==1)
       theme(strip.background = element_blank(), strip.text.x = element_blank())
     } +
-    {if (plot.opt$main!="" && plot.opt$plot.default==FALSE) ggtitle(plot.opt$main)}
+    {if (plot.opt$main!="") ggtitle(plot.opt$main)}
 
+  return(p)
 
-  if (plot.opt$plot.default==TRUE){
-    return(p)
-  } else{
-    print(p)
-  }
 } # End function ecdf

@@ -227,7 +227,7 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
         } +
         {if (plot.opt$main!="") ggtitle(plot.opt$main)}
 
-      list_plot[[1]] <- p
+     # list_plot[[1]] <- p
 
     } else { # else plot.box=FALSE
 
@@ -364,26 +364,26 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
         { if (plot.opt$xlog == TRUE) annotation_logticks(sides = "b")} +
         { if (plot.opt$ylog == TRUE) annotation_logticks(sides = "l")} +
 
+        {if (plot.opt$main!="") ggtitle(plot.opt$main)} +
+
         # facet wrap over covariate categories
         facet_wrap(.~factor(category), nrow=1) +
+
         {if(numberCategories==1)
           theme(strip.background = element_blank(), strip.text.x = element_blank())
-        } +
-
-        {if (plot.opt$main!="" && plot.opt$plot.default==FALSE) ggtitle(plot.opt$main)}
-
-      list_plot[[1]] <- p
+        }
+    #  list_plot[[1]] <- p
 
     }
 
   # to plot in the waffle plot
-  if (plot.opt$plot.default==TRUE){
-
+  #if (plot.opt$plot.default==TRUE){
+   # print(p)
     return(p)
-  } else{
-    print(p)
+  #} else{
+   # print(p)
 
-  }
+  #}
 } #END FUNCTION
 
 ####################################################################################################################################

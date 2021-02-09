@@ -117,6 +117,7 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
   list_plot = list()   # list to stack the ggplot
 
   covsplit <- plot.opt$covsplit
+
   if(is.numeric(plot.opt$which.cov)) plot.opt$which.cov<-npdeObject["data"]["name.covariates"][plot.opt$which.cov] # convert to names of covariates
   # covariates in the npdeObject => hasCovariates TRUE / FALSE
   if (length(npdeObject["data"]["name.covariates"])>0) hasCovariates = TRUE else hasCovariates = FALSE
@@ -239,13 +240,21 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
   }
 
   if(!covsplit) { # Single plot
+
     pimat<-aux.npdeplot.pimat(obsmat, xcent=matbin$xcent , quantiles=c(alpha, 0.5, 1-alpha), pi.size=plot.opt$pi.size, distrib=distrib, approx.pi=plot.opt$approx.pi, sim.ypl=sim.ypl)
+
     if(hasRefprof) {
+
       obsmat<-aux.npdeplot.transformObs(obsmat, mpref)
+
       pimat<-aux.npdeplot.transformPI(pimat, mpref)
+
     }
+
    ## Plot obsmat with PI in pimat using options in plot.opt
+
     p1<-aux.npdeplot.scatter(obsmat, pimat, plot.opt)
+
     list_plot[[1]]<-p1
 
   } else { # Plot split by covariate, for each covariate in plot.opt$which.cov
@@ -337,7 +346,9 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
     } # end loop on icov
   } # end test on covsplit
 
-  invisible(list_plot) # return invisibly, can we return plots that we can manipulate later ?
+  return(list_plot)
+
+ # invisible(list_plot) # return invisibly, can we return plots that we can manipulate later ?
  } # END FUNCTION
 
 # --------------------------------------------------------------

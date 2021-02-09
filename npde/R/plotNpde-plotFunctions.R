@@ -369,11 +369,12 @@ npde.plot.data<-function(npdeObject,...) {
        scale_x_continuous(plot.opt$xlab, scales::pretty_breaks(n = plot.opt$breaks.x)) +
        scale_y_continuous(plot.opt$ylab, scales::pretty_breaks(n = plot.opt$breaks.y))
 
-    print(p)
+   # print(p)
 
   }
-
-  return( p )
+  list_plot = list()
+  list_plot[[1]] = p
+  return( list_plot )
 
 } # end function
 
@@ -424,32 +425,28 @@ npde.plot.default<-function(npdeObject,  ...) {
       hist.cov <-   npde.plot.dist(npdeObject,
                                    plot.opt$which,
                                    dist.type="hist",
-                                   which.cov = covariate,
-                                   plot.default=TRUE,...)
+                                   which.cov = covariate,main="",...)
 
       qqplot.cov <-   npde.plot.dist(npdeObject,
                                      plot.opt$which,
                                      dist.type="qqplot",
-                                     which.cov = covariate,
-                                     plot.default=TRUE,...)
+                                     which.cov = covariate,main="",...)
 
       x.scatter.cov <-   npde.plot.scatterplot(npdeObject,
                                                which.x="x", which.y=plot.opt$which,
                                                dist.type="x.scatter",
-                                               which.cov = covariate,
-                                               plot.default=TRUE,...)
+                                               which.cov = covariate,main="",...)
 
       pred.scatter.cov <-   npde.plot.scatterplot(npdeObject,
                                                   which.x="pred", which.y=plot.opt$which,
                                                   dist.type="pred.scatter",
-                                                  which.cov = covariate,
-                                                  plot.default=TRUE,...)
-
+                                                  which.cov = covariate,main="",...)
 
       list_plot = c( hist.cov, qqplot.cov, x.scatter.cov, pred.scatter.cov )
 
       if (!is.null(list_plot))
       {
+
         grid.arrange(grobs = list_plot,
                      nrow=2, ncol=2,
                      top = textGrob(paste0(plot.opt$main[i],'\n'),
@@ -459,33 +456,39 @@ npde.plot.default<-function(npdeObject,  ...) {
       i=i+1
     } # end loop covariates
   }
-  # waffle plot with covariate
+  # waffle plot without covariate
   else
   {
+     hist <- npde.plot.dist(new_npdeObject,
+                            plot.opt$which,
+                            dist.type="hist",
+                            main="",...)
 
-    hist <- npde.plot.dist(new_npdeObject,
-                           plot.opt$which,
-                           dist.type="hist",
-                           plot.default=TRUE,...)
+     qqplot <- npde.plot.dist(new_npdeObject,
+                              plot.opt$which,
+                              dist.type="qqplot",
+                              main="",...)
 
-    qqplot <- npde.plot.dist(new_npdeObject,
-                             plot.opt$which,
-                             dist.type="qqplot",
-                             plot.default=TRUE,...)
+    x.scatter <- npde.plot.scatterplot(new_npdeObject,
+                                       which.x="x",
+                                       which.y=plot.opt$which,
+                                       main="", ...)
 
-    x.scatter <- npde.plot.scatterplot(new_npdeObject, which.x="x", which.y=plot.opt$which, plot.default=TRUE,...)
-
-    pred.scatter <- npde.plot.scatterplot(new_npdeObject, which.x="pred", which.y=plot.opt$which, plot.default=TRUE,...)
+    pred.scatter <- npde.plot.scatterplot(new_npdeObject,
+                                          which.x="pred",
+                                          which.y=plot.opt$which,
+                                          main="",...)
 
     list_plot = c( hist, qqplot, x.scatter, pred.scatter )
 
     if (!is.null(list_plot))
     {
-      grid.arrange(grobs = list_plot,
-                   nrow=2, ncol=2,
-                   top = textGrob(paste0(plot.opt$main,'\n'),
-                                  vjust = 1,
-                                  gp = gpar(fontsize=plot.opt$size.main)))
+
+       grid.arrange(grobs = list_plot,
+                    nrow=2, ncol=2,
+                    top = textGrob(paste0(plot.opt$main,'\n'),
+                                   vjust = 1,
+                                   gp = gpar(fontsize=plot.opt$size.main)))
     }else{
       print("Error in arguments.The list of plots is therefore empty.")
     }

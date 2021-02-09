@@ -24,9 +24,9 @@ library(gridExtra)
 library(mclust)
 library(testthat)
 library(grid)
-# library(grid)
+
 workDir<-"D:/RECHERCHES/_NPDE/Npde-2021/npde30-main/npde30-main"
-#setwd(workDir)
+setwd(workDir)
 knitr::opts_chunk$set(root.dir = workDir)
 fullDatDir<-file.path(workDir,"keep","data") # Full data files (some removed from package to decrease size on CRAN)
 knitr::opts_chunk$set(root.dir = workDir)
@@ -130,22 +130,18 @@ plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", im
 plot(x50.ipred, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", line.loq=TRUE, ylim=c(0,6.5))
 if(saveDocPlots) dev.off()
 
-# Romain ?
-if(FALSE) {
-  p1<-plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)")
-  p2<-plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", plot.loq=FALSE)
-  p3<-plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", impute.loq=FALSE)
-  p4<-plot(x50.ipred, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)")
-  grid.arrange(list(p1,p2,p3,p4), nrow=2, ncol=2)
-}
+p1<-plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)")
+p2<-plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", plot.loq=FALSE)
+p3<-plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", impute.loq=FALSE)
+p4<-plot(x50.ipred, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)")
+do.call(grid.arrange, c(p1,p2,p3,p4, list( nrow=2, ncol=2)))
 
 ```
 
 - scatterplots and VPC
   - pb with VPC of x50  **Eco fait**
-- possibilité d'utiliser un grid.arrange pour les 2 derniers graphes  ?  **Romain**
-- **Note** : plus possible maintenant, objet plot = NULL ?!
-  
+- **solved ** possibilité d'utiliser un grid.arrange pour les 2 derniers graphes  ?  **Romain**
+
 ```{r docVirload, echo=FALSE}
 # Diagnostics plots, cdf method (default)
 namfile<-file.path(docFigs,"x50_cdf_gg.eps")
@@ -177,8 +173,11 @@ if(saveDocPlots) dev.off()
 # Scatterplot
 namfile<-file.path(docFigs,"virload_xscatter_gg.eps")
 if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
-plot(x50.omit,plot.type="x.scatter")
-plot(x50,plot.type="x.scatter")
+
+plot.x50.omit = plot(x50.omit,plot.type="x.scatter")
+plot.x50      = plot(x50,plot.type="x.scatter")
+do.call(grid.arrange, c(plot.x50.omit$npde, plot.x50$npde, list( nrow=1, ncol=2)))
+
 if(saveDocPlots) dev.off()
 
 ```
@@ -199,7 +198,7 @@ if(saveDocPlots) dev.off()
 
 - **TODO:**
   - add to documentation
-  - default plot with cov.scatter should be boxplot => check why not working
+  - **solved Eco** default plot with cov.scatter should be boxplot => check why not working
 
 ```{r docVirWarf, echo=FALSE}
 

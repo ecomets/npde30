@@ -216,20 +216,24 @@ plot.NpdeObject <- function(x, y, ...) {
   for(ipl in plot.type) {
     switch (EXPR=ipl,
             "data"={
-              npde.plot.data(x,...)
+              plot.data = npde.plot.data(x,...)
+              return(plot.data)
             },
             "default"={ npde.plot.default(x,...)
             },
 
             "x.scatter"={
-              #if(verbose) cat("Plotting scatterplot versus X\n")
-              for(imet in typmet) npde.plot.scatterplot(x, which.x="x", which.y=imet, ...)
+              if(verbose) cat("Plotting scatterplot versus independent variable\n")
+              list.plot.x.scatter = list()
+              for(imet in typmet) list.plot.x.scatter[[imet]] = npde.plot.scatterplot(x, which.x="x", which.y=imet, ...)
+              return(list.plot.x.scatter)
             },
 
             "pred.scatter"={
               if(verbose) cat("Plotting scatterplot versus predictions\n")
-              for(imet in typmet) npde.plot.scatterplot(x, which.x="pred", which.y=imet, new=force.new, ...) # do we need new ? if so
-#              npde.plot.meanprofile(x,xaxis="pred",new=force.new,...)
+              list.plot.pred.scatter = list()
+              for(imet in typmet) list.plot.pred.scatter[[imet]] = npde.plot.scatterplot(x, which.x="pred", which.y=imet, ...)
+              return(list.plot.pred.scatter)
             },
 
             "cov.scatter"={
@@ -239,21 +243,26 @@ plot.NpdeObject <- function(x, y, ...) {
 
             "qqplot"={
               if(verbose) cat("Plotting QQ-plot of the distribution\n")
-              npde.plot.dist(x, dist.type="qqplot",new=force.new,...)
-
+              list.plot.plot.qqplot = list()
+              list.plot.plot.qqplot = npde.plot.dist(x, dist.type="qqplot",new=force.new,...)
+              return(list.plot.plot.qqplot)
             },
             "histogram"={
               #        if(verbose) cat("Plotting histogram of the distribution\n")
-              npde.plot.dist(x, dist.type="hist",new=force.new,...)
+              list.plot.plot.histogram = list()
+              list.plot.plot.histogram = npde.plot.dist(x, dist.type="hist",new=force.new,...)
+              return( list.plot.plot.histogram )
             },
 
             "ecdf"={
               if(verbose) cat("Plotting the empirical distribution function of residuals\n")
-              npde.plot.dist(x, dist.type="ecdf", new=force.new,...)
+              plot.ecdf = npde.plot.dist(x, dist.type="ecdf", new=force.new,...)
+              return( plot.ecdf )
             },
 
             "vpc"={
-              npde.plot.scatterplot(x, which.x="x", which.y="yobs", ...)
+              plot.vpc = npde.plot.scatterplot(x, which.x="x", which.y="yobs", ...)
+              return( plot.vpc )
             },
 
             "cov.x.scatter"={
@@ -291,4 +300,3 @@ plot.NpdeObject <- function(x, y, ...) {
     )
   }
 }
-

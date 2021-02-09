@@ -1,4 +1,9 @@
 ---
+output:
+  pdf_document: default
+  html_document: default
+---
+---
 title: "Generating plots in the documentation (section Examples)"
 author: "Emmanuelle Comets"
 date: "02/02/2021"
@@ -23,7 +28,7 @@ library(ggplot2)
 library(gridExtra)
 library(mclust)
 library(testthat)
-# library(grid)
+library(grid)
 workDir<-"/home/eco/work/npde/npde30"
 fullDatDir<-file.path(workDir,"keep","data") # Full data files (some removed from package to decrease size on CRAN)
 knitr::opts_chunk$set(root.dir = workDir)

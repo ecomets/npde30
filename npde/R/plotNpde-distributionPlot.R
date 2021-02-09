@@ -169,11 +169,16 @@ npde.plot.dist<-function(npdeObject, which="npde", dist.type="qqplot", ...) {
 
   # -----------------------------------------------------------
   # Test and loop on covariates
+
   if(!covsplit) {
+
     if(dist.type=="hist") p<-aux.npdeplot.hist(obsmat, plot.opt, distrib=distrib, nclass=plot.opt$bin.number, sim.ypl=sim.ypl) else
       p<-aux.npdeplot.dist(obsmat, plot.opt, dist.type=dist.type, distrib=distrib, sim.ypl=sim.ypl)
+
     list_plot[[1]]<-p
+
   } else {
+
     # loop on covariate
     idobs <- npdeObject["data"]["data"][npdeObject["data"]["not.miss"], npdeObject["data"]["name.group"]]
     iplot<-0
@@ -209,7 +214,9 @@ npde.plot.dist<-function(npdeObject, which="npde", dist.type="qqplot", ...) {
       list_plot[[iplot]]<-p
     }
   }
-  invisible(list_plot) # return invisibly, can we return plots that we can manipulate later ?
+  return( list_plot )
+
+  #invisible(list_plot) # return invisibly, can we return plots that we can manipulate later ?
 } # END FUNCTION
 
 ###############################	   P(Y<LOQ)	 ########################################
@@ -434,7 +441,6 @@ npde.plot.loq<-function(npdeObject,xaxis="x",nsim=200,...) {
 
     geom_line(aes(y = xobs),
               color = plot.opt$col.lobs,
-              ##alpha = plot.opt$alpha,
               size = plot.opt$lwd.lobs,
               linetype = plot.opt$lty.lobs) +
 
@@ -443,6 +449,4 @@ npde.plot.loq<-function(npdeObject,xaxis="x",nsim=200,...) {
 
   print(p)
 
-  print(p)
-
-}
+ }

@@ -360,12 +360,12 @@ npde.plot.data<-function(npdeObject,...) {
 
        scale_x_continuous(plot.opt$xlab, scales::pretty_breaks(n = plot.opt$breaks.x)) +
        scale_y_continuous(plot.opt$ylab, scales::pretty_breaks(n = plot.opt$breaks.y))
-
-    print(p)
-
+    
+    # print(p)
   }
-
-  return( p )
+  list_plot = list()
+  list_plot[[1]] = p
+  return( list_plot )
 
 } # end function
 
@@ -458,17 +458,23 @@ npde.plot.default<-function(npdeObject,  ...) {
     hist <- npde.plot.dist(new_npdeObject,
                            plot.opt$which,
                            dist.type="hist",
-                           plot.default=TRUE,...)
-
+                           main="",...)
+    
     qqplot <- npde.plot.dist(new_npdeObject,
                              plot.opt$which,
                              dist.type="qqplot",
-                             plot.default=TRUE,...)
-
-    x.scatter <- npde.plot.scatterplot(new_npdeObject, which.x="x", which.y=plot.opt$which, plot.default=TRUE,...)
-
-    pred.scatter <- npde.plot.scatterplot(new_npdeObject, which.x="pred", which.y=plot.opt$which, plot.default=TRUE,...)
-
+                             main="",...)
+    
+    x.scatter <- npde.plot.scatterplot(new_npdeObject,
+                                       which.x="x",
+                                       which.y=plot.opt$which,
+                                       main="", ...)
+    
+    pred.scatter <- npde.plot.scatterplot(new_npdeObject,
+                                          which.x="pred",
+                                          which.y=plot.opt$which,
+                                          main="",...)
+    
     list_plot = c( hist, qqplot, x.scatter, pred.scatter )
 
     if (!is.null(list_plot))
@@ -485,8 +491,3 @@ npde.plot.default<-function(npdeObject,  ...) {
   }
 
 } # end function npde.plot.default
-
-
-
-
-

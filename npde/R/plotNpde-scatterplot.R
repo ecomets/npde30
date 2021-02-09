@@ -337,9 +337,10 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
     } # end test on which.x="cov"
     } # end loop on icov
   } # end test on covsplit
-
-  invisible(list_plot) # return invisibly, can we return plots that we can manipulate later ?
- } # END FUNCTION
+  return(list_plot)
+  
+  # invisible(list_plot) # return invisibly, can we return plots that we can manipulate later ?
+} # END FUNCTION
 
 # --------------------------------------------------------------
 # les options bizarres : onlong and co (see NpdeControl)
@@ -357,5 +358,4 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
 # onlog=FALSE : définie par défaut FALSE dans node.mean.profile, pas redéfinie ailleurs
 # log(y) for vpc + meanprofile
 # log(x)
-
 

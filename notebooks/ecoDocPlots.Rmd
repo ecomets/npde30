@@ -23,8 +23,11 @@ library(ggplot2)
 library(gridExtra)
 library(mclust)
 library(testthat)
+library(grid)
 # library(grid)
-workDir<-"/home/eco/work/npde/npde30"
+workDir<-"D:/RECHERCHES/_NPDE/Npde-2021/npde30-main/npde30-main"
+#setwd(workDir)
+knitr::opts_chunk$set(root.dir = workDir)
 fullDatDir<-file.path(workDir,"keep","data") # Full data files (some removed from package to decrease size on CRAN)
 knitr::opts_chunk$set(root.dir = workDir)
 docFigs<-"/home/eco/work/npde/doclib/figs"
@@ -79,7 +82,7 @@ wcov<-autonpde(namobs=warfarin,namsim=simwarfarinCov, iid=1,ix=2,iy=4,icov=c(3,6
 
 ## Theophylline example
 
-- data  **Romain**
+- **solved** data  **Romain**
   - manquent les titres des axes, les axes
 - VPC, scatterplot  **Eco fait**
   - modifié pour que le tracé des percentiles observés soit fait avec les linetype et size de lobs (pas des bandes), par contre la couleur matche celle de la bande de prédiction correspondante
@@ -111,8 +114,10 @@ if(saveDocPlots) dev.off()
 
 - data
   - mêmes problèmes que plus haut
-  - line.loq doesn't work  **Romain**
+  - **solved** line.loq doesn't work  **Romain**
   - besoin de faire un waffle plot avec les 4 objets data, **Romain TODO** possible ? (sinon sauver 4 graphes)
+  - **Note** Ce n'est plus possible maintenant, les fonctions plot renvoient des object p=NULL. Pas moyen après ça
+  de les mettre dans une liste pour un grid.arrange. 
 
 ```{r docVirloadData, echo=FALSE}
 # p1<-npde.plot.data(x50, plot.default=TRUE) # non, c'est pas ça
@@ -139,6 +144,7 @@ if(FALSE) {
 - scatterplots and VPC
   - pb with VPC of x50  **Eco fait**
 - possibilité d'utiliser un grid.arrange pour les 2 derniers graphes  ?  **Romain**
+- **Note** : plus possible maintenant, objet plot = NULL ?!
   
 ```{r docVirload, echo=FALSE}
 # Diagnostics plots, cdf method (default)
@@ -177,14 +183,14 @@ if(saveDocPlots) dev.off()
 
 ```
 
-- P(Y<LOQ) currently fails **Romain**
+- **solved** P(Y<LOQ) currently fails **Romain**
 
 ```{r docVirloadLOQ, echo=FALSE}
 
 # P(Y<LOQ)
 namfile<-file.path(docFigs,"virload_ploq_gg.eps")
 if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
-try(plot(x50,plot.type="loq", main=" "))
+plot(x50,plot.type="loq", main=" ")
 if(saveDocPlots) dev.off()
 ```
 

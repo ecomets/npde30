@@ -27,6 +27,12 @@
 \newblock {\em Journal de la Société Française de Statistique 151\/} (2010),
   106--28.
 
+\bibitem{CometsPAGE13}
+{\sc Comets, E., Nguyen, T., and Mentr{\'e}, F.}
+\newblock Additional features and graphs in the new npde library for r.
+\newblock {\em 16$^{th}$ meeting of the {P}opulation {A}pproach {G}roup in
+  {E}urope, Glasgow, United Kingdom\/} (2013), Abstr 2775.
+
 \bibitem{Ding1999}
 {\sc Ding, A.~A., and Wu, H.}
 \newblock {Relationships between antiviral treatment effects and biphasic viral
@@ -72,6 +78,13 @@
 {\sc Lavielle, M.}
 \newblock {\em MONOLIX (MOd\`eles NOn LIn\'eaires \`a effets miXtes)}.
 \newblock {MONOLIX} group, Orsay, France, 2005.
+
+\bibitem{Lavielle11}
+{\sc Lavielle, M., and Bleakley, K.}
+\newblock Automatic data binning for improved visual diagnosis of
+  pharmacometric models.
+\newblock {\em Journal of Pharmacokinetics and Pharmacodynamics 38\/} (2011),
+  861--71.
 
 \bibitem{MentrePDE}
 {\sc Mentr{\'e}, F., and Escolano, S.}

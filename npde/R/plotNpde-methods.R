@@ -216,13 +216,9 @@ plot.NpdeObject <- function(x, y, ...) {
   for(ipl in plot.type) {
     switch (EXPR=ipl,
             "data"={
-
               npde.plot.data(x,...)
-
             },
-
             "default"={ npde.plot.default(x,...)
-
             },
 
             "x.scatter"={
@@ -231,33 +227,25 @@ plot.NpdeObject <- function(x, y, ...) {
             },
 
             "pred.scatter"={
-
               if(verbose) cat("Plotting scatterplot versus predictions\n")
               for(imet in typmet) npde.plot.scatterplot(x, which.x="pred", which.y=imet, new=force.new, ...) # do we need new ? if so
-
 #              npde.plot.meanprofile(x,xaxis="pred",new=force.new,...)
             },
-
 
             "cov.scatter"={
               if(verbose) cat("Plotting boxplots versus covariates\n")
               for(imet in typmet) npde.plot.covariate(x, which.y=imet, new=force.new, ...) # do we need new ? if so
             },
 
-
             "qqplot"={
               if(verbose) cat("Plotting QQ-plot of the distribution\n")
-
               npde.plot.dist(x, dist.type="qqplot",new=force.new,...)
 
             },
             "histogram"={
-
               #        if(verbose) cat("Plotting histogram of the distribution\n")
               npde.plot.dist(x, dist.type="hist",new=force.new,...)
-
             },
-
 
             "ecdf"={
               if(verbose) cat("Plotting the empirical distribution function of residuals\n")
@@ -265,28 +253,20 @@ plot.NpdeObject <- function(x, y, ...) {
             },
 
             "vpc"={
-
-              # to do : npde.plot.vpc
               npde.plot.scatterplot(x, which.x="x", which.y="yobs", ...)
-
             },
-
 
             "cov.x.scatter"={
               if(verbose) cat("Plotting scatterplot versus X, splitted by covariate(s)\n")
-
               for(imet in typmet) npde.plot.scatterplot(x, which.x="x", which.y=imet, covsplit=TRUE,...)
-
             },
 
             "cov.pred.scatter"={
               if(verbose) cat("Plotting scatterplot versus predictions, splitted by covariate(s)\n")
               for(imet in typmet) npde.plot.scatterplot(x, which.x="pred", which.y=imet, covsplit=TRUE,...)
-
             },
 
             "cov.hist"={
-
               if(verbose) cat("Plotting histogram of the distribution, splitted by covariate(s)\n")
               npde.plot.dist(x, dist.type="hist", covsplit=TRUE,...)
             },
@@ -296,7 +276,6 @@ plot.NpdeObject <- function(x, y, ...) {
               npde.plot.dist(x, dist.type="qqplot", covsplit=TRUE,...)
             },
 
-
             "cov.ecdf"={
               if(verbose) cat("Plotting histogram of the distribution, splitted by covariate(s)\n")
               npde.plot.dist(x, dist.type="ecdf", covsplit=TRUE,...)
@@ -305,7 +284,6 @@ plot.NpdeObject <- function(x, y, ...) {
             "loq"={
               if(length(x["results"]["ploq"])>0) {
                 if(verbose) cat("Plotting p_LOQ=p(yobs<LOQ) \n")
-
                 npde.plot.loq(x,...)
               }
             },

@@ -74,14 +74,14 @@ This option can be set by using the \texttt{ties=FALSE} argument.
 
 \subsubsection{Prediction distribution errors (\pde)} 
 
-\hskip 18pt When multiple observations are available for one subject, typically in population analyses, the $\pd$ are correlated within each subject~\cite{MentrePDE}. To correct for this correlation, we compute the mean E$(\Y_i)$ and variance $\var(\Y_i)$ of the $K$ simulations. The mean is approximated by: 
-$$E(\Y_{i})\thickapprox\frac{1}{K}\overset{K}{\underset{k=1}{\sum}}\Y_{i}^{sim(k)}$$
+\hskip 18pt When multiple observations are available for one subject, typically in population analyses, the $\pd$ are correlated within each subject~\cite{MentrePDE}. To correct for this correlation, we compute the mean $\mathbb{E}(\Y_i)$ and variance $\var(\Y_i)$ of the $K$ simulations. The mean is approximated by: 
+$$\mathbb{E}(\Y_{i})\thickapprox\frac{1}{K}\overset{K}{\underset{k=1}{\sum}}\Y_{i}^{sim(k)}$$
 and the variance-covariance matrix is approximated by:
 $$\var(\Y_{i})\thickapprox \frac{1}{K}\overset{K}{\underset{k=1}{\sum}}(\Y_{i}^{sim(k)}-E(\Y_{i}))(\Y_{i}^{sim(k)}-E(\Y_{i}))'$$
 Decorrelation is performed simultaneously for simulated data:
-$$ \Y_{i}^{sim(k)*}= \var(\Y_i)^{-1/2} (\Y_{i}^{sim(k)}-E(\Y_i))$$
+$$ \Y_{i}^{sim(k)*}= \var(\Y_i)^{-1/2} (\Y_{i}^{sim(k)}-\mathbb{E}(\Y_i))$$
 and for observed data:
-$$ \Y_{i}^*= \var(\Y_i)^{-1/2} (\Y_{i}-E(\Y_i))$$
+$$ \Y_{i}^*= \var(\Y_i)^{-1/2} (\Y_{i}-\mathbb{E}(\Y_i))$$
 Since we are looking to obtain 'residuals', different decorrelation options exist to obtain $\var(\Y_i)^{-1/2}$, corresponding to different sets of decorrelated data. In the \npde~package, we propose 3 options, which will be detailed in the next section (section~\ref{subsec:decorrelation}).
 
 Decorrelated $\pd$ are then obtained using the same formula as~\ref{eq:pdedef} but with the decorrelated data, and we call the resulting variables prediction distribution errors ($\pde$):
@@ -235,6 +235,34 @@ In the presence of censored data, the same imputation method is also applied to 
 
 \subsubsection{Graphs with a reference profile}
 
-\hskip 18pt A new feature of the {\sf npde} library is the ability to add a reference plot to the scatterplot of $\npde$ or $\npd$ versus the independent variable. 
+\hskip 18pt A new feature of the {\sf npde} library is the ability to add a reference plot to the scatterplot of $\npde$ or $\npd$ versus the independent variable. This was first described in a poster at the PAGE conference~\cite{CometsPAGE13}, and makes the $\npde$ plots similar in aspect to VPC, with information on both the evolution of the process and the distribution of residuals in the same plot. 
+
+The principle is to first select a reference profile, which can be associated with a subject or a group of subject, a covariate or combination of covariates. We then distribute the $\npde$ (or the $\npd$) around this reference profile, taking into account the interindividual variability. To do this, we first compute for each value $x_t$ of the predictor $x$ the mean $\mathbb{E}_{t_{ij}}$ and standard deviation SD$_{t_{ij}}$ of the simulations corresponding to the selected reference profile for that time. Denoting $I_R$ the set of individuals corresponding to the reference profile, we compute:
+
+\begin{equation}
+\begin{split}
+\mathbb{E}_{t_{ij}} &= \frac{1}{I_R \; K} \sum_{k=1}^{K} \sum_{i \in I_R}  y_{ij}^{sim(k)} \\
+{\rm Var}_{t_{ij}} &=  \frac{1}{I_R \; K -1}  \sum_{k=1}^{K} \sum_{i \in I_R}  (y_{ij}^{sim(k)} - \mathbb{E}_{t_{ij}})^2 \\
+\end{split}
+\end{equation}
+
+We then compute the transformed $\npde$ at time $t_{ij}$ as:
+\begin{equation}
+\tnpde_{ij} = \mathbb{E}_{t_{ij}} + {\rm SD}_{t_{ij}} \; \npde_{ij}
+\end{equation}
+This is performed for each time point for a balanced design. In the case of an unbalanced design, we first bin the predictors on the $X$ axis~\cite{Lavielle11} and we compute the mean and SD for each bin, which are used within each bin to compute the transformed $\npde$. If the reference profile doesn't cover all the bins, we interpolate the missing values from the means and SD estimated in the available bins. 
+
+We then produce plots of $\tnpde$ versus the predictor as previously, for a given interval size (eg 90\% prediction intervals), by computing the observed and simulated percentiles of the $\tnpde$ on the observed and simulated data respectively. Prediction intervals around the percentiles can be obtained by the same transformation.
+
+Finally, we can apply the same procedure to transform the $\npd_{ij}$, bearing in mind the $\tnpd_{ij}$ will retain the correlation due to repeated observations.
+
+The plots generated with a reference profile have a similar interpretation as VPC, but since they are based on $\npde$, there should be no correlation between the different $\tnpde$ for a subject.
+A minor difference in construction is that VPC plot the median and extreme percentiles (eg 5$^{\rm th}$ and 95$^{\rm th}$ percentiles for a 90\% VPC), while with $\tnpde$ we translate the median of the residual plots by the mean of the reference profile, and expand the extreme percentiles using the standard deviation. 
+
+Note that it is the user's responsibility to use a pertinent reference profile. For example, if the design contains different dose-groups, the reference profile should be computed across one of the doses. In addition, the {\sf npde} library offers an option to set a different reference profile for each value of a covariate when splitting the scatterplot over covariates (see previous section).
+
+% Larger PI than with VPC
+
+\paragraph{Non-parametric construction of $\tnpde$:} an alternative using the median and quantiles of the reference profile to transform the $\npde$ will be implemented shortly.
 
 % Under the null hypothesis, we expect pde to follow the distribution  $\mathcal{U}[0,1]$ and npde to follow the distribution $\mathcal{N}(0,1)$. It should be noted that left-censored observations in the validation datasets are imputed using the model to be evaluated, which could lead to loss of power if the model is wrong.	

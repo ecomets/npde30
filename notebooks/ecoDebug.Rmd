@@ -73,7 +73,7 @@ source(file.path(workDir,"npde","R","plotNpde-binningPI.R")) # renamed from plot
 
 ```{r runNpdeTheo, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
 
-theofit1<-autonpde(file.path(datDir, "theopp"),namsim=file.path(datDir, "simtheopp.tab"),1,3,4,boolsave=FALSE, units=list(x="hr",y="mg/L"))
+theofit1<-autonpde(file.path(datDir, "theopp.tab"),namsim=file.path(datDir, "simtheopp.tab"),1,3,4,boolsave=FALSE, units=list(x="hr",y="mg/L"))
 
 # Warfarin data, using files on disk
 wbase<-autonpde(namobs=file.path(datDir, "warfarin.tab"),namsim=file.path(datDir, "simwarfarinBase.tab"), iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
@@ -129,5 +129,8 @@ plot.opt<-yvir50.omit@prefs
 which.x<-"x"
 which.y<-which
 ref.prof<-NULL
+
+npde.plot.scatterplot(yvir50.omit)
+plot(yvir50.omit, plot.type="x.scatter")
 
 ```

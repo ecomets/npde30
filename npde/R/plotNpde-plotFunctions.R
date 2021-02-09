@@ -194,22 +194,14 @@ npde.plot.data<-function(npdeObject,...) {
     plot.opt$lty.lobs = plot.opt$lty
   }
 
-  # changes for xlab and ylab
-  # start for which.x and which.y by default in NpdeControl
-  which.x = plot.opt$axis
-  which.y = plot.opt$which
-
-  # xlab
+  # xlab, ylab
   if(plot.opt$xlab=="") {
-    plot.opt$xlab <- switch(which.x, "x"=paste0( npdeObject@data@name.predictor ), "pred"=paste0("Predicted ", npdeObject@data@name.response ), "cov"="", "npde"="npde", "npd"="npd", "pd"="pd") # cov, npde, npd, pd: not valid options; cov: to be implemented
-    if (which.x=="x" & npdeObject@data@units$x != "") plot.opt$xlab<-paste0(plot.opt$xlab, "(", npdeObject@data@units$x,")" )
-    if (which.x=="pred" & npdeObject@data@units$y != "") plot.opt$xlab<-paste0(plot.opt$xlab, "(", npdeObject@data@units$y,")" )
+    plot.opt$xlab <-paste0( npdeObject@data@name.predictor )
+    if (npdeObject@data@units$x != "") plot.opt$xlab<-paste0(plot.opt$xlab, " (", npdeObject@data@units$x,")" )
   }
-
-  # ylab
   if(plot.opt$ylab=="") {
-    plot.opt$ylab <- switch(which.y, "npde"="npde", "npd"="npd", "pd"="pd", "yobs"=paste0( npdeObject@data@name.response),  "cov"="") # cov not a valid option (yet ?)
-    if (which.y=="yobs" & npdeObject@data@units$y != "") plot.opt$ylab<-paste0(plot.opt$ylab, "(", npdeObject@data@units$y,")" )
+    plot.opt$ylab <-paste0( npdeObject@data@name.response)
+    if (npdeObject@data@units$y != "") plot.opt$ylab<-paste0(plot.opt$ylab, " (", npdeObject@data@units$y,")" )
   }
 
   # -----------------------------------------------------------------------------------------------------------------

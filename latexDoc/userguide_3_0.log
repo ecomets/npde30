@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=latex 2019.9.7)  5 FEB 2021 13:12
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=latex 2019.9.7)  9 FEB 2021 15:41
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -383,28 +383,28 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 (./userguide_3_0.aux)
 \openout1 = `userguide_3_0.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 63.
-LaTeX Font Info:    ... okay on input line 63.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 63.
-LaTeX Font Info:    ... okay on input line 63.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 63.
-LaTeX Font Info:    ... okay on input line 63.
-LaTeX Font Info:    Checking defaults for OMS/pzccm/m/n on input line 63.
-LaTeX Font Info:    Try loading font information for OMS+pzccm on input line 63
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for OMS/pzccm/m/n on input line 65.
+LaTeX Font Info:    Try loading font information for OMS+pzccm on input line 65
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omspzccm.fd
 File: omspzccm.fd 2000/01/03 Fontinst v1.801 font definitions for OMS/pzccm.
 )
-LaTeX Font Info:    ... okay on input line 63.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 63.
-LaTeX Font Info:    ... okay on input line 63.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 63.
-LaTeX Font Info:    ... okay on input line 63.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 63.
-LaTeX Font Info:    ... okay on input line 63.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
 \AtBeginShipoutBox=\box33
-Package hyperref Info: Link coloring ON on input line 63.
+Package hyperref Info: Link coloring ON on input line 65.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
@@ -414,54 +414,54 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
 \c@section@level=\count115
 )
-LaTeX Info: Redefining \ref on input line 63.
-LaTeX Info: Redefining \pageref on input line 63.
-LaTeX Info: Redefining \nameref on input line 63.
+LaTeX Info: Redefining \ref on input line 65.
+LaTeX Info: Redefining \pageref on input line 65.
+LaTeX Info: Redefining \nameref on input line 65.
 
 (./userguide_3_0.out) (./userguide_3_0.out)
 \@outlinefile=\write3
 \openout3 = `userguide_3_0.out'.
 
-LaTeX Font Info:    Try loading font information for OT1+ptmcm on input line 85
+LaTeX Font Info:    Try loading font information for OT1+ptmcm on input line 87
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1ptmcm.fd
 File: ot1ptmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OT1/ptmcm.
 )
-LaTeX Font Info:    Try loading font information for OML+ptmcm on input line 85
+LaTeX Font Info:    Try loading font information for OML+ptmcm on input line 87
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omlptmcm.fd
 File: omlptmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OML/ptmcm.
 )
-LaTeX Font Info:    Try loading font information for OMX+psycm on input line 85
+LaTeX Font Info:    Try loading font information for OMX+psycm on input line 87
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omxpsycm.fd
 File: omxpsycm.fd 2000/01/03 Fontinst v1.801 font definitions for OMX/psycm.
 )
-LaTeX Font Info:    Try loading font information for U+msa on input line 85.
+LaTeX Font Info:    Try loading font information for U+msa on input line 87.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 85.
+LaTeX Font Info:    Try loading font information for U+msb on input line 87.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 85.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 87.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 85.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 87.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 85.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 87.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <17.28> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 90.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 92.
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <17.28> not available
-(Font)              Font shape `T1/ptm/b/it' tried instead on input line 96.
-LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <14.4> not available
 (Font)              Font shape `T1/ptm/b/it' tried instead on input line 98.
+LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <14.4> not available
+(Font)              Font shape `T1/ptm/b/it' tried instead on input line 100.
  [1
 
 ]
@@ -476,40 +476,55 @@ LaTeX Font Info:    Font shape `T1/phv/m/n' will be
 
  [3]
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <14.4> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 134.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 136.
  [4]
 LaTeX Font Info:    Font shape `T1/phv/m/n' will be
-(Font)              scaled to size 12.9599pt on input line 167.
+(Font)              scaled to size 12.9599pt on input line 169.
  [5] [6]
-Overfull \hbox (48.74141pt too wide) in paragraph at lines 236--236
+Overfull \hbox (24.26149pt too wide) in paragraph at lines 248--248
+[]\T1/pcr/m/n/12 author  ={Karl Brendel and Emmanuelle Comets and Céline Laffon
+t and France Mentré},[] 
+ []
+
+
+Overfull \hbox (226.22083pt too wide) in paragraph at lines 248--248
+[]\T1/pcr/m/n/12 title   ={Evaluation of different tests based on observations 
+for external model evaluation of population analyses},[] 
+ []
+
+
+Overfull \hbox (48.74141pt too wide) in paragraph at lines 248--248
 []\T1/pcr/m/n/12 title   ={Extension of NPDE for evaluation of nonlinear mixed 
 effect models in presence[] 
  []
 
 
-Overfull \hbox (12.02153pt too wide) in paragraph at lines 236--236
+Overfull \hbox (12.02153pt too wide) in paragraph at lines 248--248
 []\T1/pcr/m/n/12 of data below the quantification limit with applications to {H
 IV} dynamic model},[] 
  []
 
 
-Overfull \hbox (54.86139pt too wide) in paragraph at lines 236--236
+Overfull \hbox (54.86139pt too wide) in paragraph at lines 248--248
 []\T1/pcr/m/n/12 journal ={22nd meeting of the {P}opulation {A}pproach {G}roup 
 in {E}urope, Glasgow, UK},[] 
  []
 
-(./method.tex [7] [8] [9] [10] [11]
+(./method.tex [7] [8] [9] [10] [11] [12]
 Overfull \hbox (6.55928pt too wide) in paragraph at lines 137--138
 []\T1/ptm/m/n/12 with the \T1/pcr/m/n/12 "ppred" \T1/ptm/m/n/12 method, pop-u-l
 a-tion pre-dic-tions are com-puted us-ing the sim-u-lated datasets
  []
 
-[12] [13]
+[13]
 File: /home/eco/work/npde/doclib/figs/imputation.eps Graphic file (type eps)
- </home/eco/work/npde/doclib/figs/imputation.eps> [14] [15] [16]
-[17]) [18] (./package.tex [19
+ </home/eco/work/npde/doclib/figs/imputation.eps>
 
-] [20]
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[14] [15] [16] [17] [18] [19]) [20] (./package.tex [21
+
+] [22]
 Overfull \hbox (2.35904pt too wide) in paragraph at lines 77--78
 \T1/ptm/m/n/12 Alternatively, one or both file-names for the ob-served and sim-
 u-lated data can be re-placed by a dataframe
@@ -531,22 +546,22 @@ LaTeX Warning: Float too large for page by 19.4095pt on input line 118.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[21] [22] [23
+[23] [24] [25
 
-] [24]
+] [26]
 Overfull \hbox (5.90155pt too wide) in paragraph at lines 203--203
 []\T1/pcr/m/n/12 This usually means that the covariance matrix is not positive-
 definite. This can[] 
  []
 
-[25] [26] [27]
+[27] [28] [29]
 Overfull \hbox (108.95444pt too wide) in paragraph at lines 293--294
 \T1/ptm/m/n/12 lected from a range equal to \T1/pcr/m/n/12 vpc.bin $\OMS/pzccm/
 m/n/12 ^^F\OT1/ptmcm/m/n/12 5$\T1/ptm/m/n/12 , but a mes-sage such as:'[][]\T1/
 pcr/m/n/12 In map(out$z) : no assignment to 2,4,8,11[]\T1/ptm/m/n/12 '
  []
 
-[28] [29]) (./examples_3.0.tex
+[30] [31]) (./examples_3.0.tex
 File: /home/eco/work/npde/loq_tram/loqlib/weavetest/figs/xtheo_data.eps Graphic
  file (type eps)
 
@@ -554,10 +569,10 @@ File: /home/eco/work/npde/loq_tram/loqlib/weavetest/figs/xtheo_data.eps Graphic
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[30
+[32
 
 
-] [31]
+] [33]
 
 Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
 (hyperref)                removing `math shift' on input line 91.
@@ -571,22 +586,22 @@ Underfull \hbox (badness 10000) in paragraph at lines 97--140
 
  []
 
-[32] [33] [34] [35]
+[34] [35] [36] [37]
 File: /home/eco/work/npde/doclib/figs/theophylline.eps Graphic file (type eps)
- </home/eco/work/npde/doclib/figs/theophylline.eps> [36]
+ </home/eco/work/npde/doclib/figs/theophylline.eps> [38]
 File: /home/eco/work/npde/doclib/figs/theophylline_vpc.eps Graphic file (type e
 ps)
 
-</home/eco/work/npde/doclib/figs/theophylline_vpc.eps> [37] [38] [39
+</home/eco/work/npde/doclib/figs/theophylline_vpc.eps> [39] [40] [41
 
-] [40]
+] [42]
 Overfull \hbox (31.57889pt too wide) in paragraph at lines 401--402
  []\T1/ptm/b/n/12 Data:[] \T1/ptm/m/n/12 Fig-ure [][][][][][] shows a plot of t
 he data for the dataset with the high-est level of cen-sor-ing (LOQ=50 cp/mL),
  []
 
 File: /home/eco/work/npde/doclib/figs/doc_data50.eps Graphic file (type eps)
-</home/eco/work/npde/doclib/figs/doc_data50.eps> [41]
+</home/eco/work/npde/doclib/figs/doc_data50.eps> [43]
 Overfull \hbox (24.26149pt too wide) in paragraph at lines 417--417
 []\T1/pcr/m/n/12 plot(x50,plot.type="data",new=F,ylab="Viral load (cp/mL, in lo
 g10)",plot.loq=FALSE)[] 
@@ -614,7 +629,7 @@ file (type eps)
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[42] [43]
+[44] [45]
 File: /home/eco/work/npde/loq_tram/loqlib/weavetest/figs/x50_ppred.eps Graphic 
 file (type eps)
  </home/eco/work/npde/loq_tram/loqlib/weavetest/figs/x50_ppred.eps>
@@ -625,13 +640,13 @@ Overfull \hbox (8.5976pt too wide) in paragraph at lines 464--465
  [] 
  []
 
-[44
+[46
 
 ]
 File: /home/eco/work/npde/loq_tram/loqlib/weavetest/figs/virload_ploq.eps Graph
 ic file (type eps)
  </home/eco/work/npde/loq_tram/loqlib/weavetest/figs/virload_ploq.eps>
-[45
+[47
 
 ]
 File: /home/eco/work/npde/doclib/figs/doc_xscatter50.eps Graphic file (type eps
@@ -641,9 +656,9 @@ Overfull \hbox (8.5976pt too wide) in paragraph at lines 495--496
  [] 
  []
 
-[46
+[48
 
-] [47
+] [49
 
 ]
 File: /home/eco/work/npde/loq_tram/loqlib/weavetest/figs/remi_default.eps Graph
@@ -657,25 +672,25 @@ Overfull \hbox (8.5976pt too wide) in paragraph at lines 573--574
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[48]
+[50]
 File: /home/eco/work/npde/loq_tram/loqlib/weavetest/figs/doc_remi1.eps Graphic 
 file (type eps)
  </home/eco/work/npde/loq_tram/loqlib/weavetest/figs/doc_remi1.eps>
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[49]
+[51]
 File: /home/eco/work/npde/loq_tram/loqlib/weavetest/figs/doc_remi2.eps Graphic 
 file (type eps)
  </home/eco/work/npde/loq_tram/loqlib/weavetest/figs/doc_remi2.eps>
-[50]
+[52]
 Overfull \hbox (72.51274pt too wide) in paragraph at lines 649--650
 [] []\T1/pcr/m/n/12 plot(x,plot.type="cov.x.scatter") []\T1/ptm/m/n/12 is equiv
 -a-lent to [] []\T1/pcr/m/n/12 plot(x,plot.type="x.scatter",covsplit=TRUE)[]\T1
 /ptm/m/n/12 . 
  []
 
-[51] [52]
+[53] [54]
 LaTeX Font Info:    Font shape `T1/ptm/bx/it' in size <12> not available
 (Font)              Font shape `T1/ptm/b/it' tried instead on input line 679.
 
@@ -685,7 +700,7 @@ LaTeX Warning: Float too large for page by 0.5594pt on input line 704.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[53]
+[55]
 Overfull \hbox (38.19258pt too wide) in paragraph at lines 722--723
 []|\T1/ptm/m/n/12 c("res.vs.x","res.vs.pred",| 
  []
@@ -706,16 +721,16 @@ Underfull \hbox (badness 10000) in paragraph at lines 767--767
 []|\T1/ptm/m/n/12 Vector of breaks used with user-defined breaks
  []
 
-[54
+[56
 
 ]
 Overfull \vbox (0.53761pt too high) has occurred while \output is active []
 
 
-[55]) (./userguide_3_0.bbl [56
+[57]) (./userguide_3_0.bbl [58
 
 
-]) (./appendix.tex [57] [58] [59] [60]
+]) (./appendix.tex [59] [60] [61] [62]
 Overfull \hbox (7.73676pt too wide) in paragraph at lines 132--132
 [] \T1/pcr/m/n/10.95 **********************************************************
 *****************************[] 
@@ -781,29 +796,29 @@ Overfull \hbox (7.73676pt too wide) in paragraph at lines 132--132
 *****************************[] 
  []
 
-[61] [62] [63]
+[63] [64] [65]
 Underfull \hbox (badness 10000) in paragraph at lines 213--216
 
  []
 
 )
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 254.
- [64]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 254.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 266.
+ [66]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 266.
  (./userguide_3_0.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 254.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 254.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 266.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 266.
 Package rerunfilecheck Info: File `userguide_3_0.out' has not changed.
-(rerunfilecheck)             Checksum: F92DF759E4EA959D2B84ADEE159DA499;4426.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 254.
+(rerunfilecheck)             Checksum: 5B4913675775935169CADCAA885EB364;4426.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 266.
  ) 
 Here is how much of TeX's memory you used:
- 6711 strings out of 492983
- 96455 string characters out of 6134923
- 196434 words of memory out of 5000000
- 10145 multiletter control sequences out of 15000+600000
+ 6715 strings out of 492983
+ 96490 string characters out of 6134923
+ 196521 words of memory out of 5000000
+ 10149 multiletter control sequences out of 15000+600000
  47301 words of font info for 60 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 32i,13n,45p,1098b,491s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 32i,16n,45p,1098b,491s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on userguide_3_0.dvi (64 pages, 276680 bytes).
+Output written on userguide_3_0.dvi (66 pages, 284888 bytes).

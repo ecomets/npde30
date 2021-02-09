@@ -3,44 +3,44 @@ Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: userguide_3_0.aux
 The style file: acm.bst
 Database file #1: npde_library.bib
-You've used 20 entries,
+You've used 22 entries,
             2253 wiz_defined-function locations,
-            665 strings with 7773 characters,
-and the built_in function-call counts, 6723 in all, are:
-= -- 652
-> -- 370
+            679 strings with 8139 characters,
+and the built_in function-call counts, 7402 in all, are:
+= -- 720
+> -- 399
 < -- 0
-+ -- 152
-- -- 132
-* -- 565
-:= -- 1148
-add.period$ -- 61
-call.type$ -- 20
-change.case$ -- 121
++ -- 164
+- -- 142
+* -- 622
+:= -- 1259
+add.period$ -- 67
+call.type$ -- 22
+change.case$ -- 132
 chr.to.int$ -- 0
-cite$ -- 20
-duplicate$ -- 188
-empty$ -- 492
-format.name$ -- 132
-if$ -- 1336
+cite$ -- 22
+duplicate$ -- 206
+empty$ -- 548
+format.name$ -- 142
+if$ -- 1475
 int.to.chr$ -- 0
-int.to.str$ -- 20
-missing$ -- 17
-newline$ -- 104
-num.names$ -- 40
-pop$ -- 100
+int.to.str$ -- 22
+missing$ -- 19
+newline$ -- 114
+num.names$ -- 44
+pop$ -- 107
 preamble$ -- 1
-purify$ -- 106
+purify$ -- 115
 quote$ -- 0
-skip$ -- 102
+skip$ -- 113
 stack$ -- 0
-substring$ -- 427
-swap$ -- 44
+substring$ -- 489
+swap$ -- 48
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 78
+type$ -- 86
 warning$ -- 0
-while$ -- 66
-width$ -- 22
-write$ -- 207
+while$ -- 73
+width$ -- 24
+write$ -- 227

@@ -23,11 +23,8 @@ library(ggplot2)
 library(gridExtra)
 library(mclust)
 library(testthat)
-library(grid)
 # library(grid)
-workDir<-"D:/RECHERCHES/_NPDE/Npde-2021/npde30-main/npde30-main"
-#setwd(workDir)
-knitr::opts_chunk$set(root.dir = workDir)
+workDir<-"/home/eco/work/npde/npde30"
 fullDatDir<-file.path(workDir,"keep","data") # Full data files (some removed from package to decrease size on CRAN)
 knitr::opts_chunk$set(root.dir = workDir)
 docFigs<-"/home/eco/work/npde/doclib/figs"
@@ -82,18 +79,23 @@ wcov<-autonpde(namobs=warfarin,namsim=simwarfarinCov, iid=1,ix=2,iy=4,icov=c(3,6
 
 ## Theophylline example
 
-- **solved** data  **Romain**
-  - manquent les titres des axes, les axes
+- data
+  - le plot(npdeData) ne marche pas **Romain**
+  - pour faire un graphe il faut passer par *plot.type="data"* ou *npde.plot.data()*
+  - name of ylab wrong  **Eco fait**
 - VPC, scatterplot  **Eco fait**
   - modifié pour que le tracé des percentiles observés soit fait avec les linetype et size de lobs (pas des bandes), par contre la couleur matche celle de la bande de prédiction correspondante
 
 ```{r docTheo, echo=FALSE}
 
+plot(theofit@data) # ne marche pas
+
 # Raw data
 namfile<-file.path(docFigs,"doc_theodata_gg.eps")
 if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
 #  plot(theofit@data, plot.loq=FALSE, size.pobs=2)
-plot(theofit, plot.type="data", size.pobs=2, xlab="Time (hr)",ylab="Theophylline concentrations (mg/L)")
+plot(theofit, plot.type="data")
+# plot(theofit, plot.type="data", size.pobs=2, xlab="Time (hr)",ylab="Theophylline concentrations (mg/L)")
 if(saveDocPlots) dev.off()
 
 # Default waffle plot
@@ -114,10 +116,9 @@ if(saveDocPlots) dev.off()
 
 - data
   - mêmes problèmes que plus haut
-  - **solved** line.loq doesn't work  **Romain**
+  - LOQ data should be plotted  **Romain**
   - besoin de faire un waffle plot avec les 4 objets data, **Romain TODO** possible ? (sinon sauver 4 graphes)
-  - **Note** Ce n'est plus possible maintenant, les fonctions plot renvoient des object p=NULL. Pas moyen après ça
-  de les mettre dans une liste pour un grid.arrange. 
+  - complete data according to the censoring method when an npdeObject is given (plot just the LOQ data when the plot is called directly on a npdeData object) **Romain**
 
 ```{r docVirloadData, echo=FALSE}
 # p1<-npde.plot.data(x50, plot.default=TRUE) # non, c'est pas ça
@@ -144,7 +145,7 @@ if(FALSE) {
 - scatterplots and VPC
   - pb with VPC of x50  **Eco fait**
 - possibilité d'utiliser un grid.arrange pour les 2 derniers graphes  ?  **Romain**
-- **Note** : plus possible maintenant, objet plot = NULL ?!
+- VPC missing tite on y-axis
   
 ```{r docVirload, echo=FALSE}
 # Diagnostics plots, cdf method (default)
@@ -183,15 +184,19 @@ if(saveDocPlots) dev.off()
 
 ```
 
-- **solved** P(Y<LOQ) currently fails **Romain**
+- P(Y<LOQ): changed defaults
+- todo: catch error message when using dist.type="ecdf" instead of plot.type="ecdf" (not sure what's happening) **Romain**
 
 ```{r docVirloadLOQ, echo=FALSE}
 
 # P(Y<LOQ)
 namfile<-file.path(docFigs,"virload_ploq_gg.eps")
 if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
-plot(x50,plot.type="loq", main=" ")
+try(plot(x50,plot.type="loq", main=" "))
 if(saveDocPlots) dev.off()
+
+# Catch error message
+try(plot(x50, dist.type="ecdf"))
 ```
 
 ## Warfarine

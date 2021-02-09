@@ -113,6 +113,7 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
 
   # -----------------------------------------------------------------------------------
   # Setup
+#  if(plot.opt$ylab=="") cat("Empty ylab \n") else cat("ylab=",plot.opt$ylab,"\n")
 
   list_plot = list()   # list to stack the ggplot
 
@@ -129,13 +130,13 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
 
   if(plot.opt$xlab=="") {
     plot.opt$xlab <- switch(which.x, "x"=paste0( npdeObject@data@name.predictor ), "pred"=paste0("Predicted ", npdeObject@data@name.response ), "cov"="", "npde"="npde", "npd"="npd", "pd"="pd") # cov, npde, npd, pd: not valid options; cov: to be implemented
-    if (which.x=="x" & npdeObject@data@units$x != "") plot.opt$xlab<-paste0(plot.opt$xlab, "(", npdeObject@data@units$x,")" )
-    if (which.x=="pred" & npdeObject@data@units$y != "") plot.opt$xlab<-paste0(plot.opt$xlab, "(", npdeObject@data@units$y,")" )
+    if (which.x=="x" & npdeObject@data@units$x != "") plot.opt$xlab<-paste0(plot.opt$xlab, " (", npdeObject@data@units$x,")" )
+    if (which.x=="pred" & npdeObject@data@units$y != "") plot.opt$xlab<-paste0(plot.opt$xlab, " (", npdeObject@data@units$y,")" )
   }
 
   if(plot.opt$ylab=="") {
     plot.opt$ylab <- switch(which.y, "npde"="npde", "npd"="npd", "pd"="pd", "yobs"=paste0( npdeObject@data@name.response),  "cov"="") # cov not a valid option (yet ?)
-    if (which.y=="yobs" & npdeObject@data@units$y != "") plot.opt$ylab<-paste0(plot.opt$ylab, "(", npdeObject@data@units$y,")" )
+    if (which.y=="yobs" & npdeObject@data@units$y != "") plot.opt$ylab<-paste0(plot.opt$ylab, " (", npdeObject@data@units$y,")" )
   }
 
   # vpc.interval controls which percentiles we want PI for

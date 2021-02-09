@@ -2,11 +2,11 @@
 # Diagnostic plot for covariates (npde vs boxplots of covariates)
 ####################################################################################################################################
 aux.npdeplot.boxcov <- function(obsmat, pimat, plot.opt) {
-  
+
   if ("ylim" %in% names(plot.opt) & length(plot.opt$ylim)==2)
     y.limits = c(plot.opt$ylim[1],plot.opt$ylim[2])  else
       y.limits = c(min(pimat$pinf.lower),max(pimat$psup.upper))
-  
+
   p<-ggplot(obsmat, aes(x=grp, y=y, group=factor(grp, ordered=TRUE))) + geom_boxplot(varwidth = TRUE) +
     theme(plot.title = element_text(hjust = 0.5, size = plot.opt$size.sub),
           axis.title.y = element_text(size = plot.opt$size.ylab),
@@ -40,6 +40,7 @@ aux.npdeplot.boxcov <- function(obsmat, pimat, plot.opt) {
 ####################################################################################################################################
 
 aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
+
   # obsmat: matrix of Y observations to plot (Y= yobs, npde, npd, pd, tnpde, tnpd) versus X (X=independent variable (eg time), predictions (pred), covariates (cov)), with the following columns
   ### x,y: values of X and Y
   ### grp: grouping factor - used to sort groups if plot.box=TRUE
@@ -94,7 +95,8 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
 
   # intersection area between ICs and curves to fill intersection area
   n_interp = 500 # nb of point for interpolation
-  if (plot.opt$plot.default == FALSE) colorYAxis = "white" else colorYAxis = "black"
+  #if (plot.opt$plot.default == FALSE) colorYAxis = "white" else
+  #colorYAxis = "black"
 
   # Interpolation data - loop over the covariate
 
@@ -136,7 +138,11 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
 
     if (plot.opt$plot.box==TRUE) {
 
+      box.plot.width = 25
+      x.limits = x.limits + c( -box.plot.width , box.plot.width  )*0.5
+
       p <- ggplot( obsmat, aes( x, y, fill = factor( grp, ordered=TRUE) ) ) +
+        # Title and layout
         # Title and layout
         theme(plot.title = element_text(hjust = 0.5, size = plot.opt$size.sub),
               axis.title.y = element_text(size = plot.opt$size.ylab),
@@ -150,7 +156,10 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
               panel.grid.minor.x = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid),
               panel.grid.major.y = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid),
               panel.grid.minor.y = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid))+
-        expand_limits(y = 0) +  guides( fill = FALSE ) +
+
+        expand_limits(y = 0) +
+
+        guides( fill = FALSE ) +
 
         { if ( plot.opt$bands == TRUE )
           geom_ribbon(data = pimat, mapping = aes(x = xcent, y = pmid.lower, ymin = pmid.lower, ymax = pmid.upper),
@@ -198,16 +207,21 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
                   linetype = plot.opt$lty.bands, colour = plot.opt$col.bands, size = plot.opt$lwd.bands) +
 
         # plot of data as boxplot
-        geom_boxplot(data=obsmat, aes( x, y,  fill= factor( grp, ordered=TRUE)), varwidth=TRUE)+
-        scale_fill_manual( values = rep( plot.opt$col.pobs, length(unique(obsmat$grp)) ) ) +
+        geom_boxplot(data=obsmat,
+                     aes( x, y,  fill= factor( grp, ordered=TRUE)), varwidth=TRUE)+
+
+        scale_fill_manual( values = rep( plot.opt$col.pobs,
+                                         length(unique(obsmat$grp)) ) ) +
 
         scale_y_continuous( plot.opt$ylab, limits = y.limits,
                             scales::pretty_breaks(n = plot.opt$breaks.y) ) +
 
         scale_x_continuous( plot.opt$xlab, limits = x.limits,
                             scales::pretty_breaks(n = plot.opt$breaks.y ) ) +
+
         # facet wrap over covariate categories
         facet_wrap(.~factor(category), nrow=1) +
+
         {if(numberCategories==1)
           theme(strip.background = element_blank(), strip.text.x = element_blank())
         } +
@@ -223,7 +237,7 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
         # theme of the ggplot template
         theme(plot.title = element_text(hjust = 0.5, size = plot.opt$size.sub),
               axis.title.x = element_text(size = plot.opt$size.xlab),
-              axis.title.y = element_text( colour = colorYAxis),
+              axis.title.y = element_text(size = plot.opt$size.ylab),
               axis.text.x = element_text(size=plot.opt$size.text.x),
               axis.text.y = element_text(size=plot.opt$size.text.y),
               axis.line.x = element_line(color=ifelse(plot.opt$xaxt==TRUE,"black","white")),
@@ -235,7 +249,8 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
               panel.grid.minor.y = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid))  +
 
         # coordinates x-y
-        coord_cartesian(xlim=x.limits, ylim=y.limits) + expand_limits(x = 0, y = 0) +
+        coord_cartesian(xlim=x.limits, ylim=y.limits) +
+        expand_limits(x = 0,y=0) +
 
         # bands
         { if ( plot.opt$bands == TRUE )
@@ -276,14 +291,14 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
                       mapping = aes(x = x_area_0.975,ymin = y_area_0.975,ymax = pmax(Y0.975, y_area_0.975)),
                       fill = plot.opt$fill.outliers.bands, alpha = plot.opt$alpha.outliers.bands) } +
 
-        # plot observed and model predicted percentiles (for observed, use linetype and size from lobs instead of med/bands)
+        # plot observed and model predicted percentiles
         #{if (plot.opt$type=="l" || plot.opt$type=="b")
-        { if ( plot.opt$bands == TRUE ) geom_line(aes(y = obs.inf), linetype = plot.opt$lty.lobs, colour = plot.opt$col.bands, size = plot.opt$lwd.lobs) }+#} +
+        geom_line(aes(y = obs.inf), linetype = plot.opt$lty.bands,colour = plot.opt$col.bands,size = plot.opt$lwd.band)+#} +
         #  {if (plot.opt$type=="l" || plot.opt$type=="b")
-        geom_line(aes(y = obs.median), linetype = plot.opt$lty.lobs, colour = plot.opt$col.med, size = plot.opt$lwd.lobs)+#} +
+        geom_line(aes(y = obs.median), linetype = plot.opt$lty.med,colour = plot.opt$col.med,size = plot.opt$lwd.med)+#} +
         # {if (plot.opt$type=="l" || plot.opt$type=="b")
-        { if ( plot.opt$bands == TRUE ) geom_line(aes(y = obs.sup), linetype = plot.opt$lty.lobs, colour = plot.opt$col.lobs,size = plot.opt$lwd.lobs) } +#} +
-
+        { if ( plot.opt$bands == TRUE ) geom_line(aes(y = obs.sup), linetype = plot.opt$lty.bands,colour = plot.opt$col.bands,size = plot.opt$lwd.band) } +#} +
+        #{if (plot.opt$type=="l" || plot.opt$type=="b")
         { if ( plot.opt$bands == TRUE ) geom_line(aes(y = pinf.lower), linetype = plot.opt$lty.bands,colour = plot.opt$col.bands,size = plot.opt$lwd.band) } +#} +
         #{if (plot.opt$type=="l" || plot.opt$type=="b")
         { if ( plot.opt$bands == TRUE ) geom_line(aes(y = pinf.upper), linetype = plot.opt$lty.bands,colour = plot.opt$col.bands,size = plot.opt$lwd.band)} +#} +
@@ -298,11 +313,19 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
 
         # plot lines bnds
         geom_line(pimat, mapping = aes(y = pinf.median),
-                  linetype = plot.opt$lty.bands,colour = plot.opt$col.bands,size = plot.opt$lwd.bands)+
+                  linetype = plot.opt$lty.bands,
+                  colour = plot.opt$col.bands,
+                  size = plot.opt$lwd.bands)+
+
         geom_line(pimat, mapping = aes(y = pmid.median),
-                  linetype = plot.opt$lty.med,colour   = plot.opt$col.med,size   = plot.opt$lwd.med)+
+                  linetype = plot.opt$lty.med,
+                  colour   = plot.opt$col.med,
+                  size   = plot.opt$lwd.med)+
+
         geom_line(pimat, mapping = aes(y = psup.median),
-                  linetype = plot.opt$lty.bands,colour = plot.opt$col.bands,size = plot.opt$lwd.bands) +
+                  linetype = plot.opt$lty.bands,
+                  colour = plot.opt$col.bands,
+                  size = plot.opt$lwd.bands) +
 
         # plot loq
         { if (plot.opt$line.loq & !is.na(loq))
@@ -312,6 +335,7 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
         { if ( plot.opt$plot.obs == TRUE )
           geom_point( plotdatapoint, mapping = aes( x = x1, y = y1 ),
                       color = plot.opt$col.pobs, shape = plot.opt$pch.pobs, size = plot.opt$size.pobs ) } +
+
         # plot censored data
         { if ( plot.opt$plot.obs == TRUE & dim(plotdatapoint2)[1]>0)
           geom_point( plotdatapoint2, mapping = aes( x = x2, y = y2 ),
@@ -319,41 +343,46 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
 
         # x-y log-scales
         { if (plot.opt$xlog == FALSE)
-            scale_x_continuous(plot.opt$xlab,scales::pretty_breaks(n = plot.opt$breaks.x))
+          scale_x_continuous(plot.opt$xlab,scales::pretty_breaks(n = plot.opt$breaks.x))
         } +
 
         { if (plot.opt$ylog == FALSE)
-            scale_y_continuous(plot.opt$ylab,scales::pretty_breaks(n = plot.opt$breaks.y))
+          scale_y_continuous(plot.opt$ylab,scales::pretty_breaks(n = plot.opt$breaks.y))
         } +
 
         { if (plot.opt$xlog == TRUE)
-            scale_x_log10(plot.opt$xlab,breaks = scales::trans_breaks("log10", function(x) 10 ^ x),
-                          labels = scales::trans_format("log10", scales::math_format(10 ^ .x)))
+          scale_x_log10(plot.opt$xlab,breaks = scales::trans_breaks("log10", function(x) 10 ^ x),
+                        labels = scales::trans_format("log10", scales::math_format(10 ^ .x)))
         } +
 
         { if (plot.opt$ylog == TRUE)
-            scale_y_log10(plot.opt$ylab, breaks = scales::trans_breaks("log10", function(x) 10 ^ x),
-                          labels = scales::trans_format("log10", scales::math_format(10 ^ .x)))
+          scale_y_log10(plot.opt$ylab, breaks = scales::trans_breaks("log10", function(x) 10 ^ x),
+                        labels = scales::trans_format("log10", scales::math_format(10 ^ .x)))
         } +
 
         # if log scales plot logticks
         { if (plot.opt$xlog == TRUE) annotation_logticks(sides = "b")} +
         { if (plot.opt$ylog == TRUE) annotation_logticks(sides = "l")} +
+
         # facet wrap over covariate categories
         facet_wrap(.~factor(category), nrow=1) +
         {if(numberCategories==1)
           theme(strip.background = element_blank(), strip.text.x = element_blank())
         } +
-        {if (plot.opt$main!="") ggtitle(plot.opt$main)}
+
+        {if (plot.opt$main!="" && plot.opt$plot.default==FALSE) ggtitle(plot.opt$main)}
 
       list_plot[[1]] <- p
+
     }
 
   # to plot in the waffle plot
   if (plot.opt$plot.default==TRUE){
+
     return(p)
   } else{
     print(p)
+
   }
 } #END FUNCTION
 

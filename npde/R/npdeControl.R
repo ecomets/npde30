@@ -129,7 +129,7 @@ set.plotoptions <- function(object) {
 
 #' @rdname  set.plotoptions
 #' @export
-#' 
+#'
 set.plotoptions.default <- function(object) {
 
   plot.opt<-list(
@@ -156,7 +156,7 @@ set.plotoptions.default <- function(object) {
     xlog=FALSE,
     ylog=FALSE,
 
-    plot.loq=TRUE,			# Whether data under the LOQ should be plotted
+    plot.loq=FALSE,			# Whether data under the LOQ should be plotted
     # line.loq
 
     line.loq=FALSE,			# Whether an horizontal line should be plotted at Y=LOQ in data and VPC plots

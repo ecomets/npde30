@@ -97,7 +97,7 @@ setMethod(
     if (missing(name.group)) {.Object@name.group <- character()}
     if (!missing(name.group) && is.character(name.group)==TRUE){
       if((length(name.group)==0)){
-        print("name group is empty")
+       # print("name group is empty")
         FALSE}
       else{.Object@name.group <- name.group}
     }
@@ -106,7 +106,7 @@ setMethod(
     if (missing(name.predictor)) {.Object@name.predictor <- character()}
     if (!missing(name.predictor) && is.character(name.predictor)==TRUE){
       if((length(name.predictor)==0)){
-        print("name predictor is empty")
+       # print("name predictor is empty")
         FALSE}
       else{.Object@name.predictor <- name.predictor}
     }
@@ -115,7 +115,7 @@ setMethod(
     if (missing(name.response)) {.Object@name.predictor <- character()}
     if (!missing(name.response) && is.character(name.response)==TRUE){
       if((length(name.response)==0)){
-        print("name response is empty")
+       # print("name response is empty")
         FALSE}
       else{.Object@name.response <- name.response}
     }
@@ -124,7 +124,7 @@ setMethod(
     if (missing(name.covariates)) {.Object@name.covariates <- character()}
     if (!missing(name.covariates) && is.character(name.covariates)==TRUE){
       if((length(name.covariates)==0)){
-        print("name covariates is empty")
+        #print("name covariates is empty")
         FALSE}
       else{.Object@name.covariates <- name.covariates}
     }
@@ -132,9 +132,9 @@ setMethod(
     # name.cens
     if (missing(name.cens)) {.Object@name.cens <- character()}
     if (!missing(name.cens) && is.character(name.cens)==TRUE){
-      
+
       if((length(name.cens)==0)){
-        print("name cens is empty")
+       # print("name cens is empty")
         FALSE}
       else{.Object@name.cens <- name.cens}
     }
@@ -143,7 +143,7 @@ setMethod(
     if (missing(name.miss)) {.Object@name.miss <- character()}
     if (!missing(name.miss) && is.character(name.miss)==TRUE){
       if((length(name.miss)==0)){
-        print("name miss is empty")
+       # print("name miss is empty")
         FALSE}
       else{.Object@name.miss <- name.miss}
     }
@@ -152,7 +152,7 @@ setMethod(
     if (missing(name.ipred)) {.Object@name.ipred <- character()}
     if (!missing(name.ipred) && is.character(name.ipred)==TRUE){
       if((length(name.ipred)==0)){
-        print("name ipred is empty")
+      #  print("name ipred is empty")
         FALSE}
       else{.Object@name.ipred <- name.ipred}
     }

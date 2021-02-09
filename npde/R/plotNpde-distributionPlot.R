@@ -29,15 +29,20 @@ npde.plot.dist<-function(npdeObject, which="npde", dist.type="qqplot", ...) {
   plot.opt <- set.plotoptions.default( npdeObject )
   plot.opt <- modifyList( plot.opt, userPlotOptions[ intersect( names( userPlotOptions ), names( plot.opt ) ) ] )
 
-  # arg.npde.plot.dist = formals( npde.plot.dist  )
-  # covsplit = arg.npde.plot.dist$covsplit
-  # which = arg.npde.plot.dist$which
-  # plot.type = arg.npde.plot.dist$plot.type
-  #
-  # # options
-  # dots.plot.opt = list(...)
-  # plot.opt <- set.plotoptions.default(npdeObject)
-  # plot.opt <- modifyList(plot.opt, dots.plot.opt[intersect(names(dots.plot.opt), names(plot.opt))])
+  # size replace size.pobs
+  if ( plot.opt$size %in% userPlotOptions)
+  {
+    plot.opt$size.pobs = plot.opt$size
+  }
+
+  # col replace  col.pobs
+  if ( plot.opt$col %in% userPlotOptions)
+  {
+    plot.opt$col.pobs = plot.opt$col
+  }
+
+  # which modified or not for "npde","pd","npd"
+  which = plot.opt$which
 
   # -----------------------------------------------------------
   # Check inputs
@@ -236,6 +241,10 @@ npde.plot.loq<-function(npdeObject,xaxis="x",nsim=200,...) {
   ### the observed probability
   ### a prediction band obtained using the simulated data
 
+  # --------------------------------------------------------------------------
+  # plot : loq
+  # --------------------------------------------------------------------------
+
   args1<-match.call(expand.dots=TRUE)
   i1<-match("loq",names(args1))
   if(!is.na(i1)) {
@@ -265,30 +274,22 @@ npde.plot.loq<-function(npdeObject,xaxis="x",nsim=200,...) {
     } else loq<-npdeObject["data"]["loq"]
   }
 
-  has.cens<-FALSE
 
+  # censored data
   if(length(npdeObject["data"]["icens"])>0) {
     has.cens<-TRUE
+  }else{
+    has.cens<-FALSE
   }
 
+  # plot option
   plot.opt<-npdeObject["prefs"]
-  # plot.opt$main<-"Probability of being under the LOQ"
-  #  plot.opt$ylab<-"Pr(Y<LOQ)"
-  #  plot.opt<-replace.plotoptions(plot.opt,...)
-  #  if(plot.opt$new) {
-  #    mfrow<-plot.opt$mfrow
-  #    if(length(mfrow)==0) mfrow<-c(1,1)
-  #    par(mfrow=mfrow,ask=plot.opt$ask)
-  #  }
 
-  # logtyp<-""
-  #  if(plot.opt$xlog) logtyp<-paste(logtyp,"x",sep="")
-  #  if(plot.opt$ylog) logtyp<-paste(logtyp,"y",sep="")
+  # nb of simulation
   nsim<-min(nsim,npdeObject["sim.data"]["nrep"])
 
   # Binning
   xvec<-switch(xaxis, x=npdeObject["data"]["data"][,npdeObject["data"]["name.predictor"]], pred=npdeObject["results"]["res"]$ypred, cov="Not implemented yet")
-
 
   if(!is.numeric(xvec)) {
     if(npdeObject@options$verbose) cat(xvec,"\n")
@@ -307,9 +308,8 @@ npde.plot.loq<-function(npdeObject,xaxis="x",nsim=200,...) {
 
 
   xbin<-npde.binning(xvec,plot.opt,verbose=plot.opt$interactive)
-
   xgrp<-xbin$xgrp
-  xpl<-xbin$xat
+  xpl<-xbin$xcent # xbin$xat
   nbin<-length(unique(xgrp))
   isamp<-sample(1:npdeObject["sim.data"]["nrep"],nsim)
   ysim<-npdeObject["sim.data"]["datsim"]$ysim
@@ -321,51 +321,52 @@ npde.plot.loq<-function(npdeObject,xaxis="x",nsim=200,...) {
   alpha<-(1-plot.opt$vpc.interval)/2
   quant<-c(alpha,0.5,1-alpha)
 
+  # dataframe for ggplot
   ypl<-apply(xtab,2,quantile,quant)
-
   xobs<-tapply(ydat,xgrp,mean)
+  plotdata = data.frame(xpl,t(ypl),xobs)
 
-  if(is.null(plot.opt$ylim)) plot.opt$ylim<-c(0,max(c(xtab,xobs),na.rm=T))
 
-  ypl=t(ypl)
-
-  plotdata = data.frame(xpl,ypl,xobs)
+  #if(is.null(plot.opt$ylim)) plot.opt$ylim<-c(0,max(c(xtab,xobs),na.rm=T))
 
   # --------------------------------------------------------------------------
   # plot : loq
   # --------------------------------------------------------------------------
   # plot options
-  dots.plot.opt = list(...)
+  userPlotOptions = list(...)
   plot.opt<-set.plotoptions.default(npdeObject)
-  plot.opt <- modifyList(plot.opt, dots.plot.opt[intersect(names(dots.plot.opt), names(plot.opt))])
+  plot.opt <- modifyList(plot.opt, userPlotOptions[intersect(names(userPlotOptions), names(plot.opt))])
 
+  # meta arguments to change col,lwd,lty,pch for lines and symbols
+  if ( plot.opt$size %in% userPlotOptions)
+  {
+    plot.opt$size.pobs = plot.opt$size
+    #plot.opt$size.lobs = plot.opt$size
+  }
 
-  if (length(intersect(dots.plot.opt,"col.lobs"))==0){
+  if ( plot.opt$col %in% userPlotOptions)
+  {
+    plot.opt$col.pobs = plot.opt$col
     plot.opt$col.lobs = plot.opt$col
   }
 
-  if (length(intersect(dots.plot.opt,"lwd.lobs"))==0){
+  if ( plot.opt$lwd %in% userPlotOptions)
+  {
     plot.opt$lwd.lobs = plot.opt$lwd
   }
 
-  if (length(intersect(dots.plot.opt,"lty.lobs"))==0){
+  if ( plot.opt$pch %in% userPlotOptions)
+  {
+    plot.opt$pch.pobs <- plot.opt$pch
+    plot.opt$pch.pcens = plot.opt$pch
+  }
+
+  if ( plot.opt$lty %in% userPlotOptions)
+  {
     plot.opt$lty.lobs = plot.opt$lty
   }
-
-  if (length(intersect(dots.plot.opt,"pch.pobs"))==0){
-    plot.opt$pch.pobs <- plot.opt$pch
-  }
-  if (length(intersect(dots.plot.opt,"pch.pcens"))==0){
-    plot.opt$pch.pcens <- plot.opt$pch
-  }
-  if (length(intersect(dots.plot.opt,"size.pobs"))==0){
-    plot.opt$size.pobs <- plot.opt$size
-  }
-  if (length(intersect(dots.plot.opt,"size.pcens"))==0){
-    plot.opt$size.pcens = plot.opt$size
-  }
-
   # -----------------------------------------------------------------------------------------------------------------
+
 
   #  xlim and ylim
   if ("xlim" %in% names(plot.opt) & length(plot.opt$xlim)==2) {
@@ -375,8 +376,13 @@ npde.plot.loq<-function(npdeObject,xaxis="x",nsim=200,...) {
 
   y.limits = c(0,1)
 
-  plot.opt$xlab= npdeObject@data@name.predictor
-  plot.opt$ylab= "Pr[Y<LOQ]"
+  # labels x-y axis
+  # dont past units if units are empty
+  ncharXunits = nchar( gsub( "[[:space:]]", "", npdeObject@data@units$x ) )
+  if ( ncharXunits == 0)
+    plot.opt$xlab = npdeObject@data@name.predictor
+  plot.opt$ylab = "Pr[Y<LOQ]"
+
 
   p <- ggplot(plotdata,aes(x = xpl)) +
 
@@ -427,13 +433,15 @@ npde.plot.loq<-function(npdeObject,xaxis="x",nsim=200,...) {
               linetype = plot.opt$lty.bands) +
 
     geom_line(aes(y = xobs),
-              color = plot.opt$col,
-              alpha = plot.opt$alpha,
-              size = plot.opt$lwd,
-              linetype = plot.opt$lty) +
+              color = plot.opt$col.lobs,
+              ##alpha = plot.opt$alpha,
+              size = plot.opt$lwd.lobs,
+              linetype = plot.opt$lty.lobs) +
 
     scale_x_continuous(plot.opt$xlab, scales::pretty_breaks(n = plot.opt$breaks.x))+
     scale_y_continuous(plot.opt$ylab, scales::pretty_breaks(n = plot.opt$breaks.y))
+
+  print(p)
 
   print(p)
 

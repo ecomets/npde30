@@ -57,8 +57,22 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
   plot.opt <- set.plotoptions.default( npdeObject )
   plot.opt <- modifyList( plot.opt, userPlotOptions[ intersect( names( userPlotOptions ), names( plot.opt ) ) ] )
 
+  # size replace size.pobs
+  if ( plot.opt$size %in% userPlotOptions)
+  {
+    plot.opt$size.pobs = plot.opt$size
+  }
+
+  # col replace  col.pobs
+  if ( plot.opt$col %in% userPlotOptions)
+  {
+    plot.opt$col.pobs = plot.opt$col
+  }
+
 # -----------------------------------------------------------------------------------
 # Check inputs
+
+  which.y = plot.opt$which
 
   if(match(which.x,c("x","pred","cov"),nomatch=0)==0) {
     cat("Option which.x=",which.x,"not recognised\n")
@@ -112,20 +126,20 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
   # a line at Y=LOQ does not make sense unless we are plotting VPC or transformed npde
   if(which.y %in% c("pd","pde")) plot.opt$line.loq<-FALSE
   if(which.y %in% c("npde","npd") & is.null(ref.prof)) plot.opt$line.loq<-FALSE
-  
+
   if(plot.opt$xlab=="") {
     plot.opt$xlab <- switch(which.x, "x"=paste0( npdeObject@data@name.predictor ), "pred"=paste0("Predicted ", npdeObject@data@name.response ), "cov"="", "npde"="npde", "npd"="npd", "pd"="pd") # cov, npde, npd, pd: not valid options; cov: to be implemented
     if (which.x=="x" & npdeObject@data@units$x != "") plot.opt$xlab<-paste0(plot.opt$xlab, "(", npdeObject@data@units$x,")" )
     if (which.x=="pred" & npdeObject@data@units$y != "") plot.opt$xlab<-paste0(plot.opt$xlab, "(", npdeObject@data@units$y,")" )
   }
-  
+
   if(plot.opt$ylab=="") {
     plot.opt$ylab <- switch(which.y, "npde"="npde", "npd"="npd", "pd"="pd", "yobs"=paste0( npdeObject@data@name.response),  "cov"="") # cov not a valid option (yet ?)
     if (which.y=="yobs" & npdeObject@data@units$y != "") plot.opt$ylab<-paste0(plot.opt$ylab, "(", npdeObject@data@units$y,")" )
   }
 
   # vpc.interval controls which percentiles we want PI for
-  alpha <- (1 - plot.opt$vpc.interval) / 2 
+  alpha <- (1 - plot.opt$vpc.interval) / 2
   if(alpha>0.5) alpha<-(1-alpha)
   nrep<-npdeObject["sim.data"]["nrep"]
 
@@ -150,7 +164,7 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
     not.miss2<-!(is.na(obsmat$y))
     obsmat<-obsmat[not.miss2,]
   }  else not.miss2<-NULL
-  
+
   # ECO TODO: check dimensions when MDV=1 (same dimensions between obsmat and simulated data ? if not cut here, and also check res)
 
   # Binning
@@ -252,7 +266,7 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
       zecov <- npdeObject["data"]["data"][npdeObject["data"]["not.miss"],lcov]
       if(!is.null(not.miss2)) zecov<-zecov[not.miss2]
       ucov = zecov[match(unique(idobs),idobs)]
- 
+
       if(which.x=="cov") { # plot versus covariates
         obsmat2<-obsmat
         if(is.numeric(ucov)) {
@@ -290,7 +304,7 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
           zecov.cat<-paste(lcov, zecov, sep=": ")
           zecov.cat<-factor(zecov.cat, labels=namcat, ordered=TRUE)
         }
-        
+
      obsmat$category<-zecov.cat
      if(length(sim.ypl)>0) sim.ypl.cat<-rep(obsmat$category, nrep) else sim.ypl.cat<-1
 

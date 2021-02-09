@@ -74,15 +74,17 @@ aux.npdeplot.hist<-function(obsmat,  plot.opt, distrib="norm", nclass=10, sim.yp
   if(is.null(plot.opt$xlim)) plot.opt$xlim<-c(min(xhist$breaks,na.rm=TRUE), max(xhist$breaks,na.rm=TRUE))
   if(is.null(plot.opt$ylim)) plot.opt$ylim<-c(0, max(c(obshist$value,pimat$upper),na.rm=TRUE))
 
-  p <- ggplot(obsmat, aes(group=category)) + #theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5,size = plot.opt$size.main),
-          panel.background=element_rect("white"),
-          panel.grid.major.x = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid),
-          panel.grid.major.y = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid),
+  p <- ggplot(obsmat, aes(group=category)) +
+    theme(plot.title = element_text(hjust = 0.5, size = plot.opt$size.sub),
           axis.title.x = element_text(size = plot.opt$size.xlab),
           axis.title.y = element_text(size = plot.opt$size.ylab),
           axis.text.x = element_text(size=plot.opt$size.text.x, color = ifelse(plot.opt$xaxt==TRUE,"black","white")),
-          axis.text.y = element_text(size=plot.opt$size.text.y, color = ifelse(plot.opt$yaxt==TRUE,"black","white"))) +
+          axis.text.y = element_text(size=plot.opt$size.text.y, color = ifelse(plot.opt$yaxt==TRUE,"black","white")),
+          axis.line.x = element_line(color=ifelse(plot.opt$xaxt==TRUE,"black","white")),
+          axis.line.y = element_line(color=ifelse(plot.opt$yaxt==TRUE,"black","white")),
+          panel.background=element_rect("white"),
+          panel.grid.major.x = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid),
+          panel.grid.major.y = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid))+
 
     # coordinates x-y
     coord_cartesian(xlim=plot.opt$xlim, ylim=plot.opt$ylim) +
@@ -101,7 +103,7 @@ aux.npdeplot.hist<-function(obsmat,  plot.opt, distrib="norm", nclass=10, sim.yp
     geom_bar(data=obshist, aes(x=name, y=value),
              stat="identity",
              width = diff(xhist$mids)[1],
-             colour = plot.opt$col,
+             colour = plot.opt$col.lobs,
              fill = plot.opt$fill,
              alpha = plot.opt$alpha,
              linetype =  plot.opt$lty,
@@ -132,7 +134,7 @@ aux.npdeplot.hist<-function(obsmat,  plot.opt, distrib="norm", nclass=10, sim.yp
     {if(numberCategories==1)
       theme(strip.background = element_blank(), strip.text.x = element_blank())
       } +
-     {if (plot.opt$main!="") ggtitle(plot.opt$main)}
+    {if (plot.opt$main!="" && plot.opt$plot.default==FALSE) ggtitle(plot.opt$main)}
   if (plot.opt$plot.default==TRUE){
     return(p)
   } else{
@@ -173,6 +175,13 @@ aux.npdeplot.dist<-function(obsmat,  plot.opt, dist.type="qqplot", distrib="norm
   }
   if(dist.type=="qqplot" & distrib=="norm") xmat$y<-qnorm(xmat$y)
 
+  # x-y axis labels for ecdf plot
+  if(dist.type=="ecdf")
+  {
+    plot.opt$xlab = plot.opt$which
+    plot.opt$ylab = "Empirical distribution function"
+  }
+
   # -----------------------------------------------------------------------------------
   # PI for ecdf
   pimat<-NULL
@@ -193,17 +202,11 @@ aux.npdeplot.dist<-function(obsmat,  plot.opt, dist.type="qqplot", distrib="norm
       zecat<-as.character(icat)
       pimat.cov<-data.frame(pimat.cov, category=zecat, stringsAsFactors = FALSE)
       pimat<-rbind(pimat, pimat.cov)
-      # x1<-rep(xhist$breaks,each=2) # using geom_ribbon
-      # x1<-x1[-c(1,length(x1))]
-      # pimat.cov<-data.frame(x=x1, lower=rep(bnds[,1],each=2), median=rep(bnds[,2],each=2), upper=rep(bnds[,3],each=2))
-      # zecat<-as.character(icat)
-      # pimat.cov<-data.frame(pimat.cov, category=zecat, stringsAsFactors = FALSE)
-      # pimat<-rbind(pimat, pimat.cov)
+
     }
     pimat$category<-factor(pimat$category, levels=namesCategories)
   }
   if(dist.type=="qqplot" & distrib=="norm") pimat$x<-qnorm(pimat$x)
-
 
   # -----------------------------------------------------------------------------------
   # Plot, facetting by covariate category
@@ -231,28 +234,41 @@ aux.npdeplot.dist<-function(obsmat,  plot.opt, dist.type="qqplot", distrib="norm
           panel.grid.major.y = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid))+
     # PI
     {if(plot.opt$bands==TRUE) geom_ribbon(data=pimat, aes(x=x, ymin=lower, ymax=upper), linetype = plot.opt$lty.bands,
-                colour = plot.opt$col.bands, fill = plot.opt$fill.bands,
-                size = plot.opt$lwd.bands, alpha=plot.opt$alpha.bands) } +
-    {if(plot.opt$bands==TRUE) geom_line(data=pimat, aes(x=x, y=median), linetype = plot.opt$lty.bands,
-              colour = plot.opt$col.bands, size = plot.opt$lwd.med, alpha=plot.opt$alpha.med) } +
+                colour = plot.opt$col.bands,
+                fill = plot.opt$fill.bands,
+                size = plot.opt$lwd.bands,
+                alpha=plot.opt$alpha.bands) } +
+
+    {if(plot.opt$bands==TRUE) geom_line(data=pimat, aes(x=x, y=median),
+                                        linetype = plot.opt$lty.bands,
+                                        colour = plot.opt$col.bands,
+                                        size = plot.opt$lwd.med,
+                                        alpha=plot.opt$alpha.med) } +
 
     # Plotting observed ecdf/qqplot
     {if (plot.opt$type=="l" || plot.opt$type=="b")
-      geom_line(data=xmat, aes(x=y, y=x), colour = plot.opt$col.lobs,
-                linetype = plot.opt$lty.lobs, size = plot.opt$lwd.lobs) } +
+      geom_line(data=xmat, aes(x=y, y=x),
+                colour = plot.opt$col.lobs,
+                linetype = plot.opt$lty.lobs,
+                size = plot.opt$lwd.lobs) } +
+
     {if (plot.opt$type=="p" || plot.opt$type=="b")
-      geom_point(xmat.nocens, mapping = aes(x=y, y=x), colour = plot.opt$col.pobs,
+      geom_point(xmat.nocens, mapping = aes(x=y, y=x),
+                 colour = plot.opt$col.pobs,
                  size = plot.opt$size.pobs) } +
 
     { if (hasCens & plot.opt$type %in% c("p","b"))
       geom_point(xmat.cens, mapping = aes(x=y, y=x),
-                 colour = plot.opt$col.pcens, size = plot.opt$size.pcens) } +
+                 colour = plot.opt$col.pcens,
+                 size = plot.opt$size.pcens) } +
 
     # Flipping coordinates, setting scales x-y
     scale_x_continuous(plot.opt$xlab,
                        scales::pretty_breaks(n = plot.opt$breaks.x)) +
+
     scale_y_continuous(plot.opt$ylab,
                        scales::pretty_breaks(n = plot.opt$breaks.y)) +
+
     coord_flip(xlim=plot.opt$xlim, ylim=plot.opt$ylim) +
 
     # facet wrap over covariate categories
@@ -260,7 +276,7 @@ aux.npdeplot.dist<-function(obsmat,  plot.opt, dist.type="qqplot", distrib="norm
     {if(numberCategories==1)
       theme(strip.background = element_blank(), strip.text.x = element_blank())
     } +
-    {if (plot.opt$main!="") ggtitle(plot.opt$main)}
+    {if (plot.opt$main!="" && plot.opt$plot.default==FALSE) ggtitle(plot.opt$main)}
 
 
   if (plot.opt$plot.default==TRUE){

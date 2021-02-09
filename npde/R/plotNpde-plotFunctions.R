@@ -132,16 +132,16 @@ npde.plot.pd<-function(npdeObject,...) {
 
 npde.plot.data<-function(npdeObject,...) {
 
-## to do
-## npdeData = npdeObject["data"]
-## plot npdeData avec prefs npdeObject
-## ensuite changer options
+  ## to do
+  ## npdeData = npdeObject["data"]
+  ## plot npdeData avec prefs npdeObject
+  ## ensuite changer options
 
-# method plot.npde.data(x,y,...)
-# list(..) = list de preferences
-# ensuite remplacer les prefs par list(...)
+  # method plot.npde.data(x,y,...)
+  # list(..) = list de preferences
+  # ensuite remplacer les prefs par list(...)
 
-# but plot plot(yvir50@data) = plot(yvir50,plot.type=“data”)
+  # but plot plot(yvir50@data) = plot(yvir50,plot.type=“data”)
 
 
   # data censored / no censored
@@ -161,50 +161,85 @@ npde.plot.data<-function(npdeObject,...) {
   #  y<-npdeObject["results"]["res"]$ycomp
   #}
 
-  # plot options
-  dots.plot.opt = list(...)
+  # plot options and user options
+  userPlotOptions = list(...)
   plot.opt<-set.plotoptions.default(npdeObject)
-  plot.opt <- modifyList(plot.opt, dots.plot.opt[intersect(names(dots.plot.opt), names(plot.opt))])
+  plot.opt <- modifyList(plot.opt, userPlotOptions[intersect(names(userPlotOptions), names(plot.opt))])
 
+  # meta arguments to change col,lwd,lty,pch for lines and symbols
+  if ( plot.opt$size %in% userPlotOptions)
+  {
+    plot.opt$size.pobs = plot.opt$size
+  }
 
-  if (length(intersect(dots.plot.opt,"col.lobs"))==0){
+  if ( plot.opt$col %in% userPlotOptions)
+  {
+    plot.opt$col.pobs = plot.opt$col
     plot.opt$col.lobs = plot.opt$col
   }
 
-  if (length(intersect(dots.plot.opt,"lwd.lobs"))==0){
+  if ( plot.opt$lwd %in% userPlotOptions)
+  {
     plot.opt$lwd.lobs = plot.opt$lwd
   }
 
-  if (length(intersect(dots.plot.opt,"lty.lobs"))==0){
+  if ( plot.opt$pch %in% userPlotOptions)
+  {
+    plot.opt$pch.pobs <- plot.opt$pch
+    plot.opt$pch.pcens = plot.opt$pch
+  }
+
+  if ( plot.opt$lty %in% userPlotOptions)
+  {
     plot.opt$lty.lobs = plot.opt$lty
   }
 
-  if (length(intersect(dots.plot.opt,"pch.pobs"))==0){
-    plot.opt$pch.pobs <- plot.opt$pch
+  # changes for xlab and ylab
+  # start for which.x and which.y by default in NpdeControl
+  which.x = plot.opt$axis
+  which.y = plot.opt$which
+
+  # xlab
+  if(plot.opt$xlab=="") {
+    plot.opt$xlab <- switch(which.x, "x"=paste0( npdeObject@data@name.predictor ), "pred"=paste0("Predicted ", npdeObject@data@name.response ), "cov"="", "npde"="npde", "npd"="npd", "pd"="pd") # cov, npde, npd, pd: not valid options; cov: to be implemented
+    if (which.x=="x" & npdeObject@data@units$x != "") plot.opt$xlab<-paste0(plot.opt$xlab, "(", npdeObject@data@units$x,")" )
+    if (which.x=="pred" & npdeObject@data@units$y != "") plot.opt$xlab<-paste0(plot.opt$xlab, "(", npdeObject@data@units$y,")" )
   }
 
-  if (length(intersect(dots.plot.opt,"pch.pcens"))==0){
-    plot.opt$pch.pcens = plot.opt$pch
+  # ylab
+  if(plot.opt$ylab=="") {
+    plot.opt$ylab <- switch(which.y, "npde"="npde", "npd"="npd", "pd"="pd", "yobs"=paste0( npdeObject@data@name.response),  "cov"="") # cov not a valid option (yet ?)
+    if (which.y=="yobs" & npdeObject@data@units$y != "") plot.opt$ylab<-paste0(plot.opt$ylab, "(", npdeObject@data@units$y,")" )
   }
 
   # -----------------------------------------------------------------------------------------------------------------
 
+  # ggplot with censored data
   if(has.cens) {
 
     xplot = x[id & !is.cens]
     yplot = y[id & !is.cens]
+
+    # data no censored
     grouplot = npdeObject@data@data$index[id & !is.cens]
     dataplot = data.frame(grouplot,xplot,yplot)
     colnames(dataplot) = c("group","x","y")
 
+    # data under the loq
     dataplot_bis = dataplot[dataplot$y<npdeObject@data@loq,]
     colnames(dataplot_bis) = c("group","x","y")
 
+    # data censored
     group_loq_plot = npdeObject@data@data$index[id & is.cens]
     dataloq_plot = data.frame(group_loq_plot, x[id & is.cens],y[id & is.cens])
     colnames(dataloq_plot) = c("group","x","y")
 
+    # data for plot
     dataplot = rbind(dataplot,dataplot_bis,dataloq_plot)
+
+    # add loq last columns for plot geom_hline
+    dataplot = cbind( dataplot, rep( npdeObject@data@loq, dim(dataplot)[1]))
+    colnames(dataplot) = c("group","x","y","loq")
 
     #  xlim and ylim
     if ("xlim" %in% names(plot.opt) & length(plot.opt$xlim)==2) {
@@ -218,18 +253,20 @@ npde.plot.data<-function(npdeObject,...) {
       y.limits = c(min(dataloq_plot$y, dataplot$y,na.rm = TRUE),max(dataloq_plot$y, dataplot$y,na.rm = TRUE))}
 
     # ggplot template
-      p = ggplot(dataplot, aes(x=x, y=y)) +
+    p = ggplot(dataplot, aes(x=x, y=y)) +
 
       theme(plot.title = element_text(hjust = 0.5, size = plot.opt$size.sub),
-            axis.title.x = element_text(size = plot.opt$size.xlab),
             axis.title.y = element_text(size = plot.opt$size.ylab),
-
-            #axis.text.x = element_text(size=plot.opt$size.text.x, color = ifelse(plot.opt$xaxt==TRUE,"black","white")),
-            #axis.text.y = element_text(size=plot.opt$size.text.y, color = ifelse(plot.opt$yaxt==TRUE,"black","white")),
-
+            axis.title.x = element_text(size = plot.opt$size.xlab),
+            axis.text.x = element_text(size=plot.opt$size.text.x),
+            axis.text.y = element_text(size=plot.opt$size.text.y),
+            axis.line.x = element_line(color=ifelse(plot.opt$xaxt==TRUE,"black","white")),
+            axis.line.y = element_line(color=ifelse(plot.opt$yaxt==TRUE,"black","white")),
             panel.background=element_rect("white"),
-            panel.grid.major = element_line(ifelse(plot.opt$grid==TRUE,"grey","white")),
-            panel.grid.minor = element_line(ifelse(plot.opt$grid==TRUE,"grey","white"))) +
+            panel.grid.major.x = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid),
+            panel.grid.minor.x = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid),
+            panel.grid.major.y = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid),
+            panel.grid.minor.y = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid))+
 
       ggtitle(plot.opt$main) +
 
@@ -243,21 +280,26 @@ npde.plot.data<-function(npdeObject,...) {
                  shape = plot.opt$pch.pobs)  +
 
       geom_line(aes(group=group),
-                linetype = plot.opt$lty,
-                color = plot.opt$col,
-                alpha = plot.opt$alpha,
-                size = plot.opt$lwd )+
+                linetype = plot.opt$lty.lobs,
+                color = plot.opt$col.lobs,
+                size = plot.opt$lwd.lobs )+
 
-      {if(plot.opt$plot.loq==TRUE)
+      {if(plot.opt$line.loq==TRUE)
+
+        geom_hline(dataplot,mapping = aes(yintercept = as.numeric(loq)))
+
+      } +
+
+      {if(plot.opt$plot.loq==FALSE)
 
         geom_point(dataplot_bis,
                    mapping=aes(x=x,y=y),
                    color = plot.opt$col.pcens,
                    shape = plot.opt$pch.pcens,
                    size = plot.opt$size.pcens,
-                   alpha = plot.opt$alpha.pcens )}+
+                   alpha = plot.opt$alpha.pcens)} +
 
-          {if(plot.opt$plot.loq==TRUE)
+      {if(plot.opt$plot.loq==TRUE)
 
         geom_point(dataloq_plot,
                    mapping = aes(x=x,y=y),
@@ -266,8 +308,9 @@ npde.plot.data<-function(npdeObject,...) {
                    size = plot.opt$size.pcens,
                    alpha = plot.opt$alpha.pcens)} +
 
-      scale_x_continuous(npdeObject@data@name.predictor, scales::pretty_breaks(n = plot.opt$breaks.x)) +
-      scale_y_continuous(npdeObject@data@name.response, scales::pretty_breaks(n = plot.opt$breaks.y))
+      scale_x_continuous(plot.opt$xlab, scales::pretty_breaks(n = plot.opt$breaks.x)) +
+      scale_y_continuous(plot.opt$ylab, scales::pretty_breaks(n = plot.opt$breaks.y))
+
     print(p)
 
   }# end if cens
@@ -276,6 +319,7 @@ npde.plot.data<-function(npdeObject,...) {
 
     xplot = x[id]
     yplot = y[id]
+
     grouplot = npdeObject@data@data$index[id]
     dataplot = data.frame(grouplot,xplot,yplot)
     colnames(dataplot) = c("group","x","y")
@@ -296,39 +340,40 @@ npde.plot.data<-function(npdeObject,...) {
     p = ggplot(dataplot, aes(x=x, y=y)) +
 
       theme(plot.title = element_text(hjust = 0.5, size = plot.opt$size.sub),
-            axis.title.x = element_text(size = plot.opt$size.xlab),
             axis.title.y = element_text(size = plot.opt$size.ylab),
-
-            axis.text.x = element_text(size=plot.opt$size.text.x, color = ifelse(plot.opt$xaxt==TRUE,"black","white")),
-            axis.text.y = element_text(size=plot.opt$size.text.y, color = ifelse(plot.opt$yaxt==TRUE,"black","white")),
+            axis.title.x = element_text(size = plot.opt$size.xlab),
+            axis.text.x = element_text(size=plot.opt$size.text.x),
+            axis.text.y = element_text(size=plot.opt$size.text.y),
+            axis.line.x = element_line(color=ifelse(plot.opt$xaxt==TRUE,"black","white")),
+            axis.line.y = element_line(color=ifelse(plot.opt$yaxt==TRUE,"black","white")),
             panel.background=element_rect("white"),
-            panel.grid.major = element_line(ifelse(plot.opt$grid==TRUE,"grey","white")),
-            panel.grid.minor = element_line(ifelse(plot.opt$grid==TRUE,"grey","white"))) +
+            panel.grid.major.x = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid),
+            panel.grid.minor.x = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid),
+            panel.grid.major.y = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid),
+            panel.grid.minor.y = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid))+
 
-      ggtitle(plot.opt$main) +
+       ggtitle(plot.opt$main) +
 
-      coord_cartesian(xlim=x.limits, ylim=y.limits) +
+       coord_cartesian(xlim=x.limits, ylim=y.limits) +
 
-      geom_point(color = plot.opt$col.pobs,
-                 alpha = plot.opt$alpha.pobs,
-                 size = plot.opt$size.pobs,
-                 shape = plot.opt$pch.pobs)  +
+       geom_point(color = plot.opt$col.pobs,
+                  alpha = plot.opt$alpha.pobs,
+                  size = plot.opt$size.pobs,
+                  shape = plot.opt$pch.pobs) +
 
-      geom_line(aes(group=group),
-                linetype = plot.opt$lty,
-                color = plot.opt$col,
-                alpha = plot.opt$alpha,
-                size = plot.opt$lwd )+
+       geom_line(aes(group=group),
+                 linetype = plot.opt$lty.lobs,
+                 color = plot.opt$col.lobs,
+                 size = plot.opt$lwd.lobs )+
 
-      scale_x_continuous(plot.opt$xlab, scales::pretty_breaks(n = plot.opt$breaks.x)) +
-      scale_y_continuous(plot.opt$ylab, scales::pretty_breaks(n = plot.opt$breaks.y)) +
-
-      xlab(npdeObject@data@name.predictor) +
-      ylab(npdeObject@data@name.response)
+       scale_x_continuous(plot.opt$xlab, scales::pretty_breaks(n = plot.opt$breaks.x)) +
+       scale_y_continuous(plot.opt$ylab, scales::pretty_breaks(n = plot.opt$breaks.y))
 
     print(p)
 
   }
+
+  return( p )
 
 } # end function
 
@@ -340,7 +385,7 @@ npde.plot.data<-function(npdeObject,...) {
 #'
 #' @usage npde.plot.default(npdeObject, ...)
 #'
-#' @aliases plot 
+#' @aliases plot
 #' @param npdeObject an object returned by a call to \code{\link{npde}} or \code{\link{autonpde}}
 #' @param \dots additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}})
 #' @export
@@ -350,6 +395,7 @@ npde.plot.data<-function(npdeObject,...) {
 npde.plot.default<-function(npdeObject,  ...) {
 
   # remove the covariables for the waffle plot by defaults
+
   if (length(npdeObject@data@name.covariates)!=0){
 
     new_npdeObject = npdeObject
@@ -363,46 +409,89 @@ npde.plot.default<-function(npdeObject,  ...) {
   }
 
   # modify the plot options with the user ones
-  dots.plot.opt = list(...)
+  userPlotOptions = list(...)
   plot.opt <- set.plotoptions.default(new_npdeObject)
-  plot.opt <- modifyList(plot.opt, dots.plot.opt[intersect(names(dots.plot.opt), names(plot.opt))])
+  plot.opt <- modifyList(plot.opt, userPlotOptions[intersect(names(userPlotOptions), names(plot.opt))])
 
-  if (length(intersect(dots.plot.opt,"col.lobs"))==0){
-    plot.opt$col.lobs = plot.opt$col
+  # waffle plot with covariate
+  if ( plot.opt$covsplit ==TRUE)
+  {
+    covariates = plot.opt$which.cov
+    i=1
+    for (covariate in covariates)
+    {
+
+      hist.cov <-   npde.plot.dist(npdeObject,
+                                   plot.opt$which,
+                                   dist.type="hist",
+                                   which.cov = covariate,
+                                   plot.default=TRUE,...)
+
+      qqplot.cov <-   npde.plot.dist(npdeObject,
+                                     plot.opt$which,
+                                     dist.type="qqplot",
+                                     which.cov = covariate,
+                                     plot.default=TRUE,...)
+
+      x.scatter.cov <-   npde.plot.scatterplot(npdeObject,
+                                               which.x="x", which.y=plot.opt$which,
+                                               dist.type="x.scatter",
+                                               which.cov = covariate,
+                                               plot.default=TRUE,...)
+
+      pred.scatter.cov <-   npde.plot.scatterplot(npdeObject,
+                                                  which.x="pred", which.y=plot.opt$which,
+                                                  dist.type="pred.scatter",
+                                                  which.cov = covariate,
+                                                  plot.default=TRUE,...)
+
+
+      list_plot = c( hist.cov, qqplot.cov, x.scatter.cov, pred.scatter.cov )
+
+      if (!is.null(list_plot))
+      {
+        grid.arrange(grobs = list_plot,
+                     nrow=2, ncol=2,
+                     top = textGrob(paste0(plot.opt$main[i],'\n'),
+                                    vjust = 1,
+                                    gp = gpar(fontsize=plot.opt$size.main)))
+      }
+      i=i+1
+    } # end loop covariates
   }
+  # waffle plot with covariate
+  else
+  {
 
-  if (length(intersect(dots.plot.opt,"lwd.lobs"))==0){
-    plot.opt$lwd.lobs = plot.opt$lwd
-  }
-
-  if (length(intersect(dots.plot.opt,"lty.lobs"))==0){
-    plot.opt$lty.lobs = plot.opt$lty
-  }
-
-  if (length(intersect(dots.plot.opt,"pch.pobs"))==0){
-    plot.opt$pch.pobs <- plot.opt$pch
-  }
-
-  if (length(intersect(dots.plot.opt,"pch.pcens"))==0){
-    plot.opt$pch.pcens = plot.opt$pch
-  }
-
-  hist <- npde.plot.dist(new_npdeObject,
-                         plot.opt$which,
-                         dist.type="hist",
-                         plot.default=TRUE,...)
-
-  qqplot <- npde.plot.dist(new_npdeObject,
+    hist <- npde.plot.dist(new_npdeObject,
                            plot.opt$which,
-                           dist.type="qqplot",
+                           dist.type="hist",
                            plot.default=TRUE,...)
 
-  x.scatter <- npde.plot.scatterplot(new_npdeObject, which.x="x", which.y=plot.opt$which, plot.default=TRUE,...)
+    qqplot <- npde.plot.dist(new_npdeObject,
+                             plot.opt$which,
+                             dist.type="qqplot",
+                             plot.default=TRUE,...)
 
-  pred.scatter <- npde.plot.scatterplot(new_npdeObject, which.x="pred", which.y=plot.opt$which, plot.default=TRUE,...)
+    x.scatter <- npde.plot.scatterplot(new_npdeObject, which.x="x", which.y=plot.opt$which, plot.default=TRUE,...)
 
-  do.call(grid.arrange, c(hist, qqplot, x.scatter, pred.scatter, list( nrow=2, ncol=2 ), top=""))
-  
+    pred.scatter <- npde.plot.scatterplot(new_npdeObject, which.x="pred", which.y=plot.opt$which, plot.default=TRUE,...)
+
+    list_plot = c( hist, qqplot, x.scatter, pred.scatter )
+
+    if (!is.null(list_plot))
+    {
+      grid.arrange(grobs = list_plot,
+                   nrow=2, ncol=2,
+                   top = textGrob(paste0(plot.opt$main,'\n'),
+                                  vjust = 1,
+                                  gp = gpar(fontsize=plot.opt$size.main)))
+    }else{
+      print("Error in arguments.The list of plots is therefore empty.")
+    }
+
+  }
+
 } # end function npde.plot.default
 
 

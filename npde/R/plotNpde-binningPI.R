@@ -217,6 +217,22 @@ npde.binning<-function(xvec,plot.opt,verbose=FALSE) {
   xgrp2<-rep(NA,length(xvec1))
   xgrp2[!is.na(xvec1)]<-xgrp
 
+  # ------------------------------------------------------------------------------------------------
+  # Take the min and max values of xpl to extend prediction band to min/max X
+  # start to 0 instead of the minimal value of bnds (can guves negative values for Time in x-axis)
+  # is.null test for non numerical covariate
+
+  xpl.extended = xpl
+
+  if ( !is.null(bnds)) #
+  {
+    xpl.extended[1] = min(bnds)
+    xpl.extended[nbin] = max(bnds)
+  }
+
+  xpl = xpl.extended
+  # ------------------------------------------------------------------------------------------------
+
   return(list(xgrp=xgrp2,xcent=xpl,xbound=bnds))
 
 }

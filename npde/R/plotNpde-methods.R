@@ -167,16 +167,14 @@ plot.NpdeObject <- function(x, y, ...) {
     plot.type<-plot.type[plot.type!="c"]
   } else plot.type<-"default"
 
- # i1<-match("xscale",names(args1))
- # if(!is.na(i1)) {
- #   xscale<-as.logical(as.character(args1[[i1]]))
- # } else xscale<-FALSE
+
   if(verbose) cat("Selected plot type:",plot.type,"\n")
   i1<-match("which",names(args1))
   if(!is.na(i1)) {
     typmet<-as.character(args1[[i1]])
     typmet<-plot.type[plot.type!="c"]
   } else typmet<-"npde"
+
 
   pltyp<-c("data","default", "ecdf","qqplot","histogram","x.scatter","pred.scatter", "cov.scatter","cov.x.scatter","cov.pred.scatter","cov.hist","cov.qqplot", "cov.ecdf","vpc","loq")
   ifnd<-pmatch(plot.type,pltyp)
@@ -279,8 +277,6 @@ plot.NpdeObject <- function(x, y, ...) {
 
               for(imet in typmet) npde.plot.scatterplot(x, which.x="x", which.y=imet, covsplit=TRUE,...)
 
-
-print('ok')
             },
 
             "cov.pred.scatter"={

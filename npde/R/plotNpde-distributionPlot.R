@@ -24,8 +24,8 @@
 #' @importFrom stats pnorm
 
 npde.plot.dist<-function(npdeObject, which="npde", dist.type="qqplot", ...) {
-  # arguments
-  userPlotOptions  = list(...)
+
+  userPlotOptions = list(...)
   plot.opt <- set.plotoptions.default( npdeObject )
   plot.opt <- modifyList( plot.opt, userPlotOptions[ intersect( names( userPlotOptions ), names( plot.opt ) ) ] )
 

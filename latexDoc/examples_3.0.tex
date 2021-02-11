@@ -506,6 +506,96 @@ plot(x50,plot.type="x.scatter",new=F)
 \end{verbatim} 
 
 \clearpage
+\subsection{Model evaluation for warfarin PK} \label{sec:warfarin}
+
+\subsubsection{Data}
+
+\hskip 18pt The warfarin dataset~\cite{OReilly68} was collected in a study on warfarin. The dataset contains 32 series of pharmacokinetic measurements after a single dose of 1.5~mg/kg in 30 healthy subjects (two were sampled twice but the occasions are treated as separate subjects in the analyses made using this data). 
+The {\sf warfarin} data frame has 251 rows and 8 columns of data containing data on the pharmacokinetics of warfarin, an anticoagulant drug used in the prevention of thrombosis and thromboembolism. It represents the PK part of a larger dataset including both warfarin concentrations and prothrombin complex activity (PCA), which measures the decreased coagulation  activity resulting from the inhibition of vitamin K recycling, the mechanism of  action of warfarin. The subjects in the study were sampled at different times over a period of up to 120 hours.
+
+The data is distributed with the {\sf Monolix} software as a demo for PK/PD modelling. We slightly reformated it for R, removing the line at time=0 and filling the {\sf amt} column with the dose for each subject. The data is shown in figure~\ref{fig:warfarin.data}.
+
+\begin{figure}[!h]
+\par\kern -1cm
+\begin{center}
+\epsfig{file=/home/eco/work/npde/doclib/figs/doc_warfarin_data.eps,width=6cm,angle=0}
+\end{center}
+\par\kern -6.5cm
+\caption{Warfarin data}\label{fig:warfarin.data}
+\end{figure}
+
+
+We used the base model reported in the case-study from the {\sf Monolix} documentation, and built a covariate model using a stepwise strategy for the purpose of showcasing covariate graphs in the {\sf npde} library.  The PK model was a two-compartment model, with first-order absorption and a time-delay. Interindividual variability was modelled as log-normal distributions for parameters T$_{\rm lag}$, k$__{\rm a}$, Cl and V$_1$, and the error model was a combined error model. : an age (centered on 30 yr) effect on Cl, a weight (centered on 70 kg) effect on Cl and V$_1$, and a gender effect on V$_1$. The following covariate effects were included in the covariate model: an age (centered on 30 yr) effect on CL, a weight (centered on 70 kg) effect on Cl and V$_1$. We also added a gender effect on V$_1$ to illustrative the covariate graphs, but the estimate was not significantly different from 0.
+ 
+\begin{center}
+\begin{tabular} {r c c c}
+\hline 
+& \multicolumn{2}{c}{Base model} &  \multicolumn{2}{c}{Covariate model} \\
+{\bf Parameter} & Population mean & IIV (CV\%) & Population mean & IIV (CV\%) \\
+\hline 
+k$__{\rm a}$ (h$^{-1}$) & 0.57 & 52 & 0.58 & 53\\
+T$_{\rm lag}$ (h) & 0.66 & 67 &  0.73 & 60\\
+CL (L.h$^{-1}$) & 0.13 & 0.29 & 0.13 & 24 \\
+$\beta_{age, CL}$ & - & - & 0.34 & -\\
+$\beta_{weight, CL}$ & - & - & 0.66$^*$ & - \\
+V$_1$ (L) & 5.5 & 30 & 5.5 & 18\\
+$\beta_{weight, V_1}$ & - & - & 1.2$^*$ & -\\
+$\beta_{gender, V_1}$ & - & - & 0.05 & - \\
+Q (L.h$^{-1}$) & 0.45 & - & 0.47 & -\\
+V$_2$ (L.h$^{-1}$) & 2.3 & - & 2.2 & - \\
+a (mg.L$^{-1}$) & 0.23 & - & 0.23 \\
+b (-) & 0.06 & - & 0.06 & -\\
+\hline
+$^*$ {\it here the parameters were estimated but we could use fixed allometric exponents}
+\end{tabular}
+\end{center}
+
+Two datasets containing simulated data are associated with the {\sf warfarin} data in the package:
+\begin{itemize}
+\item {\bf simwarfarinBase:} the data in this dataset was simulated according to a base model without covariates:
+\item {\bf simwarfarinCov:} the data in this dataset was simulated according to the covariate model
+\end{itemize}
+The simulations were performed using {\sf simulx} and the Mlxtran project used to estimate the parameters on the real data. For each dataset, 1000 simulations of the original data were performed for the computation of npde. To maintain the size of the package within acceptable limits for the upload to CRAN, the simulated data is not included in the package.
+
+\subsubsection{Default plots}
+
+\hskip 18pt The default plots for the base model are shown in figure\~\ref{fig:warfDefault} and in figure\~\ref{fig:warfCovDefault} for the covariate model.
+
+\begin{figure}[!h]
+\par\kern -1cm
+\begin{center}
+\epsfig{file=/home/eco/work/npde/doclib/figs/doc_warfarin_basewaffle.eps,width=6cm,angle=0}
+\end{center}
+\par\kern -6.5cm
+\caption{Default plots produced for the base model.}\label{fig:warfDefault}
+\end{figure}
+
+\begin{figure}[!h]
+\par\kern -1cm
+\begin{center}
+\epsfig{file=/home/eco/work/npde/doclib/figs/doc_warfarin_covwaffle.eps,width=6cm,angle=0}
+\end{center}
+\par\kern -6.5cm
+\caption{Default plots produced for the base model.}\label{fig:warfCovDefault}
+\end{figure}
+
+\subsubsection{Covariate model}
+
+\hskip 18pt The plots above can be split by covariate. For instance, 
+
+
+This figure can be obtained by the following code:
+\begin{verbatim}
+data(warfarin)
+data(simwarfarinBase)
+wbase<-autonpde(namobs=warfarin,namsim=simwarfarinBase, iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="mg/L", covariates=c("mg","kg","-","yr")))
+wbase<-autonpde(namobs=warfarin,namsim=simwarfarinBase, iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="mg/L", covariates=c("mg","kg","-","yr")))
+
+plot(wcov, plot.type="x.scatter", covsplit=TRUE, which.cov=c("wt"))
+\end{verbatim} 
+
+
+\clearpage
 \subsection{Model evaluation for remifentanil PK} \label{sec:remifentanil}
 
 \subsubsection{Data}

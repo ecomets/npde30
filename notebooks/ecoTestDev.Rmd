@@ -17,9 +17,13 @@ output:
   - compilation: compiled package as npde 3.0
     - version number 3.0 because reference profiles included
     - lots of error messages for "no visible binding for global variable" in variables related to ggplot2 (Undefined global functions or variables) => hope this does not block us for CRAN
+  - bugs
+    - debug covariates not all taken into account when given as numbers
 - TODO *npde website* (bookdown, Eco)
 - code **TODO** for 3.1
   - add an option to remove all output when required and remove warnings if requested
+  - plot for a NpdeData object
+  - change index labels to allow duplicate time points
 - **TODO** simplify output for *show()* function (v3.0 or v3.1 ?)
 
 ## Setup, loading libraries

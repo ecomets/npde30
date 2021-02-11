@@ -30,14 +30,8 @@ compute.bands<-function(nsamp,nseuil=200,quant=c(0.025,0.5,0.975),distrib="norm"
 
   for(isamp in unique(nsamp)) {
     if(isamp<nseuil) {
-      #if (npdeObject@prefs$plot.tnpde == TRUE)  {
-        # mean and sd for adjusting prediction interval for tnpde
-       # mean = mean(npdeObject@sim.data@datsim$ysim)
-      #  sd = sd(npdeObject@sim.data@datsim$ysim)}
-      #else{
         mean=0
         sd=1
-      #}
       if(isamp>1) {
         xsamp<-matrix(switch(distrib,norm=rnorm(msim*isamp,mean, sd),unif=runif(msim*isamp)), ncol=msim)
         mat<-apply(xsamp,2,quantile,quant)

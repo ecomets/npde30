@@ -28,7 +28,7 @@ library(ggplot2)
 library(gridExtra)
 library(mclust)
 library(testthat)
-library(grid)
+library(grid) # grid.arrange
 workDir<-"/home/eco/work/npde/npde30"
 fullDatDir<-file.path(workDir,"keep","data") # Full data files (some removed from package to decrease size on CRAN)
 knitr::opts_chunk$set(root.dir = workDir)
@@ -76,9 +76,9 @@ data(warfarin)
 data(simwarfarinCov)
 simbase<-read.table(file.path(fullDatDir, "simwarfarinBase.tab"), header=TRUE)
 
-wbase<-autonpde(namobs=warfarin,namsim=simbase, iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
+wbase<-autonpde(namobs=warfarin,namsim=simbase, iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="mg/L", covariates=c("mg","kg","-","yr")))
 
-wcov<-autonpde(namobs=warfarin,namsim=simwarfarinCov, iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfCov", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
+wcov<-autonpde(namobs=warfarin,namsim=simwarfarinCov, iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfCov", units=list(x="hr",y="mg/L", covariates=c("mg","kg","-","yr")))
 
 ```
 
@@ -212,14 +212,61 @@ try(plot(x50, dist.type="ecdf"))
   - default plot with cov.scatter should be boxplot => check why not working
 
 ```{r docVirWarf, echo=FALSE}
+# Data
+namfile<-file.path(docFigs,"doc_warfarin_data.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+plot(wbase,plot.type="data", main=" ", ylab="Warfarin concentrations (mg/L)")
+if(saveDocPlots) dev.off()
 
+# Default npde plots for base model
+namfile<-file.path(docFigs,"doc_warfarin_basewaffle.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
 plot(wbase)
+if(saveDocPlots) dev.off()
 
-plot(wbase, plot.type="cov.scatter")
+# Fails - multiple arguments => should work and should call npde.plot.scatterplot
+try(plot(wbase, plot.type="x.scatter", which.x="cov", which.y="npde", which.cov="wt"))
+npde.plot.scatterplot(wbase, which.x="cov", which.y="npde", which.cov="wt", bin.method="optimal")
 
-plot(wbase, plot.type="x.scatter", covsplit=TRUE, which.cov=c("sex","wt"))
+# Default npde plots for covariate model
+namfile<-file.path(docFigs,"doc_warfarin_covwaffle.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+plot(wcov)
+if(saveDocPlots) dev.off()
+
+npde.plot.scatterplot(wcov, which.x="cov", which.y="npde", which.cov="wt", bin.method="optimal")
+
+plot(wbase, plot.type="cov.scatter", which.cov="wt")
+plot(wbase, plot.type="cov.scatter", which.cov="sex")
+try(plot(wbase, plot.type="cov.scatter", which.cov="age"))
+
+# Splitting npde vs time plots by covariates
+namfile<-file.path(docFigs,"doc_warfarin_baseSplitWt.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+plot(wbase, plot.type="x.scatter", covsplit=TRUE, which.cov=c("wt"))
+if(saveDocPlots) dev.off()
+
+namfile<-file.path(docFigs,"doc_warfarin_baseSplitSex.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+plot(wbase, plot.type="x.scatter", covsplit=TRUE, which.cov=c("sex"))
+if(saveDocPlots) dev.off()
+
+# Splitting npde vs time plots by covariates
+namfile<-file.path(docFigs,"doc_warfarin_CovSplitWt.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+plot(wcov, plot.type="x.scatter", covsplit=TRUE, which.cov=c("wt"))
+if(saveDocPlots) dev.off()
+
+namfile<-file.path(docFigs,"doc_warfarin_CovSplitSex.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+plot(wcov, plot.type="x.scatter", covsplit=TRUE, which.cov=c("sex"))
+if(saveDocPlots) dev.off()
 
 ```
+
+## Warfarin
+
+
 
 ## Remifentanil (data will be on website)
 

@@ -261,6 +261,7 @@ plot.NpdeObject <- function(x, y, ...) {
             },
 
             "vpc"={
+              if(verbose) cat("Plotting VPC\n")
               plot.vpc = npde.plot.scatterplot(x, which.x="x", which.y="yobs", ...)
               return( plot.vpc )
             },

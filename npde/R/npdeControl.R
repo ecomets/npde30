@@ -156,7 +156,7 @@ set.plotoptions.default <- function(object) {
     xlog=FALSE,
     ylog=FALSE,
 
-    plot.loq=FALSE,			# Whether data under the LOQ should be plotted
+    plot.loq=TRUE,			# Whether data under the LOQ should be plotted
     # line.loq
 
     line.loq=FALSE,			# Whether an horizontal line should be plotted at Y=LOQ in data and VPC plots
@@ -174,8 +174,6 @@ set.plotoptions.default <- function(object) {
     approx.pi=TRUE,			# Whether approximate prediction bands should be obtained for the distribution plots (see documentation)
 
     plot.default = FALSE, # to get waffle plot
-
-    plot.tnpde=FALSE,
 
     smooth=FALSE,
     line.smooth="s",

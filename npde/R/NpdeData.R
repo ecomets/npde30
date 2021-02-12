@@ -88,90 +88,51 @@ setMethod(
     .Object@name.cens<-name.cens
     .Object@name.miss<-name.miss
     .Object@name.ipred<-name.ipred
-
-
-  #.avoid_code = function() {
-
-
-    # name.groupe
-    if (missing(name.group)) {.Object@name.group <- character()}
-    if (!missing(name.group) && is.character(name.group)==TRUE){
-      if((length(name.group)==0)){
-       # print("name group is empty")
-        FALSE}
-      else{.Object@name.group <- name.group}
-    }
-
-    # name.predictor
-    if (missing(name.predictor)) {.Object@name.predictor <- character()}
-    if (!missing(name.predictor) && is.character(name.predictor)==TRUE){
-      if((length(name.predictor)==0)){
-       # print("name predictor is empty")
-        FALSE}
-      else{.Object@name.predictor <- name.predictor}
-    }
-
-    # name.response
-    if (missing(name.response)) {.Object@name.predictor <- character()}
-    if (!missing(name.response) && is.character(name.response)==TRUE){
-      if((length(name.response)==0)){
-       # print("name response is empty")
-        FALSE}
-      else{.Object@name.response <- name.response}
-    }
+    
+    if (missing(name.group)) 
+      .Object@name.group <- character() else
+        .Object@name.group <- name.group
+    
+    if (missing(name.predictor)) 
+      .Object@name.predictor <- character() else
+        .Object@name.predictor <- name.predictor
+    
+    if (missing(name.response)) 
+      .Object@name.response <- character() else
+        .Object@name.response <- name.response
 
     # name.covariates
-    if (missing(name.covariates)) {.Object@name.covariates <- character()}
-    if (!missing(name.covariates) && is.character(name.covariates)==TRUE){
-      if((length(name.covariates)==0)){
-        #print("name covariates is empty")
-        FALSE}
-      else{.Object@name.covariates <- name.covariates}
-    }
+    if (missing(name.covariates)) 
+      .Object@name.covariates <- character() else
+        .Object@name.covariates <- name.covariates
 
     # name.cens
-    if (missing(name.cens)) {.Object@name.cens <- character()}
-    if (!missing(name.cens) && is.character(name.cens)==TRUE){
-
-      if((length(name.cens)==0)){
-       # print("name cens is empty")
-        FALSE}
-      else{.Object@name.cens <- name.cens}
-    }
+    if (missing(name.cens)) 
+      .Object@name.cens <- character() else 
+        .Object@name.cens <- name.cens
 
     # name.miss
-    if (missing(name.miss)) {.Object@name.miss <- character()}
-    if (!missing(name.miss) && is.character(name.miss)==TRUE){
-      if((length(name.miss)==0)){
-       # print("name miss is empty")
-        FALSE}
-      else{.Object@name.miss <- name.miss}
-    }
+    if (missing(name.miss)) 
+      .Object@name.miss <- character() else 
+        .Object@name.miss <- name.miss
 
     # name.ipred
-    if (missing(name.ipred)) {.Object@name.ipred <- character()}
-    if (!missing(name.ipred) && is.character(name.ipred)==TRUE){
-      if((length(name.ipred)==0)){
-      #  print("name ipred is empty")
-        FALSE}
-      else{.Object@name.ipred <- name.ipred}
-    }
-
-#}
+    if (missing(name.ipred)) 
+      .Object@name.ipred <- character() else 
+        .Object@name.ipred <- name.ipred
 
     if(missing(units)) units<-list(x="-",y="-")
     if(is.null(units$x)) units$x<-"-"
     if(is.null(units$y)) units$y<-"-"
 
     ncov<-length(name.covariates)
-
     if(ncov>0) {
       nunit<-length(units$covariates)
-      if(nunit==0) units$covariates<-rep("-",ncov)
+      if(nunit==0) units$covariates<-rep("",ncov)
       if(nunit>ncov) units$covariates<-units$covariates[1:ncov]
       if(nunit<ncov) {
         length(units$covariates)<-ncov
-        units$covariates[(nunit+1):ncov]<-"-"
+        units$covariates[(nunit+1):ncov]<-""
       }
     }
 

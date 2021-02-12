@@ -234,18 +234,15 @@ setMethod("read",
             # Covariates
             if(length(object@name.covariates)>0 & object@name.covariates[1]!="") {
               is.int <- which(!is.na(as.integer(object@name.covariates)))
-              is.int <- is.int[as.integer(object@name.covariates[is.int])<dim(dat)[2]]
+              is.int <- is.int[as.integer(object@name.covariates[is.int])<=dim(dat)[2]]
               object@name.covariates[is.int] <- colnames(dat)[as.integer(object@name.covariates[is.int])]
               nam2 <- colnames(dat)[match(object@name.covariates,colnames(dat))]
               if(sum(is.na(nam2))>0 & verbose) cat("Covariates not found:","-",paste(object@name.covariates[is.na(nam2)],collapse=" - "),"-\n")
               object@name.covariates <- object@name.covariates[!is.na(nam2)]
               object@units$covariates <- object@units$covariates[!is.na(nam2)]
+              object@units$covariates<-object@units$covariates[!duplicated(object@name.covariates)]
+              object@name.covariates<-object@name.covariates[!duplicated(object@name.covariates)]
             }
-            # Saving covariates in the original format in ocov, transforming binary covariates in dat to factors - No: here we can keep covariates as factors
-            #     object@ocov<-dat[,object@name.covariates,drop=FALSE]
-            #     for(icov in object@name.covariates) {
-            #     	if(length(unique(dat[,icov]))==2) dat[,icov]<-as.integer(factor(dat[,icov]))-1
-            #     }
 
             if(nchar(object@name.group)*length(object@name.predictor)* nchar(object@name.response)<=0) {
               stop("Please check the structure of the data file and provide information concerning which columns specify the group structure (ID), the predictors (eg dose, time) and the response (eg Y, conc). See documentation for automatic recognition of column names for these elements.\n")
@@ -545,7 +542,9 @@ print.NpdeData <- function(x,nlines=10,...) {
     cat("    Structured data:",st1,"\n")
     cat("    predictor:",x@name.predictor,paste("(",x@units$x,")",sep=""),"\n")
     if(length(x@name.covariates)>0) {
-      cat("    covariates:",paste(paste(x@name.covariates," (",x@units$covariates,")",sep=""),collapse=", "),"\n")
+      vecunit<-paste(" (",x@units$covariates,")",sep="")
+      vecunit[x@units$covariates==""]<-""
+      cat("    covariates:",paste(paste(x@name.covariates,vecunit,sep=""),collapse=", "),"\n")
     }
     if(dim(x@data)[1]>0) {
       if(nlines==0) return()

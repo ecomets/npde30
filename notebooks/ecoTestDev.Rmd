@@ -441,7 +441,7 @@ plot(yvir20, plot.type="loq", lwd.bands=1.75)
 - **other checks to do**
   - check if PI extend on the X-range when less homogenous data
 
-```{r warfCov, echo=FALSE}
+```{r warfCov1, echo=FALSE}
 plot(wcov, plot.type="x.scatter") 
 
 # Working
@@ -457,7 +457,9 @@ plot(wcov, plot.type="x.scatter", covsplit=TRUE)
 
 plot(wcov, plot.type="vpc", covsplit=TRUE, which.cov=c("sex","wt"),xlim=c(0,80))
 plot(wcov, plot.type="vpc",ylim=c(0,30),covsplit=TRUE, which.cov=c("wt"))
-
+```{
+  
+```{r warfCov2, echo=FALSE}
 # graphe par défaut et waffle plot pour les données avec des covariables
 plot(wcov, covsplit=TRUE, which.cov="sex")
 plot(wcov, covsplit=TRUE, which.cov="sex",type.plot="default")

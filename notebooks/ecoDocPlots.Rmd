@@ -29,10 +29,11 @@ library(gridExtra)
 library(mclust)
 library(testthat)
 library(grid) # grid.arrange
+library(Cairo)
 workDir<-"/home/eco/work/npde/npde30"
 fullDatDir<-file.path(workDir,"keep","data") # Full data files (some removed from package to decrease size on CRAN)
 knitr::opts_chunk$set(root.dir = workDir)
-docFigs<-"/home/eco/work/npde/doclib/figs"
+docFigs<-file.path(workDir,"latexDoc","figsDev")
 saveDocPlots<-FALSE
 ```
 
@@ -239,6 +240,20 @@ npde.plot.scatterplot(wcov, which.x="cov", which.y="npde", which.cov="wt", bin.m
 plot(wbase, plot.type="cov.scatter", which.cov="wt")
 plot(wbase, plot.type="cov.scatter", which.cov="sex")
 try(plot(wbase, plot.type="cov.scatter", which.cov="age"))
+plot(wbase, plot.type="ecdf", which.cov="sex", covsplit=TRUE)
+plot(wbase, plot.type="ecdf", which.cov="wt", covsplit=TRUE)
+plot(wcov, plot.type="ecdf", which.cov="wt", covsplit=TRUE)
+
+# Density plots split by weight for both models
+namfile<-file.path(docFigs,"doc_warfarin_ecdfBaseSplitWt.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+plot(wbase, plot.type="ecdf", which.cov="wt", covsplit=TRUE)
+if(saveDocPlots) dev.off()
+
+namfile<-file.path(docFigs,"doc_warfarin_ecdfCovSplitWt.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+plot(wcov, plot.type="ecdf", which.cov="wt", covsplit=TRUE)
+if(saveDocPlots) dev.off()
 
 # Splitting npde vs time plots by covariates
 namfile<-file.path(docFigs,"doc_warfarin_baseSplitWt.eps")
@@ -263,10 +278,6 @@ plot(wcov, plot.type="x.scatter", covsplit=TRUE, which.cov=c("sex"))
 if(saveDocPlots) dev.off()
 
 ```
-
-## Warfarin
-
-
 
 ## Remifentanil (data will be on website)
 

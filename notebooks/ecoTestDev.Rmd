@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 title: "Testing package with devtools"
 author: "Emmanuelle Comets"
@@ -23,7 +24,7 @@ output:
 - code **TODO** for 3.1
   - add an option to remove all output when required and remove warnings if requested
   - plot for a NpdeData object
-  - change index labels to allow duplicate time points
+    - change index labels to allow duplicate time points
 - **TODO** simplify output for *show()* function (v3.0 or v3.1 ?)
 
 ## Setup, loading libraries
@@ -36,7 +37,7 @@ library(gridExtra)
 library(mclust)
 library(testthat)
 library(grid)
-workDir<-"D:/RECHERCHES/_NPDE/Npde-2021/npde30-main/npde30-main"
+workDir<-"/home/eco/work/npde/npde30/"
 setwd(workDir)
 knitr::opts_chunk$set(root.dir = workDir)
 #docFigs<-"/home/eco/work/npde/doclib/figs"
@@ -153,6 +154,8 @@ if(savePaperPlots) {
 }
 ```
 
+wcov devrait marcher (avec les covariables données en numéro de colonne et pas avec leurs noms)
+
 ```{r warfarinRun, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
 data(warfarin)
 data(simwarfarinBase)
@@ -161,6 +164,8 @@ data(simwarfarinCov)
 wbase<-autonpde(namobs=warfarin,namsim=simwarfarinBase, iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
 
 wcov<-autonpde(namobs=warfarin,namsim=simwarfarinCov, iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfCov", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
+
+wcov2<-autonpde(namobs=warfarin,namsim=simwarfarinCov, iid=1,ix=2,iy=4,icov=c("amt" ,"wt" , "sex","age"),namsav="warfCov", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
 
 # Warfarin with MDV
 datDir<-file.path(workDir,"npde","data")
@@ -427,6 +432,8 @@ plot(wcov, covsplit=TRUE, which.cov=c("sex","wt"),type.plot="default")
 plot(wcov, covsplit=TRUE, which.cov=c("sex","wt"))
 plot(wcov, covsplit=FALSE, which.cov=c("sex","wt"))
 
+plot(wcov, covsplit=TRUE, which.cov=c("sex","wt","amt","age"))
+
 plot(wcov, covsplit=TRUE, which.cov=c("sex","wt","amt"),main=c("waffle plot : Sex","waffle plot : Wt", "waffle plot : amt"))
 plot(wbase, covsplit=TRUE, which.cov=c("sex","wt","amt"),main=c("waffle plot : Sex","waffle plot : Wt", "waffle plot : amt"))
 plot(wmdv,  covsplit=TRUE, which.cov=c("sex","wt","amt"),main=c("waffle plot : Sex","waffle plot : Wt", "waffle plot : amt"))
@@ -552,5 +559,4 @@ if(saveDocPlots) {
 
 ```{r deactivateDevMode, echo=FALSE, hide=T}
 dev_mode()
-```
 

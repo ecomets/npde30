@@ -213,13 +213,23 @@ plot.NpdeObject <- function(x, y, ...) {
 
   if(typmet!="npde") x@prefs$bands<-FALSE
 
+  # check the argument of plot
+  list.args = c(list(...),formalArgs( plot.NpdeObject ))
+
+  if( "plot.type" %in% names(list.args) == FALSE && "dist.type" %in% names(list.args) == TRUE)
+    stop("plot.type is not in the argument")
+
+  if( "plot.type" %in% names(list.args) == TRUE && "dist.type" %in% names(list.args) == TRUE)
+    stop("plot.type & dist.type are both in the arguments")
+
   for(ipl in plot.type) {
     switch (EXPR=ipl,
             "data"={
               plot.data = npde.plot.data(x,...)
               return(plot.data)
             },
-            "default"={ npde.plot.default(x,...)
+            "default"={
+              npde.plot.default(x,...)
             },
 
             "x.scatter"={
@@ -256,12 +266,11 @@ plot.NpdeObject <- function(x, y, ...) {
 
             "ecdf"={
               if(verbose) cat("Plotting the empirical distribution function of residuals\n")
-              plot.ecdf = npde.plot.dist(x, dist.type="ecdf", new=force.new,...)
+              plot.ecdf = npde.plot.dist(x, dist.type="ecdf", new=force.new, ...)
               return( plot.ecdf )
             },
 
             "vpc"={
-              if(verbose) cat("Plotting VPC\n")
               plot.vpc = npde.plot.scatterplot(x, which.x="x", which.y="yobs", ...)
               return( plot.vpc )
             },
@@ -301,3 +310,4 @@ plot.NpdeObject <- function(x, y, ...) {
     )
   }
 }
+

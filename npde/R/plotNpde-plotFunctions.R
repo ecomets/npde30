@@ -153,13 +153,9 @@ npde.plot.data<-function(npdeObject,...) {
 
   # data plot x,y and id
   x<-npdeObject["data"]["data"][,npdeObject["data"]["name.predictor"]]
-  y<-npdeObject["data"]["data"][,npdeObject["data"]["name.response"]]
+  y<-npdeObject["results"]["res"]$ycomp
   plot.opt<-npdeObject["prefs"]
   id<-(npdeObject["data"]["data"]$index %in% plot.opt$ilist)
-
-  #if(plot.opt$impute.loq & length(npdeObject["results"]["res"]$ycomp)>0 & npdeObject["options"]["cens.method"]!="omit"){
-  #  y<-npdeObject["results"]["res"]$ycomp
-  #}
 
   # plot options and user options
   userPlotOptions = list(...)
@@ -212,22 +208,24 @@ npde.plot.data<-function(npdeObject,...) {
     xplot = x[id & !is.cens]
     yplot = y[id & !is.cens]
 
-    # data no censored
-    grouplot = npdeObject@data@data$index[id & !is.cens]
-    dataplot = data.frame(grouplot,xplot,yplot)
-    colnames(dataplot) = c("group","x","y")
+      # data no censored
+      grouplot = npdeObject@data@data$index[id & !is.cens]
+      dataplot = data.frame(grouplot,xplot,yplot)
+      colnames(dataplot) = c("group","x","y")
 
-    # data under the loq
-    dataplot_bis = dataplot[dataplot$y<npdeObject@data@loq,]
-    colnames(dataplot_bis) = c("group","x","y")
+    if(plot.opt$plot.loq==TRUE)
+    {
 
-    # data censored
-    group_loq_plot = npdeObject@data@data$index[id & is.cens]
-    dataloq_plot = data.frame(group_loq_plot, x[id & is.cens],y[id & is.cens])
-    colnames(dataloq_plot) = c("group","x","y")
+      # data censored
+      group_loq_plot = npdeObject@data@data$index[id & is.cens]
+      dataloq_plot = data.frame(group_loq_plot, x[id & is.cens],y[id & is.cens])
+      colnames(dataloq_plot) = c("group","x","y")
 
-    # data for plot
-    dataplot = rbind(dataplot,dataplot_bis,dataloq_plot)
+      # both
+      dataplot = rbind( dataplot, dataloq_plot )
+      colnames(dataplot) = c("group","x","y")
+
+    }
 
     # add loq last columns for plot geom_hline
     dataplot = cbind( dataplot, rep( npdeObject@data@loq, dim(dataplot)[1]))
@@ -242,9 +240,15 @@ npde.plot.data<-function(npdeObject,...) {
     if ("ylim" %in% names(plot.opt) & length(plot.opt$ylim)==2) {
       y.limits = c(plot.opt$ylim[1],plot.opt$ylim[2])
     } else {
-      y.limits = c(min(dataloq_plot$y, dataplot$y,na.rm = TRUE),max(dataloq_plot$y, dataplot$y,na.rm = TRUE))}
+      y.limits = c(min(dataplot$y, dataplot$y,na.rm = TRUE),max(dataplot$y, dataplot$y,na.rm = TRUE))}
+
+    # loq value
+    loq = npdeObject@data@loq
+
+
 
     # ggplot template
+
     p = ggplot(dataplot, aes(x=x, y=y)) +
 
       theme(plot.title = element_text(hjust = 0.5, size = plot.opt$size.sub),
@@ -278,27 +282,15 @@ npde.plot.data<-function(npdeObject,...) {
 
       {if(plot.opt$line.loq==TRUE)
 
-        geom_hline(dataplot,mapping = aes(yintercept = as.numeric(loq)))
+        geom_hline(dataplot,mapping = aes(yintercept = as.numeric(loq)))}+
 
-      } +
-
-      {if(plot.opt$plot.loq==FALSE)
-
-        geom_point(dataplot_bis,
-                   mapping=aes(x=x,y=y),
-                   color = plot.opt$col.pcens,
-                   shape = plot.opt$pch.pcens,
-                   size = plot.opt$size.pcens,
-                   alpha = plot.opt$alpha.pcens)} +
-
-      {if(plot.opt$plot.loq==TRUE)
-
+      {if(plot.opt$plot.loq ==TRUE)
         geom_point(dataloq_plot,
                    mapping = aes(x=x,y=y),
                    color = plot.opt$col.pcens,
                    shape = plot.opt$pch.pcens,
                    size = plot.opt$size.pcens,
-                   alpha = plot.opt$alpha.pcens)} +
+                   alpha = plot.opt$alpha.pcens)}  +
 
       scale_x_continuous(plot.opt$xlab, scales::pretty_breaks(n = plot.opt$breaks.x)) +
       scale_y_continuous(plot.opt$ylab, scales::pretty_breaks(n = plot.opt$breaks.y))
@@ -360,7 +352,7 @@ npde.plot.data<-function(npdeObject,...) {
 
        scale_x_continuous(plot.opt$xlab, scales::pretty_breaks(n = plot.opt$breaks.x)) +
        scale_y_continuous(plot.opt$ylab, scales::pretty_breaks(n = plot.opt$breaks.y))
-    
+
     # print(p)
   }
   list_plot = list()
@@ -459,22 +451,22 @@ npde.plot.default<-function(npdeObject,  ...) {
                            plot.opt$which,
                            dist.type="hist",
                            main="",...)
-    
+
     qqplot <- npde.plot.dist(new_npdeObject,
                              plot.opt$which,
                              dist.type="qqplot",
                              main="",...)
-    
+
     x.scatter <- npde.plot.scatterplot(new_npdeObject,
                                        which.x="x",
                                        which.y=plot.opt$which,
                                        main="", ...)
-    
+
     pred.scatter <- npde.plot.scatterplot(new_npdeObject,
                                           which.x="pred",
                                           which.y=plot.opt$which,
                                           main="",...)
-    
+
     list_plot = c( hist, qqplot, x.scatter, pred.scatter )
 
     if (!is.null(list_plot))

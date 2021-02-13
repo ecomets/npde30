@@ -1,0 +1,18 @@
+\thispagestyle {empty}
+\contentsline {section}{\numberline {1}Running npde }{1}{section.0.1}%
+\contentsline {section}{\numberline {2}Types of graphs}{4}{section.0.2}%
+\contentsline {section}{\numberline {3}Changing graphical parameters}{5}{section.0.3}%
+\contentsline {section}{\numberline {4}Default plots}{10}{section.0.4}%
+\contentsline {subsection}{\numberline {4.1}Waffle plot}{10}{subsection.0.4.1}%
+\contentsline {subsection}{\numberline {4.2}Data}{15}{subsection.0.4.2}%
+\contentsline {subsection}{\numberline {4.3}VPC (Visual Predictive Check)}{17}{subsection.0.4.3}%
+\contentsline {subsection}{\numberline {4.4}Scatterplots: scatterplots of npde versus X or predictions}{19}{subsection.0.4.4}%
+\contentsline {section}{\numberline {5}Histogram, QQ-plot and Ecdf plots.}{21}{section.0.5}%
+\contentsline {subsection}{\numberline {5.1}Histogram}{21}{subsection.0.5.1}%
+\contentsline {subsection}{\numberline {5.2}QQ-plot}{23}{subsection.0.5.2}%
+\contentsline {subsection}{\numberline {5.3}Ecdf plots}{23}{subsection.0.5.3}%
+\contentsline {section}{\numberline {6}x.scatter and pred.scatter plots}{23}{section.0.6}%
+\contentsline {subsection}{\numberline {6.1}x.scatter plots}{23}{subsection.0.6.1}%
+\contentsline {section}{\numberline {7}Waffle plot}{27}{section.0.7}%
+\contentsline {section}{\numberline {8}Plot LOQ}{28}{section.0.8}%
+\contentsline {section}{\numberline {9}Options for plots}{29}{section.0.9}%

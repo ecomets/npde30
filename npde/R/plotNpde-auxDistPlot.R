@@ -92,7 +92,7 @@ aux.npdeplot.hist<-function(obsmat,  plot.opt, distrib="norm", nclass=10, sim.yp
 
     # Plot bands
     {  if(plot.opt$bands==TRUE)
-      geom_crossbar(data=pimat, aes(x=x, y=median, ymin=lower, ymax=upper),
+      geom_crossbar(data=pimat, aes(x=.data$x, y=median, ymin=lower, ymax=upper),
                     width=diff(xhist$mids)[1],
                     colour = plot.opt$col.ther,
                     fill = plot.opt$fill.bands,
@@ -219,7 +219,7 @@ aux.npdeplot.dist<-function(obsmat,  plot.opt, dist.type="qqplot", distrib="norm
   if(sum(xmat$cens)>0) hasCens<-1 else hasCens<-0
   if(hasCens) xmat.cens<-xmat[xmat$cens==0,]
 
-  p<-ggplot(xmat, aes(x=y, y=x, group=factor(category))) +
+  p<-ggplot(xmat, aes(x=.data$y, y=.data$x, group=factor(category))) +
     # title and layout
     theme(plot.title = element_text(hjust = 0.5, size = plot.opt$size.sub),
           axis.title.x = element_text(size = plot.opt$size.xlab),
@@ -232,13 +232,13 @@ aux.npdeplot.dist<-function(obsmat,  plot.opt, dist.type="qqplot", distrib="norm
           panel.grid.major.x = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid),
           panel.grid.major.y = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid))+
     # PI
-    {if(plot.opt$bands==TRUE) geom_ribbon(data=pimat, aes(x=x, ymin=lower, ymax=upper), linetype = plot.opt$lty.bands,
+    {if(plot.opt$bands==TRUE) geom_ribbon(data=pimat, aes(x=.data$x, ymin=lower, ymax=upper), linetype = plot.opt$lty.bands,
                 colour = plot.opt$col.bands,
                 fill = plot.opt$fill.bands,
                 size = plot.opt$lwd.bands,
                 alpha=plot.opt$alpha.bands) } +
 
-    {if(plot.opt$bands==TRUE) geom_line(data=pimat, aes(x=x, y=median),
+    {if(plot.opt$bands==TRUE) geom_line(data=pimat, aes(x=.data$x, y=median),
                                         linetype = plot.opt$lty.ther,
                                         colour = plot.opt$col.ther,
                                         size = plot.opt$lwd.ther,
@@ -246,20 +246,20 @@ aux.npdeplot.dist<-function(obsmat,  plot.opt, dist.type="qqplot", distrib="norm
 
     # Plotting observed ecdf/qqplot
     {if (plot.opt$type=="l" || plot.opt$type=="b")
-      geom_line(data=xmat, aes(x=y, y=x),
+      geom_line(data=xmat, aes(x=.data$y, y=.data$x),
                 colour = plot.opt$col.lobs,
                 linetype = plot.opt$lty.lobs,
                 size = plot.opt$lwd.lobs) } +
 
     {if (plot.opt$type=="p" || plot.opt$type=="b")
-      geom_point(xmat.nocens, mapping = aes(x=y, y=x),
+      geom_point(xmat.nocens, mapping = aes(x=.data$y, y=.data$x),
                  colour = plot.opt$col.pobs,
                  shape = plot.opt$pch.pobs,
                  alpha = plot.opt$alpha.pobs,
                  size = plot.opt$size.pobs) } +
 
     { if (hasCens & plot.opt$type %in% c("p","b"))
-      geom_point(xmat.cens, mapping = aes(x=y, y=x),
+      geom_point(xmat.cens, mapping = aes(x=.data$y, y=.data$x),
                  color = plot.opt$col.pcens,
                  shape = plot.opt$pch.pcens,
                  size = plot.opt$size.pcens,

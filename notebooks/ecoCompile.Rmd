@@ -37,13 +37,20 @@ knitr::opts_chunk$set(root.dir = workDir)
   - Check => update documentation, create NAMESPACE
 - **FINAL COMPILATION FOR CRAN**
   - removed documentation (too large)
-  - removed simWararineBase 
+  - removed simwarfarineBase 
+  - still over 5Mo but seems to be ok
+- CRAN pre-test doesn't pass :-/
+  - added importFrom for ggplot functions, also for gridExtra (grid.arrange) and grid
+  - 'solved' problem by adding a dependency on rlang
+    - partially fixed with rlang
+    - workaround by defining global variables so check won't complain about them, but we need to use the .data systematically in ggplot aes() => **Romain TODO**
 
 ```{r compilation}
 setwd(file.path(workDir,"npde"))
 system("rm man/*")
 cmd<-paste("cp ", file.path(workDir,"latexDoc","userguide_3_0.pdf")," ", file.path(workDir,"userguide_npde_3.0.pdf"),sep="")
 system(cmd)
+devtools::document()
 roxygenise()
 setwd(workDir)
 system("R CMD build npde")

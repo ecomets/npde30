@@ -7,7 +7,7 @@ aux.npdeplot.boxcov <- function(obsmat, pimat, plot.opt) {
     y.limits = c(plot.opt$ylim[1],plot.opt$ylim[2])  else
       y.limits = c(min(pimat$pinf.lower),max(pimat$psup.upper))
 
-  p<-ggplot(obsmat, aes(x=grp, y=y, group=factor(grp, ordered=TRUE))) + 
+  p<-ggplot(obsmat, aes(x=grp, y=.data$y, group=factor(grp, ordered=TRUE))) + 
     geom_boxplot(varwidth=plot.opt$varwidth, width=plot.opt$boxwidth) +
     theme(plot.title = element_text(hjust = 0.5, size = plot.opt$size.sub),
           axis.title.y = element_text(size = plot.opt$size.ylab),
@@ -143,7 +143,7 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
       box.plot.width = 25
       x.limits = x.limits + c( -box.plot.width , box.plot.width  )*0.5
 
-      p <- ggplot( obsmat, aes( x, y, fill = factor( grp, ordered=TRUE) ) ) +
+      p <- ggplot( obsmat, aes( x=.data$x, y=.data$y, fill = factor( grp, ordered=TRUE) ) ) +
         # Title and layout
         theme(plot.title = element_text(hjust = 0.5, size = plot.opt$size.sub),
               axis.title.y = element_text(size = plot.opt$size.ylab),
@@ -207,7 +207,7 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
 
         # plot of data as boxplot
         geom_boxplot(data=obsmat,
-                     aes( x, y,  fill= factor( grp, ordered=TRUE)), varwidth=plot.opt$varwidth, width=plot.opt$boxwidth)+
+                     aes( x=.data$x, y=.data$y,  fill= factor( grp, ordered=TRUE)), varwidth=plot.opt$varwidth, width=plot.opt$boxwidth)+
 
         scale_fill_manual( values = rep( plot.opt$col.pobs,
                                          length(unique(obsmat$grp)) ) ) +
@@ -321,11 +321,11 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
         
         # plot non censored data
         { if ( plot.opt$plot.obs == TRUE )
-          geom_point( plotdatapoint, mapping = aes( x = x1, y = y1 ),
+          geom_point( plotdatapoint, mapping = aes( x = .data$x1, y = .data$y1 ),
                 color = plot.opt$col.pobs, shape = plot.opt$pch.pobs, size = plot.opt$size.pobs ) } +
         # plot censored data
         { if ( plot.opt$plot.obs == TRUE & dim(plotdatapoint2)[1]>0)
-          geom_point( plotdatapoint2, mapping = aes( x = x2, y = y2 ),
+          geom_point( plotdatapoint2, mapping = aes( x = .data$x2, y = .data$y2 ),
                       color = plot.opt$col.pcens, shape =  plot.opt$pch.pcens, size = plot.opt$size.pcens ) } +
 
         # x-y log-scales

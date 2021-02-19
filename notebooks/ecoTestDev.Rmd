@@ -34,10 +34,11 @@ library(gridExtra)
 library(mclust)
 library(testthat)
 library(grid)
-workDir<-"/home/eco/work/npde/npde30/"
+workDir<-"/home/eco/work/npde/npde30"
 setwd(workDir)
 knitr::opts_chunk$set(root.dir = workDir)
 docFigs<-"/home/eco/work/npde/doclib/figs"
+fullDatDir<-file.path(workDir,"keep","data") # Full data files (some removed from package to decrease size on CRAN)
 saveDocPlots<-FALSE
 savePaperPlots<-FALSE
 ```
@@ -155,7 +156,7 @@ print(theofit)
 data(virload)
 data(virload20)
 data(virload50)
-data(simvirload)
+simvirload<-read.table(file.path(fullDatDir, "simvirload.tab"), header=T)
 
 #Plotting the data
 par(mfrow=c(1,2))
@@ -191,8 +192,8 @@ wcov devrait marcher (avec les covariables données en numéro de colonne et pas
 
 ```{r warfarinRun, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
 data(warfarin)
-data(simwarfarinBase)
-data(simwarfarinCov)
+simwarfarinBase<-read.table(file.path(fullDatDir, "simwarfarinBase.tab"), header=T)
+simwarfarinBase<-read.table(file.path(fullDatDir, "simwarfarinBase.tab"), header=T)
 
 wbase<-autonpde(namobs=warfarin,namsim=simwarfarinBase, iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
 
@@ -204,7 +205,7 @@ wcov2<-autonpde(namobs=warfarin,namsim=simwarfarinCov, iid=1,ix=2,iy=4,icov=c("a
 
 # Warfarin with MDV
 datDir<-file.path(workDir,"npde","data")
-warfmdv<-read.table(file.path(datDir, "warfarin.tab"), header=TRUE)
+warfmdv<-read.table(file.path(datDir, "warfarin.tab"), header=T)
 idx<-sample(1:dim(warfmdv)[1], 10)
 warfmdv$mdv<-0
 warfmdv$mdv[idx]<-1

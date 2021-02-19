@@ -10,7 +10,7 @@ Encoding: UTF-8
 LazyLoad: yes
 LazyData: yes
 Imports: methods, scales, gridExtra, ggplot2, mclust, here, grid,
-        testthat
+        testthat, rlang
 RoxygenNote: 7.1.1
 Collate: 
     'NpdeSimData.R'

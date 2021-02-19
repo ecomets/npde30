@@ -21,6 +21,32 @@ This is also performed for all simulated data, and the npde are then computed on
 }
 More details can be found in the PDF documentation.
 }
+\examples{
+\dontrun{
+  data(warfarin)
+  data(simwarfarinCov)
+  wcov<-autonpde(namobs=warfarin,namsim=simwarfarinCov, iid=1,ix=2,iy=4,icov=c(3,6:8),
+  namsav="warfCov", units=list(x="hr",y="mg/L", covariates=c("mg","kg","-","yr")))
+  
+  # Diagnostic plots for warfarin with a covariate model
+  plot(wcov)
+  
+  # Covariate plots
+  xwt.scatt<-plot(wcov, plot.type="x.scatter", covsplit=TRUE, which.cov="wt")
+  xwt.qqplot<-plot(wcov, plot.type="qqplot", covsplit=TRUE, which.cov="wt")
+  xwt.box<-plot(wcov, plot.type="covariates", which.cov="wt")
+  xsex.scatt<-plot(wcov, plot.type="x.scatter", covsplit=TRUE, which.cov="sex")
+  xsex.qqplot<-plot(wcov, plot.type="qqplot", covsplit=TRUE, which.cov="sex")
+  xsex.box<-plot(wcov, plot.type="covariates", which.cov="sex")
+  
+  # Transforming the reference profile for npd, compared to a VPC plot
+  plot.tnpd<-plot(wcov, plot.type="x.scatter", ref.prof=list(id=2), 
+  main="tnpd with reference profile ID=2")
+  plot.vpc<-plot(wcov, plot.type="vpc", main="VPC")
+  grid.arrange(grobs=list(plot.tnpd, plot.vpc), nrow=1, ncol=2)
+}
+
+}
 \references{
 K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.
 Mentre. Metrics for external model evaluation with an application to the

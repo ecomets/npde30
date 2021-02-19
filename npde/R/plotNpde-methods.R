@@ -21,6 +21,8 @@
 #' plot(x)
 #' }
 #' @importFrom graphics plot boxplot hist lines par points polygon rect segments
+#' @import ggplot2 
+#' @importFrom rlang .data
 #' @method plot NpdeData
 #' @export
 

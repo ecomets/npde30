@@ -30,6 +30,8 @@
 #' 23:2036--49, 2006.
 #' @keywords plot
 #' @export
+#' @importFrom grid textGrob gpar 
+#' @importFrom gridExtra grid.arrange
 
 npde.plot.select<-function(npdeObject,data=FALSE,ecdf=FALSE,qqplot=FALSE, histogram=FALSE,x.scatter=FALSE,pred.scatter=FALSE,x.box=FALSE,pred.box=FALSE, cov.x.scatter=FALSE,cov.pred.scatter=FALSE,cov.x.box=FALSE,cov.pred.box=FALSE, cov.ecdf=FALSE, vpc=FALSE,...) {
   # Function selecting which plots are to be drawn
@@ -238,7 +240,7 @@ npde.plot.data<-function(npdeObject,...) {
 
     # ggplot template
 
-    p = ggplot(dataplot, aes(x=x, y=y)) +
+    p = ggplot(dataplot, aes(x=.data$x, y=.data$y)) +
 
       theme(plot.title = element_text(hjust = 0.5, size = plot.opt$size.sub),
             axis.title.y = element_text(size = plot.opt$size.ylab),
@@ -258,7 +260,7 @@ npde.plot.data<-function(npdeObject,...) {
       coord_cartesian(xlim=x.limits, ylim=y.limits) +
 
       geom_point(dataplot,
-                 mapping=aes(x=x,y=y),
+                 mapping=aes(x=.data$x,y=.data$y),
                  color = plot.opt$col.pobs,
                  alpha = plot.opt$alpha.pobs,
                  size = plot.opt$size.pobs,
@@ -278,7 +280,7 @@ npde.plot.data<-function(npdeObject,...) {
       
       {if(plot.opt$plot.loq ==TRUE)
         geom_point(dataloq_plot,
-                   mapping = aes(x=x,y=y),
+                   mapping = aes(x=.data$x,y=.data$y),
                    color = plot.opt$col.pcens,
                    shape = plot.opt$pch.pcens,
                    size = plot.opt$size.pcens,
@@ -310,7 +312,7 @@ npde.plot.data<-function(npdeObject,...) {
 
     ## ggplot template
 
-    p = ggplot(dataplot, aes(x=x, y=y)) +
+    p = ggplot(dataplot, aes(x=.data$x, y=.data$y)) +
 
       theme(plot.title = element_text(hjust = 0.5, size = plot.opt$size.sub),
             axis.title.y = element_text(size = plot.opt$size.ylab),

@@ -59,7 +59,7 @@ theofit<-autonpde(theopp,simtheopp,1,3,4,boolsave=FALSE, units=list(x="hr",y="mg
 data(virload)
 data(virload20)
 data(virload50)
-data(simvirload)
+simvirload<-read.table(file.path(fullDatDir, "simvirload.tab"), header=T)
 
 # full data
 if(FALSE) xvir<-autonpde(virload,simvirload,iid=1,ix=2,iy=3,boolsave=FALSE, units=list(x="hr", y="cp/mL, log 10 base"))

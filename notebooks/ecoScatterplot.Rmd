@@ -58,6 +58,7 @@ library(testthat)
 workDir<-"/home/eco/work/npde/npde30"
 notesDir<-file.path(workDir,"notebooks")
 datDir<-file.path(workDir,"npde","data")
+fullDatDir<-file.path(workDir,"keep","data") # Full data files (some removed from package to decrease size on CRAN)
 testsDir<-file.path(workDir,"npde","tests","testthat")
 setwd(workDir)
 ```
@@ -98,16 +99,16 @@ source(file.path(workDir,"npde","R","plotNpde-covplot.R"))
 # Distribution plots
 source(file.path(workDir,"npde","R","plotNpde-auxDistPlot.R")) # renamed from plotNpde-unitFunctionsAux.R
 source(file.path(workDir,"npde","R","plotNpde-distributionPlot.R")) # extracted "main" for distribution plots from plotNpde-plotFunctions.R
-
+  source(file.path(workDir,"npde","R","plotNpde-covplot.R"))
 ```
 
 ### Run npde
 
 ```{r runNpde, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
 # Warfarin data, using files on disk
-wbase<-autonpde(namobs=file.path(datDir, "warfarin.tab"),namsim=file.path(datDir, "simwarfarinBase.tab"), iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
+wbase<-autonpde(namobs=file.path(datDir, "warfarin.tab"),namsim=file.path(fullDatDir, "simwarfarinBase.tab"), iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
 
-wcov<-autonpde(namobs=file.path(datDir, "warfarin.tab"),namsim=file.path(datDir, "simwarfarinCov.tab"), iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
+wcov<-autonpde(namobs=file.path(datDir, "warfarin.tab"),namsim=file.path(fullDatDir, "simwarfarinCov.tab"), iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
 ```
 
 ### Prepare obsmat for npde/pd versus x, with or without covariates sex and weight

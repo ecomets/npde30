@@ -2,7 +2,7 @@ Package: npde
 Title: Normalised Prediction Distribution Errors for Nonlinear Mixed-Effect Models
 Version: 3.0
 Date: 2021-02-01
-Author: Emmanuelle Comets, Romain Leroux, Karl Brendel, Thi Huyen Tram Nguyen, France Mentre.
+Author: Emmanuelle Comets, Karl Brendel, Thi Huyen Tram Nguyen, Romain Leroux, France Mentre.
 Maintainer: Emmanuelle Comets <emmanuelle.comets@inserm.fr>
 Description: Provides routines to compute normalised prediction distribution errors, a metric designed to evaluate non-linear mixed effect models such as those used in pharmacokinetics and pharmacodynamics.
 License: GPL (>= 2)

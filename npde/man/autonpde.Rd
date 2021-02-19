@@ -7,7 +7,7 @@
 \usage{
 autonpde(namobs, namsim, iid, ix, iy, imdv = 0, icens = 0,
 icov = 0, iipred = 0, boolsave = TRUE, namsav = "output", type.graph = "eps",
-verbose = FALSE, calc.npde=TRUE, calc.pd=TRUE, decorr.method = "cholesky",
+verbose = FALSE, calc.npde=TRUE, calc.npd=TRUE, decorr.method = "cholesky",
  cens.method = "cdf", units = list(x="",y=""), detect=FALSE, ties=TRUE, header=TRUE)
 
 npde()
@@ -62,7 +62,7 @@ processed, FALSE otherwise), defaults to FALSE}
 \item{calc.npde}{a boolean (TRUE if npde are to be computed, FALSE otherwise),
 defaults to TRUE}
 
-\item{calc.pd}{a boolean (TRUE if pd are to be computed, FALSE otherwise), defaults
+\item{calc.npd}{a boolean (TRUE if npd are to be computed, FALSE otherwise), defaults
 to TRUE}
 
 \item{decorr.method}{a character string indicating the method used to decorrelate
@@ -90,7 +90,7 @@ An object of class \code{\link{NpdeObject}}
 }
 \description{
 These functions compute normalised prediction distribution errors (npde) and
-optionally prediction discrepancies (pd). \code{npde} asks the user the name
+prediction discrepancies (pd). \code{npde} asks the user the name
 and structure of the files containing the data, using \code{pdemenu}, while
 \code{autonpde} takes these variables and others as arguments.
 }
@@ -98,6 +98,9 @@ and structure of the files containing the data, using \code{pdemenu}, while
 Both functions compute the normalised prediction distribution errors (and/or
 prediction discrepancies) in the same way. \code{npde} is an interactive
 function whereas \code{autonpde} takes all required input as arguments.
+
+Diagnostic graphs are produced for npd, and npde are used in the tests as
+their distribution takes into account the correlation between repeated observations.
 
 When the computation of npde fails because of numerical problems, error
 messages are printed out, then pd are computed instead and graphs of pd are
@@ -140,6 +143,8 @@ K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.
 Mentre. Metrics for external model evaluation with an application to the
 population pharmacokinetics of gliclazide. \emph{Pharmaceutical Research},
 23:2036--49, 2006.
+
+PDF documentation for npde 3.0: \url{https://github.com/ecomets/npde30/blob/main/userguide_npde_3.0.pdf}
 }
 \seealso{
 \code{\link{npde.graphs}}, \code{\link{gof.test}}

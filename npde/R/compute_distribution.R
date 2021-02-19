@@ -9,8 +9,8 @@
 #' @usage dist.pred.sim(npdeObject,nsamp, ...)
 #' @param npdeObject an object returned by a call to \code{\link{npde}} or \code{\link{autonpde}}
 #' @param nsamp number of datasets (defaults to 100 or to the number of replications if it is smaller)
-#' @param \dots additional arguments. Currently only the value of calc.pd and calc.npde may be passed on, and will override their corresponding value in the "options" slot of npdeObject
-#' @return an object of class NpdeObject; the ["results"] slot will contain pd and/or npde for a sample of the simulated datasets (depending on whether calc.pd/calc.npde are ), stored in pd.sim and/or npde.sim
+#' @param \dots additional arguments. Currently only the value of calc.npd and calc.npde may be passed on, and will override their corresponding value in the "options" slot of npdeObject
+#' @return an object of class NpdeObject; the ["results"] slot will contain pd and/or npde for a sample of the simulated datasets (depending on whether calc.npd/calc.npde are set), stored in pd.sim and/or npde.sim
 #' @author Emmanuelle Comets <emmanuelle.comets@@bichat.inserm.fr>
 #' @seealso \code{\link{npde}}, \code{\link{autonpde}}
 #' @references K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.
@@ -34,16 +34,16 @@
 #'
 dist.pred.sim<-function(npdeObject,nsamp, ...) {
   args1<-match.call(expand.dots=TRUE)
-  i1<-match("calc.pd",names(args1))
-  calc.pd<-NA
-  if(!is.na(i1)) calc.pd<-as.logical(as.character(args1[[i1]]))
-  if(is.na(calc.pd)) calc.pd<- npdeObject["options"]$calc.pd
+  i1<-match("calc.npd",names(args1))
+  calc.npd<-NA
+  if(!is.na(i1)) calc.npd<-as.logical(as.character(args1[[i1]]))
+  if(is.na(calc.npd)) calc.npd<- npdeObject["options"]$calc.npd
   i1<-match("calc.npde",names(args1))
   calc.npde<-NA
   if(!is.na(i1)) calc.npde<-as.logical(as.character(args1[[i1]]))
   if(is.na(calc.npde)) calc.npde<- npdeObject["options"]$calc.npde
-  if(!calc.pd & !calc.npde) {
-    cat("At least one of calc.pd or calc.npde must be TRUE.\n")
+  if(!calc.npd & !calc.npde) {
+    cat("At least one of calc.npd or calc.npde must be TRUE.\n")
     return(npdeObject)
   }
 
@@ -74,7 +74,7 @@ dist.pred.sim<-function(npdeObject,nsamp, ...) {
   for(isuj in unique(idobs)) {
     matsim<-matrix(ysim[idsim==isuj],ncol=nrep)
     ysuj<-yobs[idobs==isuj,]
-    if(calc.pd) {
+    if(calc.npd) {
       pdsuj<-c()
       # compute pdsim_ij
       for(i in 1:nsamp) {
@@ -109,7 +109,10 @@ dist.pred.sim<-function(npdeObject,nsamp, ...) {
   }
 
   # Saving results
-  if(calc.pd) npdeObject["results"]["pd.sim"]<-pd
-  if(calc.npde) npdeObject["results"]["npde.sim"]<-npde
+  if(calc.npd) {
+    npdeObject["results"]["pd.sim"]<-pd
+    npdeObject["results"]["npd.sim"]<-qnorm(pd)
+  }
+ if(calc.npde) npdeObject["results"]["npde.sim"]<-npde
   return(npdeObject)
 }

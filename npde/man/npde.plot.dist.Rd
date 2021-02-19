@@ -6,12 +6,12 @@
 \alias{aux.npdeplot.dist}
 \title{Distribution plots of pd/npde}
 \usage{
-npde.plot.dist(npdeObject, which="npde", dist.type="qqplot", ...)
+npde.plot.dist(npdeObject, which="npd", dist.type="qqplot", ...)
 }
 \arguments{
 \item{npdeObject}{an object returned by a call to \code{\link{npde}} or \code{\link{autonpde}}}
 
-\item{which}{a string determining which metric to plot, one of "npde", "pd" or "npd" (defaults to "npde")}
+\item{which}{a string determining which metric to plot (one of "npde", "pd" or "npd"), defaults to "npd"}
 
 \item{dist.type}{string, one of "ecdf" (empirical cumulative density function), "hist" (histogram) or "qqplot" (QQ-plot of the empirical distribution versus the theoretical quantiles) to determine which type of plot (default is "qqplot")}
 

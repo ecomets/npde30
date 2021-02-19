@@ -46,4 +46,7 @@ The file simvirload contains 1000 simulations under the same model.
   plot(Log_VL~Time,data=virload50,xlab="Time (d)",ylab="Viral loads, base 10 log-scale (cp/mL)")
 }
 }
+\references{
+PDF documentation for npde 3.0: \url{https://github.com/ecomets/npde30/blob/main/userguide_npde_3.0.pdf}
+}
 \keyword{datasets}

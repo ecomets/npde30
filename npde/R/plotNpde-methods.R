@@ -134,8 +134,12 @@ plot.NpdeRes <- function(x, y, ...) {
 #' @param x a NpdeObject object
 #' @param y unused, here for compatibility with the base plot function
 #' @param \dots additional graphical parameters, which when given will supersede graphical preferences stored in the object
-#' @details The default plot
-#' @references K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.Mentre. Metrics for external model evaluation with an application to the population pharmacokinetics of gliclazide. \emph{Pharmaceutical Research}, 23:2036--49, 2006.
+#' 
+#' @details The default plot, as a 2x2 array with distribution plots on the top row (histogram and QQ-plot), and scatterplots of npde
+#' versus independent variable and population predictions on the bottom row. 
+#' The graph is plotted in a graphic device window, unless the result is stored in an object (eg myplot<-plot(x)) which can then be printed (eg using print(myplot)).
+#'
+#'  @references K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.Mentre. Metrics for external model evaluation with an application to the population pharmacokinetics of gliclazide. \emph{Pharmaceutical Research}, 23:2036--49, 2006.
 #' @seealso \code{\link{set.plotoptions}}
 #' @keywords plot
 #' @examples
@@ -155,6 +159,7 @@ plot.NpdeRes <- function(x, y, ...) {
 plot.NpdeObject <- function(x, y, ...) {
 
   args1<-match.call(expand.dots=TRUE)
+  list.args <- list(...)
 
   i1<-match("new",names(args1))
   if(!is.na(i1)) force.new<-as.logical(as.character(args1[[i1]])) else force.new<-NULL
@@ -165,23 +170,27 @@ plot.NpdeObject <- function(x, y, ...) {
   if(!is.na(i1)) {
     plot.type<-as.character(args1[[i1]])
     plot.type<-plot.type[plot.type!="c"]
-  } else plot.type<-"default"
+  } else { # if the user types dist.type instead of plot.type, and does not specify plot.type, we assume a typo
+    i2<-match("dist.type",names(args1))
+    if(!is.na(i2)) {
+      plot.type<-as.character(args1[[i2]])
+      } else plot.type<-"default"
+  }
 
-
-  if(verbose) cat("Selected plot type:",plot.type,"\n")
   i1<-match("which",names(args1))
   if(!is.na(i1)) {
     typmet<-as.character(args1[[i1]])
-    typmet<-plot.type[plot.type!="c"]
-  } else typmet<-"npde"
+    typmet<-typmet[ typmet !="c"]
+    typmet<-intersect(typmet, c("npd","npde","pd","pde")) # check if which is one of the allowed metrics, if not set to npd
+  } else typmet<-"npd"
+  if(length(typmet)==0) typmet<-"npd" # defaults to npd
 
-
-  pltyp<-c("data","default", "ecdf","qqplot","histogram","x.scatter","pred.scatter", "cov.scatter","cov.x.scatter","cov.pred.scatter","cov.hist","cov.qqplot", "cov.ecdf","vpc","loq")
+  if(verbose) cat("Selected plot type:",plot.type,"\n")
+  pltyp<-c("data","default", "ecdf","qqplot","histogram","x.scatter","pred.scatter", "covariates","cov.x.scatter","cov.pred.scatter","cov.hist","cov.qqplot", "cov.ecdf","vpc","loq")
   ifnd<-pmatch(plot.type,pltyp)
   if(sum(is.na(ifnd))>0) {
     cat("The following plot types were not found or are ambiguous:", plot.type[is.na(ifnd)],"\n")
   }
-
   ifnd<-ifnd[!is.na(ifnd)]
 
   if(length(ifnd)==0) return("Plot type not found\n")
@@ -192,8 +201,10 @@ plot.NpdeObject <- function(x, y, ...) {
   # Check if pd or npde are present in the dataset, if not, perform the computation (ECO TODO remove ?)
   if(length(plot.type)>1 || plot.type[1]!="data") {
     icompute.pd<-icompute.npde<-icompute<-FALSE
-    if(typmet %in% c("both","pd") & length(x["results"]["res"]$pd)==0) icompute.pd<-TRUE
-    if(typmet %in% c("both","npde") & length(x["results"]["res"]$npde)==0) icompute.npde<-TRUE
+    if(!is.na(match("pd", typmet)) | !is.na(match("both", typmet))) {
+      if(length(x["results"]["res"]$pd)==0) icompute.pd<-TRUE  }
+    if(!is.na(match("npde", typmet)) | !is.na(match("both", typmet))) {
+      if(length(x["results"]["res"]$npde)==0) icompute.npde<-TRUE  }
     if(icompute.npde | icompute.pd) {
       icompute<-TRUE
       if(interactive) {
@@ -204,106 +215,200 @@ plot.NpdeObject <- function(x, y, ...) {
       {if(verbose) cat("Missing some elements for plots, will perform computations\n")}
     }
     if(icompute) {
-      x["options"]$calc.pd<-icompute.pd
+      x["options"]$calc.npd<-icompute.pd
       x["options"]$calc.npde<-icompute.npde
       x<-npde.main(x)
       assign(namObj,x,envir=parent.frame())
     }
   }
 
-  if(typmet!="npde") x@prefs$bands<-FALSE
+  # ECO: commented this, not sure why it was set that way ???
+#  if(typmet!="npde") x@prefs$bands<-FALSE
 
   # check the argument of plot
-  list.args = c(list(...),formalArgs( plot.NpdeObject ))
+  # list.args = c(list(...),formalArgs( plot.NpdeObject ))
+  # print(list.args, quote=TRUE)
+  # stop()
+  
+  # remove duplicate arguments that we will set explicitly in case they have been passed in ...
+  list.args<-list.args[!(names(list.args) %in% c("dist.type", "which.x", "which.y", "which"))]
+  # print(list.args, quote=TRUE)
+  # stop()
 
-  if( "plot.type" %in% names(list.args) == FALSE && "dist.type" %in% names(list.args) == TRUE)
-    stop("plot.type is not in the argument")
-
-  if( "plot.type" %in% names(list.args) == TRUE && "dist.type" %in% names(list.args) == TRUE)
-    stop("plot.type & dist.type are both in the arguments")
-
+  # arguments added to list.args MUST HAVE THE NAME THEY HAVE within the function called by do.call => x becomes npdeObject within the auxiliary functions...
+  list.args$npdeObject <- x
+  
   for(ipl in plot.type) {
     switch (EXPR=ipl,
             "data"={
               plot.data = npde.plot.data(x,...)
-              return(plot.data)
+              return( suppressWarnings(plot.data))
             },
             "default"={
-              npde.plot.default(x,...)
+              plot.default<-plot.default<-npde.plot.default(x, ...)
+              invisible( suppressWarnings( plot.default)) # doesn't work to return the plot, but if return, plots the 4 plots
             },
 
             "x.scatter"={
               if(verbose) cat("Plotting scatterplot versus independent variable\n")
               list.plot.x.scatter = list()
-              for(imet in typmet) list.plot.x.scatter[[imet]] = npde.plot.scatterplot(x, which.x="x", which.y=imet, ...)
-              return(list.plot.x.scatter)
+              list.args$which.x<-"x"
+              for(imet in typmet) {
+                list.args$which.y<-imet
+                list.plot.x.scatter[[imet]] <- do.call(npde.plot.scatterplot, list.args)
+              }
+              if(length(typmet)==1) list.plot.x.scatter<-list.plot.x.scatter[[1]]
+              return( suppressWarnings(list.plot.x.scatter))
             },
 
             "pred.scatter"={
               if(verbose) cat("Plotting scatterplot versus predictions\n")
               list.plot.pred.scatter = list()
-              for(imet in typmet) list.plot.pred.scatter[[imet]] = npde.plot.scatterplot(x, which.x="pred", which.y=imet, ...)
-              return(list.plot.pred.scatter)
+              list.args$which.x<-"pred"
+              for(imet in typmet) {
+                list.args$which.y<-imet
+                list.plot.pred.scatter[[imet]] <- do.call(npde.plot.scatterplot, list.args)
+              }
+              if(length(typmet)==1) list.plot.pred.scatter<-list.plot.pred.scatter[[1]]
+              return( suppressWarnings(list.plot.pred.scatter))
             },
 
-            "cov.scatter"={
-              if(verbose) cat("Plotting boxplots versus covariates\n")
-              for(imet in typmet) npde.plot.covariate(x, which.y=imet, new=force.new, ...) # do we need new ? if so
+            "covariates"={
+              if(verbose) cat("Plotting boxplots of", typmet,"versus covariate categories\n")
+              plot.covariates<-list()
+#              list.args$which.x<-"cov"
+#              list.args$new<-force.new
+              for(imet in typmet) {
+                list.args$which.y<-imet
+                plot.covariates[[imet]] <- do.call(npde.plot.covariate, list.args)
+              }
+              if(length(typmet)==1) plot.covariates<-plot.covariates[[1]]
+              return( suppressWarnings(plot.covariates))
             },
 
             "qqplot"={
               if(verbose) cat("Plotting QQ-plot of the distribution\n")
-              list.plot.plot.qqplot = list()
-              list.plot.plot.qqplot = npde.plot.dist(x, dist.type="qqplot",new=force.new,...)
-              return(list.plot.plot.qqplot)
+              list.plot.qqplot = list()
+              list.args$dist.type<-"qqplot"
+              list.args$new <- force.new
+#              print(list.args[names(list.args)=="dist.type"], quote=TRUE)
+              for(imet in typmet) {
+                list.args$which <- imet # set which variable to plot
+                list.plot.qqplot[[imet]] <-do.call(npde.plot.dist, list.args)
+              }
+              if(length(typmet)==1) list.plot.qqplot<-list.plot.qqplot[[1]]
+              return( suppressWarnings(list.plot.qqplot))
             },
             "histogram"={
-              #        if(verbose) cat("Plotting histogram of the distribution\n")
-              list.plot.plot.histogram = list()
-              list.plot.plot.histogram = npde.plot.dist(x, dist.type="hist",new=force.new,...)
-              return( list.plot.plot.histogram )
+              if(verbose) cat("Plotting histogram of the distribution\n")
+              list.plot.histogram = list()
+              list.args$dist.type<-"hist"
+              list.args$new <- force.new
+              for(imet in typmet) {
+                list.args$which <- imet
+                list.plot.histogram[[imet]] <-do.call(npde.plot.dist, list.args)
+              }
+              if(length(typmet)==1) list.plot.histogram<-list.plot.histogram[[1]]
+              return( suppressWarnings( list.plot.histogram ))
             },
 
             "ecdf"={
               if(verbose) cat("Plotting the empirical distribution function of residuals\n")
-              plot.ecdf = npde.plot.dist(x, dist.type="ecdf", new=force.new, ...)
-              return( plot.ecdf )
+              list.plot.ecdf = list()
+              list.args$dist.type<-"ecdf"
+              list.args$new <- force.new
+              for(imet in typmet) {
+                list.args$which <- imet
+                list.plot.ecdf[[imet]]<-do.call(npde.plot.dist, list.args)
+              }
+              if(length(typmet)==1) list.plot.ecdf<-list.plot.ecdf[[1]]
+              return( suppressWarnings(list.plot.ecdf ))
             },
 
-            "vpc"={
-              plot.vpc = npde.plot.scatterplot(x, which.x="x", which.y="yobs", ...)
-              return( plot.vpc )
+            "vpc"={ # similar to plot.type="x.scatter", which.x="x", which.y="yobs"
+              if(verbose) cat("Plotting VPC\n")
+              list.args$which.x <-"x"
+              list.args$which.y <-"yobs"
+              plot.vpc <- do.call(npde.plot.scatterplot, list.args)
+              return( suppressWarnings( plot.vpc))
             },
 
-            "cov.x.scatter"={
-              if(verbose) cat("Plotting scatterplot versus X, splitted by covariate(s)\n")
-              for(imet in typmet) npde.plot.scatterplot(x, which.x="x", which.y=imet, covsplit=TRUE,...)
+            "cov.x.scatter"={ # alias for plot.type="x.scatter", covsplit=TRUE
+              if(verbose) cat("Plotting scatterplot versus X, split by covariate(s)\n")
+              list.args$covplit<-TRUE
+              list.args$which.x <-"x"
+              # we could probably just iteratively call the same function (but maybe pbs with ggplot objects...)
+              list.plot.cov = list()
+              for(imet in typmet) {
+                list.args$which.y <- imet
+                list.plot.cov[[imet]]<-do.call(npde.plot.scatterplot, list.args)
+              }
+              if(length(typmet)==1) list.plot.cov<-list.plot.cov[[1]]
+              return( suppressWarnings(list.plot.cov ))
             },
 
-            "cov.pred.scatter"={
-              if(verbose) cat("Plotting scatterplot versus predictions, splitted by covariate(s)\n")
-              for(imet in typmet) npde.plot.scatterplot(x, which.x="pred", which.y=imet, covsplit=TRUE,...)
+            "cov.pred.scatter"={ # alias for plot.type="pred.scatter", covsplit=TRUE
+              if(verbose) cat("Plotting scatterplot versus predictions, split by covariate(s)\n")
+              list.plot.pred.scatter = list()
+              list.args$which.x<-"pred"
+              list.args$covsplit <- TRUE
+              for(imet in typmet) {
+                list.args$which.y<-imet
+                list.plot.pred.scatter[[imet]] <- do.call(npde.plot.scatterplot, list.args)
+              }
+              if(length(typmet)==1) list.plot.pred.scatter<-list.plot.pred.scatter[[1]]
+              return( suppressWarnings(list.plot.pred.scatter))
             },
 
-            "cov.hist"={
-              if(verbose) cat("Plotting histogram of the distribution, splitted by covariate(s)\n")
-              npde.plot.dist(x, dist.type="hist", covsplit=TRUE,...)
+            "cov.hist"={ # alias for plot.type="hist", covsplit=TRUE
+              if(verbose) cat("Plotting histogram of the distribution, split by covariate(s)\n")
+              list.plot.histogram = list()
+              list.args$dist.type<-"hist"
+              list.args$covsplit <- TRUE
+              # list.args$new <- force.new
+              for(imet in typmet) {
+                list.args$which <- imet
+                list.plot.histogram[[imet]] <-do.call(npde.plot.dist, list.args)
+              }
+              if(length(typmet)==1) list.plot.histogram<-list.plot.histogram[[1]]
+              return( suppressWarnings( list.plot.histogram ))
             },
 
-            "cov.qqplot"={
-              if(verbose) cat("Plotting histogram of the distribution, splitted by covariate(s)\n")
-              npde.plot.dist(x, dist.type="qqplot", covsplit=TRUE,...)
+            "cov.qqplot"={ # alias for plot.type="qqplot", covsplit=TRUE
+              if(verbose) cat("Plotting histogram of the distribution, split by covariate(s)\n")
+              list.plot.qqplot = list()
+              list.args$dist.type<-"qqplot"
+              list.args$covsplit <- TRUE
+              # list.args$new <- force.new
+              for(imet in typmet) {
+                list.args$which <- imet # set which variable to plot
+                list.plot.qqplot[[imet]] <-do.call(npde.plot.dist, list.args)
+              }
+              if(length(typmet)==1) list.plot.qqplot<-list.plot.qqplot[[1]]
+              return( suppressWarnings(list.plot.qqplot))
             },
 
-            "cov.ecdf"={
-              if(verbose) cat("Plotting histogram of the distribution, splitted by covariate(s)\n")
-              npde.plot.dist(x, dist.type="ecdf", covsplit=TRUE,...)
+            "cov.ecdf"={  # alias for plot.type="ecdf", covsplit=TRUE
+              if(verbose) cat("Plotting histogram of the distribution, split by covariate(s)\n")
+              list.plot.ecdf = list()
+              list.args$dist.type<-"ecdf"
+              list.args$covsplit <- TRUE
+#              list.args$new <- force.new
+              for(imet in typmet) {
+                list.args$which <- imet
+                list.plot.ecdf[[imet]]<-do.call(npde.plot.dist, list.args)
+              }
+              if(length(typmet)==1) list.plot.ecdf<-list.plot.ecdf[[1]]
+              return( suppressWarnings(list.plot.ecdf ))
             },
 
             "loq"={
               if(length(x["results"]["ploq"])>0) {
                 if(verbose) cat("Plotting p_LOQ=p(yobs<LOQ) \n")
-                npde.plot.loq(x,...)
+                list.args$xaxis <- "x"
+                list.args$nsim <- 200
+                list.plot.loq<-do.call(npde.plot.loq, list.args)
+                return( suppressWarnings(list.plot.loq ))
               }
             },
             cat("Plot ",ipl," not implemented yet\n")

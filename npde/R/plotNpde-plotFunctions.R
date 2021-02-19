@@ -153,7 +153,6 @@ npde.plot.data<-function(npdeObject,...) {
 
   # data plot x,y and id
   x<-npdeObject["data"]["data"][,npdeObject["data"]["name.predictor"]]
-  y<-npdeObject["results"]["res"]$ycomp
   plot.opt<-npdeObject["prefs"]
   id<-(npdeObject["data"]["data"]$index %in% plot.opt$ilist)
 
@@ -161,34 +160,26 @@ npde.plot.data<-function(npdeObject,...) {
   userPlotOptions = list(...)
   plot.opt<-set.plotoptions.default(npdeObject)
   plot.opt <- modifyList(plot.opt, userPlotOptions[intersect(names(userPlotOptions), names(plot.opt))])
+  if(plot.opt$impute.loq)  y<-npdeObject["results"]["res"]$ycomp else y<-npdeObject["data"]["data"][,npdeObject["data"]["name.response"]]
 
   # meta arguments to change col,lwd,lty,pch for lines and symbols
-  if ( plot.opt$size %in% userPlotOptions)
-  {
-    plot.opt$size.pobs = plot.opt$size
-  }
+  if ( plot.opt$size %in% userPlotOptions)    plot.opt$size.pobs = plot.opt$size
 
-  if ( plot.opt$col %in% userPlotOptions)
-  {
+  if ( plot.opt$col %in% userPlotOptions)  {
     plot.opt$col.pobs = plot.opt$col
     plot.opt$col.lobs = plot.opt$col
   }
 
   if ( plot.opt$lwd %in% userPlotOptions)
-  {
     plot.opt$lwd.lobs = plot.opt$lwd
-  }
 
-  if ( plot.opt$pch %in% userPlotOptions)
-  {
+  if ( plot.opt$pch %in% userPlotOptions)  {
     plot.opt$pch.pobs <- plot.opt$pch
     plot.opt$pch.pcens = plot.opt$pch
   }
 
   if ( plot.opt$lty %in% userPlotOptions)
-  {
     plot.opt$lty.lobs = plot.opt$lty
-  }
 
   # xlab, ylab
   if(plot.opt$xlab=="") {
@@ -203,7 +194,7 @@ npde.plot.data<-function(npdeObject,...) {
   # -----------------------------------------------------------------------------------------------------------------
 
   # ggplot with censored data
-  if(has.cens) {
+  if(has.cens) { # do we really need to separate those 2 cases ? we oculd use if to add the relevant points for censored data as in the other plots
 
     xplot = x[id & !is.cens]
     yplot = y[id & !is.cens]
@@ -245,8 +236,6 @@ npde.plot.data<-function(npdeObject,...) {
     # loq value
     loq = npdeObject@data@loq
 
-
-
     # ggplot template
 
     p = ggplot(dataplot, aes(x=x, y=y)) +
@@ -282,8 +271,11 @@ npde.plot.data<-function(npdeObject,...) {
 
       {if(plot.opt$line.loq==TRUE)
 
-        geom_hline(dataplot,mapping = aes(yintercept = as.numeric(loq)))}+
-
+        geom_hline(dataplot,mapping = aes(yintercept = as.numeric(loq)),
+                   linetype = plot.opt$lty.line.loq,
+                   color = plot.opt$col.line.loq,
+                   size = plot.opt$lwd.line.loq  )}+
+      
       {if(plot.opt$plot.loq ==TRUE)
         geom_point(dataloq_plot,
                    mapping = aes(x=x,y=y),
@@ -294,9 +286,6 @@ npde.plot.data<-function(npdeObject,...) {
 
       scale_x_continuous(plot.opt$xlab, scales::pretty_breaks(n = plot.opt$breaks.x)) +
       scale_y_continuous(plot.opt$ylab, scales::pretty_breaks(n = plot.opt$breaks.y))
-
-    print(p)
-
   }# end if cens
 
   if(!has.cens) {
@@ -352,12 +341,11 @@ npde.plot.data<-function(npdeObject,...) {
 
        scale_x_continuous(plot.opt$xlab, scales::pretty_breaks(n = plot.opt$breaks.x)) +
        scale_y_continuous(plot.opt$ylab, scales::pretty_breaks(n = plot.opt$breaks.y))
-
-    # print(p)
   }
-  list_plot = list()
-  list_plot[[1]] = p
-  return( list_plot )
+  # list_plot = list()
+  # list_plot[[1]] = p
+  # return( list_plot )
+  return(p)
 
 } # end function
 
@@ -377,109 +365,81 @@ npde.plot.data<-function(npdeObject,...) {
 ## #' @keywords plot by default : qqplot, hist, x.scatter, pred.scatter
 
 npde.plot.default<-function(npdeObject,  ...) {
-
-  # remove the covariables for the waffle plot by defaults
-
-  if (length(npdeObject@data@name.covariates)!=0){
-
-    new_npdeObject = npdeObject
-    drops = new_npdeObject@data@name.covariates
-    new_npdeObject@data@data <- new_npdeObject@data@data[ , !(names(new_npdeObject@data@data) %in% drops)]
-
-  }else{
-
-    new_npdeObject = npdeObject
-
-  }
-
-  # modify the plot options with the user ones
+  
+  # modify the plot options with the user ones (... can supersede some argumetns in plot.opt, eg covsplit to force a plot by covariates)
   userPlotOptions = list(...)
-  plot.opt <- set.plotoptions.default(new_npdeObject)
+  plot.opt <- set.plotoptions.default(npdeObject)
   plot.opt <- modifyList(plot.opt, userPlotOptions[intersect(names(userPlotOptions), names(plot.opt))])
+  list.args <- list(...) # list used to pass on to individual functions through do.call
+  list.args<-list.args[!(names(list.args) %in% c("dist.type", "which.x", "which.y", "which"))]
+  list.args$npdeObject <- npdeObject
+  typmet<-intersect(plot.opt$which, c("npd","npde","pd","pde")) # check if which is one of the allowed metrics, if not set to npd
+  if(length(typmet)==0) plot.opt$which<-"npd"
 
-  # waffle plot with covariate
-  if ( plot.opt$covsplit ==TRUE)
-  {
-    covariates = plot.opt$which.cov
-    i=1
-    for (covariate in covariates)
-    {
-
-      hist.cov <-   npde.plot.dist(npdeObject,
-                                   plot.opt$which,
-                                   dist.type="hist",
-                                   which.cov = covariate,
-                                   plot.default=TRUE,...)
-
-      qqplot.cov <-   npde.plot.dist(npdeObject,
-                                     plot.opt$which,
-                                     dist.type="qqplot",
-                                     which.cov = covariate,
-                                     plot.default=TRUE,...)
-
-      x.scatter.cov <-   npde.plot.scatterplot(npdeObject,
-                                               which.x="x", which.y=plot.opt$which,
-                                               dist.type="x.scatter",
-                                               which.cov = covariate,
-                                               plot.default=TRUE,...)
-
-      pred.scatter.cov <-   npde.plot.scatterplot(npdeObject,
-                                                  which.x="pred", which.y=plot.opt$which,
-                                                  dist.type="pred.scatter",
-                                                  which.cov = covariate,
-                                                  plot.default=TRUE,...)
-
-
-      list_plot = c( hist.cov, qqplot.cov, x.scatter.cov, pred.scatter.cov )
-
-      if (!is.null(list_plot))
-      {
-        grid.arrange(grobs = list_plot,
-                     nrow=2, ncol=2,
-                     top = textGrob(paste0(plot.opt$main[i],'\n'),
-                                    vjust = 1,
-                                    gp = gpar(fontsize=plot.opt$size.main)))
-      }
-      i=i+1
-    } # end loop covariates
-  }
-  # waffle plot with covariate
-  else
-  {
-
-    hist <- npde.plot.dist(new_npdeObject,
-                           plot.opt$which,
-                           dist.type="hist",
-                           main="",...)
-
-    qqplot <- npde.plot.dist(new_npdeObject,
-                             plot.opt$which,
-                             dist.type="qqplot",
-                             main="",...)
-
-    x.scatter <- npde.plot.scatterplot(new_npdeObject,
-                                       which.x="x",
-                                       which.y=plot.opt$which,
-                                       main="", ...)
-
-    pred.scatter <- npde.plot.scatterplot(new_npdeObject,
-                                          which.x="pred",
-                                          which.y=plot.opt$which,
-                                          main="",...)
-
-    list_plot = c( hist, qqplot, x.scatter, pred.scatter )
-
-    if (!is.null(list_plot))
-    {
-      grid.arrange(grobs = list_plot,
-                   nrow=2, ncol=2,
-                   top = textGrob(paste0(plot.opt$main,'\n'),
-                                  vjust = 1,
-                                  gp = gpar(fontsize=plot.opt$size.main)))
-    }else{
-      print("Error in arguments.The list of plots is therefore empty.")
+  # Check covariate input
+  if(plot.opt$covsplit) {
+    if(plot.opt$which.cov=="all") plot.opt$which.cov<-npdeObject@data@name.covariates
+    found.cov <- intersect(plot.opt$which.cov, npdeObject@data@name.covariates)
+    if(length(found.cov)!=length(plot.opt$which.cov)) {
+      if(npdeObject@options$verbose) cat("Some covariates not found, check inputs \n")
+      plot.opt$which.cov<-found.cov
     }
-
+    if(length(plot.opt$which.cov)==0) plot.opt$covsplit<-FALSE
   }
 
+  if(plot.opt$covsplit && length(plot.opt$which.cov)>0 ) {
+#    cat("Currently not splitting by covariate, please call the plots individually using plot.type='' with the argument covsplit=TRUE.\n")
+    for(icov in plot.opt$which.cov) {
+     list.args$which.cov <- icov 
+     list.args$covsplit <- TRUE
+     list.args$main <- ""
+     
+     list.args$which <- plot.opt$which
+     list.args$dist.type <- "hist"
+     hist<-do.call(npde.plot.dist, list.args)
+     list.args$dist.type <- "qqplot"
+     qqplot<-do.call(npde.plot.dist, list.args)
+     
+     list.args$which.y <- plot.opt$which
+     list.args$which.x <- "x"
+     x.scatter<-do.call(npde.plot.scatterplot, list.args)
+     list.args$which.x <- "pred"
+     pred.scatter<-do.call(npde.plot.scatterplot, list.args)
+     
+     list_plot<-list(hist, qqplot, x.scatter, pred.scatter)
+     if(length(list_plot)==4) {
+       grid.arrange(grobs = list_plot,
+                    nrow=2, ncol=2, vjust = 1,
+                    top = textGrob(paste0(plot.opt$main,'\n'), gp = gpar(fontsize=plot.opt$size.main)))
+     } else {
+       if(npdeObject@options$verbose) cat("Problems in some or all default plots, check inputs\n")
+     }
+    }
+  } else {
+    list.args$covsplit<-FALSE
+    list.args$which <- plot.opt$which
+    list.args$dist.type <- "hist"
+    list.args$main <- ""
+    hist<-do.call(npde.plot.dist, list.args)
+    
+    list.args$dist.type <- "qqplot"
+    qqplot<-do.call(npde.plot.dist, list.args)
+    
+    list.args$which.y <- plot.opt$which
+    list.args$which.x <- "x"
+    x.scatter<-do.call(npde.plot.scatterplot, list.args)
+    
+    list.args$which.y <- plot.opt$which
+    list.args$which.x <- "pred"
+    pred.scatter<-do.call(npde.plot.scatterplot, list.args)
+    
+    list_plot<-list(hist, qqplot, x.scatter, pred.scatter)
+    if(length(list_plot)==4) {
+      grid.arrange(grobs = list_plot,
+                   nrow=2, ncol=2, vjust = 1,
+                   top = textGrob(paste0(plot.opt$main,'\n'), gp = gpar(fontsize=plot.opt$size.main)))
+    }
+#    invisible(list_plot) # invisible doesn't work with ggplot objects :-/
+    if(length(list_plot)==4) return(list_plot) else return() # ou return(list_plot) dans tous les cas ?
+  }
 } # end function npde.plot.default

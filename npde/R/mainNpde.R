@@ -4,13 +4,16 @@
 #' Compute normalised prediction distribution errors
 #'
 #' These functions compute normalised prediction distribution errors (npde) and
-#' optionally prediction discrepancies (pd). \code{npde} asks the user the name
+#' prediction discrepancies (pd). \code{npde} asks the user the name
 #' and structure of the files containing the data, using \code{pdemenu}, while
-#' \code{autonpde} takes these variables and others as arguments.
-#'
+#' \code{autonpde} takes these variables and others as arguments. 
+#' 
 #' Both functions compute the normalised prediction distribution errors (and/or
 #' prediction discrepancies) in the same way. \code{npde} is an interactive
 #' function whereas \code{autonpde} takes all required input as arguments.
+#' 
+#' Diagnostic graphs are produced for npd, and npde are used in the tests as
+#' their distribution takes into account the correlation between repeated observations.
 #'
 #' When the computation of npde fails because of numerical problems, error
 #' messages are printed out, then pd are computed instead and graphs of pd are
@@ -20,7 +23,7 @@
 #' 
 #' @usage autonpde(namobs, namsim, iid, ix, iy, imdv = 0, icens = 0,
 #' icov = 0, iipred = 0, boolsave = TRUE, namsav = "output", type.graph = "eps",
-#' verbose = FALSE, calc.npde=TRUE, calc.pd=TRUE, decorr.method = "cholesky",
+#' verbose = FALSE, calc.npde=TRUE, calc.npd=TRUE, decorr.method = "cholesky",
 #'  cens.method = "cdf", units = list(x="",y=""), detect=FALSE, ties=TRUE, header=TRUE)
 #' @usage npde()
 #' 
@@ -60,7 +63,7 @@
 #' to postscript ("eps")
 #' @param calc.npde a boolean (TRUE if npde are to be computed, FALSE otherwise),
 #' defaults to TRUE
-#' @param calc.pd a boolean (TRUE if pd are to be computed, FALSE otherwise), defaults
+#' @param calc.npd a boolean (TRUE if npd are to be computed, FALSE otherwise), defaults
 #' to TRUE
 #' @param cens.method a character string indicating the method used to handle
 #' censored data (see \code{\link{npde.cens.method}})
@@ -92,6 +95,7 @@
 #' Mentre. Metrics for external model evaluation with an application to the
 #' population pharmacokinetics of gliclazide. \emph{Pharmaceutical Research},
 #' 23:2036--49, 2006.
+#' @references PDF documentation for npde 3.0: \url{https://github.com/ecomets/npde30/blob/main/userguide_npde_3.0.pdf}
 #' @keywords models
 #' @export
 #' @examples
@@ -114,7 +118,7 @@
 #' head(x["results"]["res"])
 #' }
 
-autonpde<-function(namobs,namsim,iid,ix,iy,imdv=0,icens=0,icov=0, iipred=0,boolsave=TRUE,namsav="output",type.graph="eps",verbose=FALSE, calc.npde=TRUE,calc.pd=TRUE,decorr.method="cholesky",cens.method="cdf", units=list(x="",y=""), detect=FALSE, ties=TRUE,header=TRUE) {
+autonpde<-function(namobs,namsim,iid,ix,iy,imdv=0,icens=0,icov=0, iipred=0,boolsave=TRUE,namsav="output",type.graph="eps",verbose=FALSE, calc.npde=TRUE,calc.npd=TRUE,decorr.method="cholesky",cens.method="cdf", units=list(x="",y=""), detect=FALSE, ties=TRUE,header=TRUE) {
 
    # output is deprecated, now using invisible
   if(is.data.frame(namobs)) namobs<-deparse(substitute(namobs))
@@ -127,12 +131,12 @@ autonpde<-function(namobs,namsim,iid,ix,iy,imdv=0,icens=0,icov=0, iipred=0,bools
 
   xsim<-npdeSimData(npde.data=xdat,name.simdata=namsim,verbose=verbose,header=header)
 
-  if(cens.method!="omit" & !calc.pd) {
-    calc.pd<-TRUE
-    cat("To compute npde with the",cens.method," method, pd need to be computed first, changing to calc.pd.\n")
+  if(cens.method!="omit" & !calc.npd) {
+    calc.npd<-TRUE
+    cat("To compute npde with the",cens.method," method, pd need to be computed first, changing to calc.npd.\n")
   }
 
-  opt<-list(boolsave=boolsave,namsav=namsav,type.graph=type.graph, verbose=verbose,calc.npde=calc.npde, calc.pd=calc.pd,decorr.method=decorr.method, cens.method=cens.method, ties=ties)
+  opt<-list(boolsave=boolsave,namsav=namsav,type.graph=type.graph, verbose=verbose,calc.npde=calc.npde, calc.npd=calc.npd,decorr.method=decorr.method, cens.method=cens.method, ties=ties)
 
   npde.obj<-new(Class="NpdeObject",data=xdat,sim.data=xsim,options=opt)
 
@@ -168,7 +172,7 @@ npde<-function() {
   cat("Simulated data:",xinput$namsim,"\n")
   xsim<-npdeSimData(npde.data=xdat,name.simdata=xinput$namsim)
   
-  opt<-list(boolsave=xinput$boolsave,namsav=xinput$namfile, type.graph=xinput$type.graph,verbose=xinput$verbose,calc.npde=xinput$calc.npde, calc.pd=xinput$calc.pd,decorr.method=xinput$decorr.method,cens.method=xinput$cens.method,ties=xinput$ties, header=xinput$header)
+  opt<-list(boolsave=xinput$boolsave,namsav=xinput$namfile, type.graph=xinput$type.graph,verbose=xinput$verbose,calc.npde=xinput$calc.npde, calc.npd=xinput$calc.npd,decorr.method=xinput$decorr.method,cens.method=xinput$cens.method,ties=xinput$ties, header=xinput$header)
   npde.obj<-new(Class="NpdeObject",data=xdat,sim.data=xsim,options=opt)
   
   
@@ -270,9 +274,9 @@ pdemenu<-function() {
     cok<-readline(prompt="Do you want to compute npde (y/Y) [default=yes] ? ")
     if(cok=="y"|cok=="Y"|cok=="yes"|cok=="") {calc.npde<-TRUE;ick<-1} else
       calc.npde<-FALSE
-    cok<-readline(prompt="Do you want to compute pd (y/Y) [default=yes] ? ")
-    if(cok=="y"|cok=="Y"|cok=="yes"|cok=="") {calc.pd<-TRUE;ick<-1} else
-      calc.pd<-FALSE
+    cok<-readline(prompt="Do you want to compute npd (y/Y) [default=yes] ? ")
+    if(cok=="y"|cok=="Y"|cok=="yes"|cok=="") {calc.npd<-TRUE;ick<-1} else
+      calc.npd<-FALSE
     if(ick==0) cat("\n Please choose to compute at least one of npde or pd.\n")
   }
   cat("Different decorrelation methods are available:\n")
@@ -301,9 +305,9 @@ pdemenu<-function() {
   if(cok==3) cens.method<-"loq"
   if(cok==4) cens.method<-"ppred"
   if(cok==5) cens.method<-"ipred"
-  if(cens.method!="omit" & !calc.pd) {
-    calc.pd<-TRUE
-    cat("To compute npde with the",cens.method," method, pd need to be computed first, changing calc.pd to TRUE\n")
+  if(cens.method!="omit" & !calc.npd) {
+    calc.npd<-TRUE
+    cat("To compute npde with the",cens.method," method, pd need to be computed first, changing calc.npd to TRUE\n")
   }
   verbose<-FALSE
   if(calc.npde) {
@@ -313,7 +317,7 @@ pdemenu<-function() {
   ties<-TRUE
   cok<-readline(prompt="Do you want to allow different observations to have the same value of pd/npde (y/Y) [default=yes, if no, pd and npde will be jittered] ? ")
   if(tolower(cok)=="n"|tolower(cok)=="no") ties<-TRUE
-  return(list(namobs=namobs,namsim=namsim,iid=iid,ix=ix,iy=iy,imdv=imdv,icens=icens, iipred=iipred,icov=icov,boolsave=boolsave,type.graph=type.graph,namfile=namfile, calc.pd=calc.pd,calc.npde=calc.npde,verbose=verbose,decorr.method=decorr.method, cens.method=cens.method,detect=detect,ties=ties,header=header))
+  return(list(namobs=namobs,namsim=namsim,iid=iid,ix=ix,iy=iy,imdv=imdv,icens=icens, iipred=iipred,icov=icov,boolsave=boolsave,type.graph=type.graph,namfile=namfile, calc.npd=calc.npd,calc.npde=calc.npde,verbose=verbose,decorr.method=decorr.method, cens.method=cens.method,detect=detect,ties=ties,header=header))
 }
 
 ####################################################################################
@@ -331,8 +335,11 @@ pdemenu<-function() {
 #setMethod("npde.main","NpdeObject",
 npde.main <- function(object) {
     #  	cat("Entering npde.main\n")
-    if(object["options"]$calc.pd) object<-computepd(object)
-    if(!object["options"]$calc.npde) gof.test(object,which="pd")
+    if(object["options"]$calc.npd) object<-computepd(object)
+    if(!object["options"]$calc.npde) {
+      if(object["options"]["verbose"]) cat("npde have not been computed, showing tests based on npd. Warning: these tests suffer from inflated type I error rates!! n")
+      gof.test(object,which="npd")
+    }
     #    cat("Computation of pd successful\n")
     if(object["options"]$calc.npde) {
       object<-computenpde(object)
@@ -381,7 +388,7 @@ npde.save <- function(object, ...) {
   }
   namcol<-c(object@data@name.group,object@data@name.predictor, object@data@name.response,object@data@name.cens,object@data@name.miss, object@data@name.covariates,object@data@name.ipred)
   saveres<-object["data"]["data"][,namcol]
-  namcol2<-c("ypred","pd","npde")
+  namcol2<-c("ypred","pd","npde", "npd")
   saveres<-cbind(saveres,object["results"]["res"][,namcol2])
   write.table(saveres,namres,row.names=FALSE,quote=FALSE)
 }

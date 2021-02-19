@@ -48,9 +48,10 @@ The p.value elements is a named vector with four components:
 \describe{
 \item{p.mean}{p-value for the mean test (Wilcoxon test if parametric=FALSE, Student test if parametric=TRUE)}
 \item{p.var}{p-value for the variance test (parametric=FALSE, Fisher test if parametric=TRUE)}
-\item{p.dist}{p-value for the distribution test (XXX if parametric=FALSE, XXX if parametric=TRUE)}
+\item{p.dist}{p-value for the distribution test (Shapiro-test for normality (npd, npde)/Kolmogorove-Smirnov test for uniformity)}
 \item{p.global}{p-value for the global test (combination of the mean, variance and distribution tests with a Bonferroni correction)}
 }
+The p-values are adjusted using a Bonferroni correction: the raw p-values of the 3 individual tests are multiplied by 3, and the p-value for the global test is equal to the minimum of the adjusted p-values.
 }
 \examples{
 \dontrun{

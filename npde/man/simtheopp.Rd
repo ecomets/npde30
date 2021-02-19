@@ -75,6 +75,9 @@ lines(ypl[,1],ypl[,4],lty=2)
 }
 
 }
+\references{
+PDF documentation for npde 3.0: \url{https://github.com/ecomets/npde30/blob/main/userguide_npde_3.0.pdf}
+}
 \seealso{
 \code{\link{theopp}}
 }

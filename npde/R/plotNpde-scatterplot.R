@@ -4,13 +4,13 @@
 #'
 #' Produces a scatterplot. Different types of scatterplots can be produced, with associated prediction bands (see details).
 #'
-#' @usage npde.plot.scatterplot(npdeObject, which.x="x", which.y="npde", ref.prof=NULL, ...)
+#' @usage npde.plot.scatterplot(npdeObject, which.x="x", which.y="npd", ref.prof=NULL, ...)
 #'
 #' @aliases compute.bands.true compute.bands aux.npdeplot.computepi aux.npdeplot.meanprof aux.npdeplot.pimat aux.npdeplot.transformPI aux.npdeplot.transformObs
 #'
 #' @param npdeObject an object returned by a call to \code{\link{npde}} or \code{\link{autonpde}}
 #' @param which.x a string specifying the variable on the X-axis (one of "x", "pred", "cov")
-#' @param which.y a string specifying the variable on the Y-axis (one of "yobs", "npde", "pd", "npd")
+#' @param which.y a string specifying the variable on the Y-axis (one of "yobs", "npde", "pd", "npd"), defaults to "npd"
 #' @param ref.prof either the character string "covariate" or a named list
 #' @param \dots additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}} and \code{\link{npdeControl}})
 #'
@@ -39,7 +39,7 @@
 # function to create a scatterplot
 # -----------------------------------------------------------------------------------
 
-npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.prof=NULL, ...){ #} xscale=FALSE, onlog=FALSE, ref.prof=NULL, ...) {
+npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npd", ref.prof=NULL, ...){ #} xscale=FALSE, onlog=FALSE, ref.prof=NULL, ...) {
     # npdeObject: object returned from a npde run
     # which.x: variable on the X-axis, one of "x", "pred", "cov" ( ? npde/npd ?)
     # which.y: variable on the Y-axis, one of "npde", "npd", "pd", "yobs" (VPC)  + (? "pde", "cov" ?)
@@ -71,8 +71,6 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
 
 # -----------------------------------------------------------------------------------
 # Check inputs
-
-  which.y = plot.opt$which
 
   if(match(which.x,c("x","pred","cov"),nomatch=0)==0) {
     cat("Option which.x=",which.x,"not recognised\n")
@@ -129,13 +127,13 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
   if(which.y %in% c("npde","npd") & is.null(ref.prof)) plot.opt$line.loq<-FALSE
 
   if(plot.opt$xlab=="") {
-    plot.opt$xlab <- switch(which.x, "x"=paste0( npdeObject@data@name.predictor ), "pred"=paste0("Predicted ", npdeObject@data@name.response ), "cov"="", "npde"="npde", "npd"="npd", "pd"="pd") # cov, npde, npd, pd: not valid options; cov: to be implemented
+    plot.opt$xlab <- switch(which.x, "x"=paste0( npdeObject@data@name.predictor ), "pred"=paste0("Predicted ", npdeObject@data@name.response ), "cov"="", "npde"="npde", "npd"="npd", "pd"="pd", "pde"="pde") # cov, npde, npd, pd: not valid options; cov: to be implemented
     if (which.x=="x" & npdeObject@data@units$x != "") plot.opt$xlab<-paste0(plot.opt$xlab, " (", npdeObject@data@units$x,")" )
     if (which.x=="pred" & npdeObject@data@units$y != "") plot.opt$xlab<-paste0(plot.opt$xlab, " (", npdeObject@data@units$y,")" )
   }
 
   if(plot.opt$ylab=="") {
-    plot.opt$ylab <- switch(which.y, "npde"="npde", "npd"="npd", "pd"="pd", "yobs"=paste0( npdeObject@data@name.response),  "cov"="") # cov not a valid option (yet ?)
+    plot.opt$ylab <- switch(which.y, "npde"="npde", "npd"="npd", "pde"="pde", "pd"="pd", "yobs"=paste0( npdeObject@data@name.response),  "cov"="") # cov not a valid option (yet ?)
     if (which.y=="yobs" & npdeObject@data@units$y != "") plot.opt$ylab<-paste0(plot.opt$ylab, " (", npdeObject@data@units$y,")" )
   }
 
@@ -152,7 +150,8 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
                      "pred"=npdeObject@results@res$ypred,
                      "cov"=npdeObject@data@data[,npdeObject@data@name.covariates[idx.cov[1]]] ))
   obsmat$y <- switch(which.y, "npde"=npdeObject@results@res$npde, "npd"=npdeObject@results@res$npd, "pd"=npdeObject@results@res$pd,
-                     "yobs"=npdeObject@results@res$ycomp)
+                     "yobs"=npdeObject@results@res$ycomp, "pde"=npdeObject@results@res$npde)
+  if(which.y=="pde") obsmat$y<-pnorm(obsmat$y)
   if(length(npdeObject@data@icens)==0) obsmat$cens<-0 else obsmat$cens<-npdeObject@data@data$cens
 
   if(length(npdeObject@data@loq)>0) obsmat$loq <-npdeObject@data@loq
@@ -218,7 +217,7 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
   }
   if(hasRefprof) {
     plot.opt$ylab<-paste("Transformed ", plot.opt$ylab,sep="")
-    if(length(npdeObject@data@units$y)>0) plot.opt$ylab<-paste(plot.opt$ylab," (Reference profile units:", npdeObject@data@units$y,")",sep="")
+    if(length(npdeObject@data@units$y)>0) plot.opt$ylab<-paste(plot.opt$ylab," (reference units: ", npdeObject@data@units$y,")",sep="")
   }
 
   # -----------------------------------------------------------------------------------
@@ -229,7 +228,9 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
     sim.ypl<-switch(which.y, "pd"=npdeObject["sim.data"]["datsim"]$pdsim,
                     "npd"=npdeObject["sim.data"]["datsim"]$npdsim,
                     "npde"=npdeObject["sim.data"]["datsim"]$npdesim,
+                    "pde"=npdeObject["sim.data"]["datsim"]$npdesim,
                     "yobs"=npdeObject["sim.data"]["datsim"]$ysim)
+    if(which.y=="pde") sim.ypl<-pnorm(sim.ypl)
     if(length(sim.ypl)==0) {
       if(which.y!="yobs") plot.opt$approx.pi<-TRUE else return()
       if(npdeObject@options$verbose) cat("No simulated values for",which.y," found in data, switching to approximate PI.")
@@ -301,7 +302,7 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
             zecov.cat<-factor(zecov.cat, labels=namcat, ordered=TRUE)
           }
         } else { # Categorical covariate defined as factor, or covariate with less than plot.opt$ncat categories
-          namcat<-paste(lcov,unique(ucov), sep=": ")
+          namcat<-paste(lcov,sort(unique(ucov)), sep=": ")
           zecov.cat<-paste(lcov, zecov, sep=": ")
           zecov.cat<-factor(zecov.cat, labels=namcat, ordered=TRUE)
         }
@@ -337,6 +338,7 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npde", ref.pro
     } # end test on which.x="cov"
     } # end loop on icov
   } # end test on covsplit
+  if(length(list_plot)==1) list_plot<-list_plot[[1]]
   return(list_plot)
   
   # invisible(list_plot) # return invisibly, can we return plots that we can manipulate later ?

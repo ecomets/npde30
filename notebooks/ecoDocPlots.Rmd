@@ -34,7 +34,7 @@ workDir<-"/home/eco/work/npde/npde30"
 fullDatDir<-file.path(workDir,"keep","data") # Full data files (some removed from package to decrease size on CRAN)
 knitr::opts_chunk$set(root.dir = workDir)
 docFigs<-file.path(workDir,"latexDoc","figsDev")
-saveDocPlots<-FALSE
+saveDocPlots<-TRUE
 ```
 
 ### Install package in development mode
@@ -47,7 +47,7 @@ library(npde)
 
 ### Run examples
 
-- remove warnings (name.ipred empty, etc...)  **Romain**
+- remove warnings (name.ipred empty, etc...)  **Romain** fait
 
 ```{r theoRun, echo=FALSE}
 # Calling autonpde with dataframes
@@ -86,9 +86,8 @@ wcov<-autonpde(namobs=warfarin,namsim=simwarfarinCov, iid=1,ix=2,iy=4,icov=c(3,6
 ## Theophylline example
 
 - data
-  - le plot(npdeData) ne marche pas **Romain**
+  - le plot(npdeData) ne marche pas **Romain** à faire pour la 3.1 (si possible en essayant d'utiliser le même code de base)
   - pour faire un graphe il faut passer par *plot.type="data"* ou *npde.plot.data()*
-  - name of ylab wrong  **Eco fait**
 - VPC, scatterplot  **Eco fait**
   - modifié pour que le tracé des percentiles observés soit fait avec les linetype et size de lobs (pas des bandes), par contre la couleur matche celle de la bande de prédiction correspondante
 
@@ -131,21 +130,21 @@ if(saveDocPlots) dev.off()
 # Raw data
 namfile<-file.path(docFigs,"doc_data50_gg.eps")
 if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
-plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", line.loq=TRUE, ylim=c(0,6.5))
-plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", plot.loq=FALSE, line.loq=TRUE, ylim=c(0,6.5))
-plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", impute.loq=FALSE, line.loq=TRUE, ylim=c(0,6.5))
-plot(x50.ipred, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", line.loq=TRUE, ylim=c(0,6.5))
+x1<-plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", line.loq=TRUE, ylim=c(0,6.5), main="LOQ imupted using cdf")
+x2<-plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", plot.loq=FALSE, line.loq=TRUE, ylim=c(0,6.5), main="LOQ removed from plot")
+x3<-plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", impute.loq=FALSE, line.loq=TRUE, ylim=c(0,6.5), main="LOQ as in dataset before imputation")
+x4<-plot(x50.ipred, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", line.loq=TRUE, ylim=c(0,6.5), main="LOQ imputed to individual prediction")
+grid.arrange(grobs=list(x1,x2,x3,x4), nrow=2, ncol=2)
 if(saveDocPlots) dev.off()
 
-# Romain ?
 if(FALSE) {
-  p1<-plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)")
-  p2<-plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", plot.loq=FALSE)
-  p3<-plot(x50, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)", impute.loq=FALSE)
-  p4<-plot(x50.ipred, plot.type="data", xlab="Time (hr)", ylab="log(Viral load) (cp/mL)")
-  grid.arrange(list(p1,p2,p3,p4), nrow=2, ncol=2)
+  x1<-plot(x, plot.type="hist")
+  x2<-plot(x, plot.type="qqplot")
+  x3<-plot(x, plot.type="x.scatter")
+  x4<-plot(x, plot.type="pred.scatter")
+  grid.arrange(grobs=list(x1,x2,x3,x4), nrow=2, ncol=2)
 }
-
+    
 ```
 
 - scatterplots and VPC
@@ -188,30 +187,47 @@ plot(x50.omit,plot.type="x.scatter")
 plot(x50,plot.type="x.scatter")
 if(saveDocPlots) dev.off()
 
+# User-defined waffle plots
+vpc.omit<-plot(x50.omit,plot.type="vpc")
+vpc.cdf<-plot(x50,plot.type="vpc")
+
+namfile<-file.path(docFigs,"userwaffle_vpc.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+grid.arrange(grobs=list(vpc.omit, vpc.cdf), nrow=1, ncol=2)
+if(saveDocPlots) dev.off()
+
+xscatter.omit<-plot(x50.omit,plot.type="x.scatter")
+xscatter.cdf<-plot(x50,plot.type="x.scatter")
+
+namfile<-file.path(docFigs,"userwaffle_xscatter.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+grid.arrange(grobs=list(xscatter.omit, xscatter.cdf), nrow=1, ncol=2)
+if(saveDocPlots) dev.off()
+
 ```
 
 - P(Y<LOQ): changed defaults
-- todo: catch error message when using dist.type="ecdf" instead of plot.type="ecdf" (not sure what's happening) **Romain**
 
 ```{r docVirloadLOQ, echo=FALSE}
 
 # P(Y<LOQ)
 namfile<-file.path(docFigs,"virload_ploq_gg.eps")
 if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
-try(plot(x50,plot.type="loq", main=" "))
+plot(x50,plot.type="loq", main=" ")
 if(saveDocPlots) dev.off()
 
-# Catch error message
+# Catch error message works now
 try(plot(x50, dist.type="ecdf"))
 ```
 
-## Warfarine
+## Warfarin
 
 
 - **TODO:**
   - add to documentation
-  - default plot with cov.scatter should be boxplot => check why not working
-
+  - cov.scatter changed to covariates (default plot with covariates as in Brendel et al. 2010)
+  - alternative: covsplit applied to the other types of graphs will produce graphs stratified by covariate categories/ranges
+  - check npde.plot.scatterplot(wbase, which.x="cov", which.y="npde", which.cov="wt", bin.method="optimal") not rendering anything
 ```{r docVirWarf, echo=FALSE}
 # Data
 namfile<-file.path(docFigs,"doc_warfarin_data.eps")
@@ -237,9 +253,9 @@ if(saveDocPlots) dev.off()
 
 npde.plot.scatterplot(wcov, which.x="cov", which.y="npde", which.cov="wt", bin.method="optimal")
 
-plot(wbase, plot.type="cov.scatter", which.cov="wt")
-plot(wbase, plot.type="cov.scatter", which.cov="sex")
-try(plot(wbase, plot.type="cov.scatter", which.cov="age"))
+plot(wbase, plot.type="covariates", which.cov="wt")
+plot(wbase, plot.type="covariates", which.cov="sex")
+try(plot(wbase, plot.type="covariates", which.cov="age"))
 plot(wbase, plot.type="ecdf", which.cov="sex", covsplit=TRUE)
 plot(wbase, plot.type="ecdf", which.cov="wt", covsplit=TRUE)
 plot(wcov, plot.type="ecdf", which.cov="wt", covsplit=TRUE)
@@ -277,6 +293,21 @@ if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 
 plot(wcov, plot.type="x.scatter", covsplit=TRUE, which.cov=c("sex"))
 if(saveDocPlots) dev.off()
 
+# Covariate plots as boxplots (Brendel et al)
+namfile<-file.path(docFigs,"doc_warfarin_boxCovWt.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+plot(wcov, plot.type="covariates", which.cov=c("wt"))
+if(saveDocPlots) dev.off()
+
+# Reference profile compared to VPC
+plot.tnpde<-plot(wcov, plot.type="x.scatter", ref.prof=list(id=2), main="tnpd with reference profile ID=2")
+plot.vpc<-plot(wcov, plot.type="vpc", main="VPC")
+
+namfile<-file.path(docFigs,"doc_warfarin_refprofile.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+grid.arrange(grobs=list(plot.tnpde, plot.vpc), nrow=1, ncol=2)
+if(saveDocPlots) dev.off()
+
 ```
 
 ## Remifentanil (data will be on website)
@@ -291,7 +322,7 @@ iid=1,ix=2,iy=3,icov=c(6:12),namsav="remibase",units=list(x="hr",y="ug/L",
 covariates=c("yr","-","cm","kg","m2","kg","yr")))
   plot(xrem)
   
-  plot(xrem, plot.type="cov.scatter", which.cov=c("LBM"))
+  plot(xrem, plot.type="covariates", which.cov=c("LBM"))
   plot(xrem, plot.type="ecdf", covsplit=TRUE, which.cov=c("Age"))
 
 }

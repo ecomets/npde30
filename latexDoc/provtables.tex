@@ -1,0 +1,155 @@
+
+%\begin{longtable}{@{*}r||p{8cm}@{*} p{3in}@{*}}
+\begin{table}[h] 
+\noindent{\bfseries Table III:} {\itshape Default graphical parameters. Any option not defined by the user is automatically set to its default value.}
+%\label{tab:plot.options}
+\begin{center}
+\begin{tabular}{r p{10cm} p{3cm}}
+\hline 
+{\bf Parameter} & {\bf Description} & {\bf Default value}\\
+\hline
+% \endfirsthead
+% \multicolumn{3}{l}{{\itshape \bfseries \tablename\ \thetable{} -- cont.}} \\
+% \hline {\bf Parameter} & {\bf Description} & {\bf Default value}\\
+% \hline
+% \endhead
+% \hline \multicolumn{3}{r}{{-- {\it To be continued}}} \\ 
+% \endfoot
+% %\hline
+% \endlastfoot
+% & & \\
+\multicolumn{3}{l}{{\itshape \bfseries General graphical options}} \\
+{\sf new} & Whether a new plot should be produced  & \true \\
+{\sf ask} & Whether users should be prompted before each new plot (if \true) & \false \\
+{\sf interactive} & Output is produced for some plots (most notably when binning is used, this prints out the boundaries of the binning intervals) if \true & \false \\
+{\sf xaxt} & A character which specifies the x axis type. Specifying "n" suppresses plotting of the axis & empty \\
+{\sf yaxt} & A character which specifies the y axis type. Specifying "n" suppresses plotting of the axis & empty \\
+{\sf frame.plot} & If \true, a box is drawn around the current plot & \true \\
+{\sf main} & Title & empty \\
+{\sf xlab} & Label for the X-axis & empty \\
+{\sf ylab} & Label for the Y-axis & empty \\
+{\sf xlog} & Scale for the X-axis (\true: logarithmic scale) & \false \\
+{\sf ylog} & Scale for the Y-axis (\true: logarithmic scale) & \false \\
+{\sf cex} & A numerical value giving the amount by which plotting text and symbols should be magnified relative to the default & 1 \\
+{\sf cex.axis} & Magnification to be used for axis annotation relative to the current setting of 'cex' & 1 \\
+{\sf cex.lab} & Magnification to be used for x and y labels relative to the current setting of 'cex' & 1 \\
+{\sf cex.main} & Magnification to be used for main titles relative to the current setting of 'cex' & 1 \\
+{\sf mfrow} & Page layout (NA: layout set by the plot function or before) & NA \\
+{\sf xlim} & Range for the X-axis (NA: ranges set by the plot function) & NA \\
+{\sf ylim} & Range for the Y-axis (NA: ranges set by the plot function) & NA \\
+{\sf type} & Type of plot ("b": both, "p": points, "l": lines). Defaults to b for data and p for other plots & b/p \\
+& & \\
+\hline
+%\\
+\end{tabular} 
+\end{center}
+\end{table} 
+
+\begin{table}[!h] 
+\begin{center}
+\begin{tabular}{| r p{8cm} c|}
+\hline
+\textbf{\textcolor{black}{Argument}} & \centering{\textbf{\textcolor{black}{Description }}} & \textbf{\textcolor{black}{Default value}} \\
+\hline
+{\ttfamily verbose} & Output is produced for some plots (most notably when binning is used, this prints out the boundaries of the binning intervals) if TRUE & FALSE \\
+{\ttfamily main} & Title & depends on plot \\
+{\ttfamily sub } & Subtitle & empty \\
+{\ttfamily size.main } & Size of the main title & 14 \\
+{\ttfamily size.sub  } & Size of the title for covariate & 12 \\
+
+{\ttfamily xlab} & Label for the X-axis & depends on plot \\
+{\ttfamily ylab} & Label for the Y-axis & depends on plot \\
+{\ttfamily size.xlab} & Size of the label for the X-axis & 12 \\
+{\ttfamily size.ylab} & Size of the label for the Y-axis & 12 \\
+{\ttfamily breaks.x} & Number of tick marks on the X-axis & 10 \\
+{\ttfamily breaks.y} & Number of tick marks on the Y-axis & 10 \\
+{\ttfamily size.x.text} & Size of tick marks and tick labels on the X-axis & 10 \\
+{\ttfamily size.y.text} & Size of tick marks and tick labels on the Y-axis & 10 \\
+
+{\ttfamily xlim} & Range of values on the X-axis & empty, adjusts to the data \\
+{\ttfamily ylim} & Range of values on the Y-axis & empty, adjusts to the data \\
+
+{\ttfamily xaxt} & A character whether to plot the X axis. Specifying "n" suppresses plotting of the axis & "y"  \\
+{\ttfamily yaxt} & A character whether to plot the Y axis. Specifying "n" suppresses plotting of the axis & "y" \\
+
+{\ttfamily xlog} & Scale for the X-axis (TRUE: logarithmic scale) & FALSE \\
+{\ttfamily ylog} & Scale for the Y-axis (TRUE: logarithmic scale) & FALSE \\
+
+{\ttfamily } & &  \\
+\hline
+\end{tabular} 
+\end{center}
+\caption{Graphical parameters that can be passed on the plot function: titles and axes.} \label{tab:graphicalOptions1}
+\end{table} 
+
+\clearpage
+%\newpage
+
+\begin{center}
+\par \kern -1cm
+\begin{tabular}{r p{10cm} p{3cm}}
+\hline 
+{\bf Parameter} & {\bf Description} & {\bf Default value}\\
+\hline
+\multicolumn{3}{l}{{\itshape \bfseries Options controlling the type of plots}} \\
+{\sf plot.type} & Type of plot (see documentation for list) & default \\
+{\sf ilist} & List of subjects to include in the individual plots & 1:N \\
+{\sf smooth} & Whether a smooth should be added to certain plots & \false \\
+{\sf line.smooth} & Type of smoothing (l=line, s=spline) & s \\
+{\sf which.cov} & Which covariates to use for the plot  & all \\
+{\sf ncat} & Number of categories in which to split continuous covariates for graphs & 3 \\
+& Defaults to 3, splitting in $<$Q$_1$, Q$_1$-Q$_3$, $>$Q$_3$ & \\
+{\sf which.resplot} & Type of residual plot ("res.vs.x": scatterplot & c("res.vs.x","res.vs.pred", \\
+&  versus X, "res.vs.pred": scatterplot versus predictions, "dist.hist": histogram, "dist.qqplot": QQ-plot) & "dist.qqplot","dist.hist") \\
+{\sf box} & If \true, boxplots are produced instead of scatterplots & \false \\
+& & \\
+\multicolumn{3}{l}{{\itshape \bfseries Options for colours and line types}} \\
+{\sf col} & Default symbol and line colour & black \\
+{\sf lty} & Default line type & 1 (straight line) \\
+{\sf lwd} & Default line width & 1 \\
+{\sf pch.pobs} & Default symbol type & 20 (dot) \\
+{\sf pch.pcens} & Default symbol type for censored observations & 8 () \\
+{\sf col.pobs} & Symbol colour to use for observations (points) & steelblue4 \\
+{\sf col.lobs} & Symbol colour to use for observations (lines) & steelblue4 \\
+{\sf col.pcens} & Symbol colour to use for censored observations & red \\
+{\sf lty.lobs} & Line type for observations & 1 \\
+{\sf lwd.lobs} & Line width for observations & 1 \\
+{\sf col.abline} & Colour of the horizontal/vertical lines added to the plots & "DarkBlue" \\
+{\sf lty.abline} & Type of the lines added to the plots & 2 (dashed) \\
+{\sf lwd.abline} & Width of the lines added to the plots & 2 \\
+{\sf col.fillpi} & Colour used to fill histograms andprediction bands & slategray1 \\
+{\sf col.fillmed} & Colour used to fill prediction band on the median (VPC, npde) & pink \\
+{\sf col.lmed} & Colour used to plot the predicted median (VPC, npde) & indianred4 \\
+{\sf col.lpi} & Colour used to plot lower and upper quantiles & slategray4 \\
+& & \\
+\hline
+%\\
+\end{tabular} 
+\par \kern -1cm
+\end{center}
+
+\begin{center}
+\begin{tabular}{r p{10cm} p{3cm}}
+\hline 
+{\bf Parameter} & {\bf Description} & {\bf Default value}\\
+\hline
+{\sf lty.lmed} & Line type used to plot the predicted median (VPC, npde) & 2 \\
+{\sf lty.lpi} & Line type used to plot lower and upper quantiles & 2 \\
+{\sf lwd.lmed} & Line width used to plot the predicted median (VPC, npde) & 1 \\
+{\sf lwd.lpi} & Line width used to plot lower and upper quantiles & 1 \\
+& & \\
+\multicolumn{3}{l}{{\itshape \bfseries Graphical options for VPC and residual plots}} \\
+{\sf bands} & Whether prediction intervals should be plotted & \true \\
+{\sf approx.pi} & If \true, samples from $\mathcal{N}(0,1)$ are used to plot prediction intervals, while if \false, prediction bands are obtained using pd/npde computed for the simulated data & \true \\
+{\sf vpc.method} & Method used to bin points (one of "equal", "width", "user" or "optimal"); at least the first two letters of the method need to be specified & "equal" \\
+{\sf vpc.bin} & Number of binning intervals & 10 \\
+{\sf vpc.interval} & Size of interval & 0.95 \\
+{\sf vpc.breaks} & Vector of breaks used with user-defined breaks (vpc.method="user") & NULL \\
+{\sf vpc.extreme} & Can be set to a vector of 2 values to fine-tune the behaviour of the binning algorithm at the boundaries; specifying c(0.01,0.99) with the "equal" binning method and vpc.bin=10 will create 2 extreme bands containing 1\% of the data on the X-interval, then divide the region within the two bands into the remaining 8 intervals each containing the same number of data; in this case the intervals will all be equal except for the two extreme intervals, the size of which is fixed by the user; complete fine-tuning can be obtained by setting the breaks with the vpc.method="user" & NULL \\
+{\sf pi.size} & Width of the prediction interval on the quantiles & 0.95 \\
+{\sf vpc.lambda} & Value of lambda used to select the optimal number of bins through a penalised criterion & 0.3 \\
+{\sf vpc.beta} & Value of beta used to compute the variance-based criterion (Jopt,beta(I)) in the clustering algorithm & 0.2 \\
+{\sf bands.rep} & Number of simulated datasets used to compute prediction bands & 200 \\
+\hline
+\end{tabular} 
+\end{center}

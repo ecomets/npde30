@@ -37,7 +37,7 @@ library(grid)
 workDir<-"/home/eco/work/npde/npde30/"
 setwd(workDir)
 knitr::opts_chunk$set(root.dir = workDir)
-#docFigs<-"/home/eco/work/npde/doclib/figs"
+docFigs<-"/home/eco/work/npde/doclib/figs"
 saveDocPlots<-FALSE
 savePaperPlots<-FALSE
 ```
@@ -49,38 +49,40 @@ dev_mode() # development mode
 install.packages(pkgs=file.path(workDir,"npde_3.0.tar.gz"),repos=NULL)
 library(npde)
 
-source(file.path(workDir,"npde","R","aaa_generics.R"))
-source(file.path(workDir,"npde","R","npdeControl.R"))
-source(file.path(workDir,"npde","R","NpdeData.R"))
-source(file.path(workDir,"npde","R","NpdeSimData.R"))
-source(file.path(workDir,"npde","R","NpdeData-methods.R"))
-source(file.path(workDir,"npde","R","NpdeRes.R"))
-source(file.path(workDir,"npde","R","NpdeRes-methods.R"))
-source(file.path(workDir,"npde","R","NpdeObject.R"))
-source(file.path(workDir,"npde","R","NpdeObject-methods.R"))
-
-# Computational functions from the package
-source(file.path(workDir,"npde","R","compute_distribution.R"))
-source(file.path(workDir,"npde","R","compute_npde.R"))
-source(file.path(workDir,"npde","R","compute_pd.R"))
-source(file.path(workDir,"npde","R","compute_ploq.R"))
-source(file.path(workDir,"npde","R","mainNpde.R"))
-source(file.path(workDir,"npde","R","npde.R"))
-
-# Plot functions from the package - kept, some changes
-source(file.path(workDir,"npde","R","plotNpde-methods.R"))
-source(file.path(workDir,"npde","R","plotNpde-plotFunctions.R"))
-source(file.path(workDir,"npde","R","plotNpde-binningPI.R")) # renamed from plotNpde-unitFunctionsPI.R
-
-# Distribution plots
-source(file.path(workDir,"npde","R","plotNpde-auxDistPlot.R")) # renamed from plotNpde-unitFunctionsAux.R
-source(file.path(workDir,"npde","R","plotNpde-distributionPlot.R")) # extracted "main" for distribution plots from plotNpde-plotFunctions.R
-
-# Scatterplots
-source(file.path(workDir,"npde","R","plotNpde-auxScatter.R")) # replaces plotNpde-unitFunctionsRef.R
-source(file.path(workDir,"npde","R","plotNpde-auxScatterPlot.R"))
-source(file.path(workDir,"npde","R","plotNpde-scatterplot.R")) # replaces plotNpde-meanProf.R
-
+if(FALSE) {
+  source(file.path(workDir,"npde","R","aaa_generics.R"))
+  source(file.path(workDir,"npde","R","npdeControl.R"))
+  source(file.path(workDir,"npde","R","NpdeData.R"))
+  source(file.path(workDir,"npde","R","NpdeSimData.R"))
+  source(file.path(workDir,"npde","R","NpdeData-methods.R"))
+  source(file.path(workDir,"npde","R","NpdeRes.R"))
+  source(file.path(workDir,"npde","R","NpdeRes-methods.R"))
+  source(file.path(workDir,"npde","R","NpdeObject.R"))
+  source(file.path(workDir,"npde","R","NpdeObject-methods.R"))
+  
+  # Computational functions from the package
+  source(file.path(workDir,"npde","R","compute_distribution.R"))
+  source(file.path(workDir,"npde","R","compute_npde.R"))
+  source(file.path(workDir,"npde","R","compute_pd.R"))
+  source(file.path(workDir,"npde","R","compute_ploq.R"))
+  source(file.path(workDir,"npde","R","mainNpde.R"))
+  source(file.path(workDir,"npde","R","npde.R"))
+  
+  # Plot functions from the package - kept, some changes
+  source(file.path(workDir,"npde","R","plotNpde-methods.R"))
+  source(file.path(workDir,"npde","R","plotNpde-plotFunctions.R"))
+  source(file.path(workDir,"npde","R","plotNpde-binningPI.R")) # renamed from plotNpde-unitFunctionsPI.R
+  
+  # Distribution plots
+  source(file.path(workDir,"npde","R","plotNpde-auxDistPlot.R")) # renamed from plotNpde-unitFunctionsAux.R
+  source(file.path(workDir,"npde","R","plotNpde-distributionPlot.R")) # extracted "main" for distribution plots from plotNpde-plotFunctions.R
+  
+  # Scatterplots
+  source(file.path(workDir,"npde","R","plotNpde-auxScatter.R")) # replaces plotNpde-unitFunctionsRef.R
+  source(file.path(workDir,"npde","R","plotNpde-auxScatterPlot.R"))
+  source(file.path(workDir,"npde","R","plotNpde-scatterplot.R")) # replaces plotNpde-meanProf.R
+  source(file.path(workDir,"npde","R","plotNpde-covplot.R"))
+}
 
 ```
 
@@ -215,37 +217,36 @@ wmdv<-autonpde(namobs=warfmdv,namsim=file.path(datDir, "simwarfarinCov.tab"), ii
   
 ### Default plots for theophylline data
 
+- **Change**
+  - npd now default for diagnostic graphs (npde still default for tests)
+  - **TODO** change output for test function
+
 - **BUGS Romain TODOO**
-  - **solved** title: in the waffle plot, only one title should appear, above all the 4 graphs (not one title per graph)
-  - ajout de la condition plot.opt$plot.default==FALSE) pour l'affichage des titres dans les plot
-  
-  - **solved** no axes in the histogram plot => add
-  
-  - **solved** **X-range on PI** extend prediction band to min/max X (it seems to stop at the center of the bin) => option ???
-  
-- **Note** :dans plotNpde-auxScatterPlot: 1er bin avec valeur minimal de la borne et dernier bin avec valeur maximal de la borne. Les plots sur me 1er et dernier bin ne s'arrêtent pas au milieu du bin.
-  
-  - **global options** not passing on to the functions
-    - **solved** size
-      - **solved** normalement si l'utilisateur spécifie "size=2" sans spécifier size.pobs, size.pobs devrait passer à 1.5, et là ça ne semble rien changer
-      - **solved** ni dans le graphe par défault (ie les 4 graphes), ni individuellement 
-    - **solved** colours
-      - **solved** when only col is specified, it should affect other elements (but not sure which we had decided), here only affects histogram and col.lobs for qqplot
-      - **solved** col => col.pobs, col.lobs, col.pcens ?
-      - **solved** col.lobs ne change rien, devrait changer les lignes correspondant aux percentiles et les lignes dans l'histograme
-      
-- **WARNING** attention aux effets de bord !!!
-  - dans **set.plotoptions.NpdeObject**, xlab et ylab étaient fixés par défaut or on veut pouvoir les fixer automatiquement dans les fonctions graphiques tout en laissant l'utilisateur les passer en argument => on ne peut pas les mettre par défaut (xlab et ylab dépendent ici des variables qu'on veut tracer) => réfléchir avant de faire un truc comme ça (ou bien documenter qu'on puisse voir pourquoi ça plante, sinon on perd du temps à trouver pourqoui ça ne marche pas)
-  
-- **Note** : dans la dernière version, la fonction NpdeControl a toujours dans ses argumens xlab="" et ylab"" + which et xaxis
-Dabs plotNpde-distributionPlot l.156-l.168 il y a différents tests qui restent en conséquence. Pour le moment ça n'empêche pas à l'utilisateur/utilisatrice de changer les labels à sa guise. 
+  - **remain**
+  - **solved**
+    - title
+      - ajout de la condition plot.opt$plot.default==FALSE) pour l'affichage des titres dans les plot
+    -  axes in the histogram plot => add
+
+- **Eco check**
+    - **solved** **X-range on PI** extend prediction band to min/max X (it seems to stop at the center of the bin) => option ???
+    - **Note** :dans plotNpde-auxScatterPlot: 1er bin avec valeur minimal de la borne et dernier bin avec valeur maximal de la borne. Les plots sur me 1er et dernier bin ne s'arrêtent pas au milieu du bin.
+    - **global options** not passing on to the functions
+      - **solved** size
+        - **solved** normalement si l'utilisateur spécifie "size=2" sans spécifier size.pobs, size.pobs devrait passer à 1.5, et là ça ne semble rien changer
+        - **solved** ni dans le graphe par défault (ie les 4 graphes), ni individuellement 
+      - **solved** colours
+        - **solved** when only col is specified, it should affect other elements (but not sure which we had decided), here only affects histogram and col.lobs for qqplot
+        - **solved** col => col.pobs, col.lobs, col.pcens ?
+        - **solved** col.lobs ne change rien, devrait changer les lignes correspondant aux percentiles et les lignes dans l'histograme
+
 
 ```{r theoPlots, echo=FALSE}
 # plot by default
 plot(theofit1)
-plot(theofit1, main="Theophylline data")
+plot(theofit1, main="Gof plots for theophylline")
 plot(theofit1, which="pd")
-plot(theofit1, which="npd")
+plot(theofit1, which="npde")
 plot(theofit1, which="faux") # should throw an error => yes
 plot(theofit1,size=5)
 plot(theofit1,col="green",size=3)
@@ -457,7 +458,7 @@ plot(wcov, plot.type="x.scatter", covsplit=TRUE)
 
 plot(wcov, plot.type="vpc", covsplit=TRUE, which.cov=c("sex","wt"),xlim=c(0,80))
 plot(wcov, plot.type="vpc",ylim=c(0,30),covsplit=TRUE, which.cov=c("wt"))
-```{
+```
   
 ```{r warfCov2, echo=FALSE}
 # graphe par défaut et waffle plot pour les données avec des covariables
@@ -507,7 +508,8 @@ if(saveDocPlots) {
 # Raw data
   namfile<-file.path(docFigs,"xtheo_data_gg.eps")
   cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
-  plot(theofit1@data)
+#   plot(theofit1@data)
+  plot(theofit1, plot.type="data")
   dev.off()
 # Diagnostics plots  
   namfile<-file.path(docFigs,"theophylline_gg.eps")
@@ -532,20 +534,23 @@ if(saveDocPlots) {
 
     - **solved** 2 graphes de données (voire 3)
     - **solved** 2 graphes de VPC côte à côte (=> donner code correspondant dans la doc)
+    - **Eco** modifié car le code plantait, toujours ce mélange de [[1]]
 
 ```{r grid.arrange, echo=FALSE}
-
 plot.x.scatter.yvir50 = plot(yvir50,plot.type="x.scatter")
 plot.pred.scatter.yvir50 = plot(yvir50,plot.type="pred.scatter")
-do.call(grid.arrange, c(plot.x.scatter.yvir50$npde, plot.pred.scatter.yvir50$npde, list( nrow=1, ncol=2)))
+grid.arrange(grobs=list(plot.x.scatter.yvir50, plot.pred.scatter.yvir50), nrow=1, ncol=2)
 
 plot.vpc.yvir50 = plot(yvir50,plot.type="vpc")
 plot.yvir50.omit = plot(yvir50.omit,plot.type="vpc")
-do.call(grid.arrange, c(plot.vpc.yvir50, plot.yvir50.omit, list( nrow=1, ncol=2)))
+namfile<-file.path(docFigs,"doc_sidebysideVPC.eps")
+if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+grid.arrange(grobs=list(plot.vpc.yvir50,plot.yvir50.omit), nrow=1, ncol=2)
+if(saveDocPlots) dev.off()
 
 ```
 - **Note**
-- Pour modifier les graphes directement avec un template ggplot. Le theme dun plot ggplot est accessible via le slot theme et layers, exemple : *plot.vpc.yvir50$theme et plot.vpc.yvir50$layers*.On peut ainsi définir un template ggplot par defaut pour chaque plot et créer une fonction qui va directement le modifier en  fonctions des options utilisateurs. Comme *plot.vpc.yvir50$theme* et *plot.vpc.yvir50$layers* sont des listes, avec modifyList les slots sont facilement accessibles et modifiables. Dans les fonctions plots pourraient être ainsi appelées un theme tels que *theme_plot_vpc(), theme_plot_scatter(), etc.*
+- Pour modifier les graphes directement avec un template ggplot. Le theme d'un plot ggplot est accessible via le slot theme et layers, exemple : *plot.vpc.yvir50$theme et plot.vpc.yvir50$layers*.On peut ainsi définir un template ggplot par defaut pour chaque plot et créer une fonction qui va directement le modifier en  fonctions des options utilisateurs. Comme *plot.vpc.yvir50$theme* et *plot.vpc.yvir50$layers* sont des listes, avec modifyList les slots sont facilement accessibles et modifiables. Dans les fonctions plots pourraient être ainsi appelées un theme tels que *theme_plot_vpc(), theme_plot_scatter(), etc.*
 
 ```{r doc.virload, echo=FALSE}
 
@@ -594,4 +599,5 @@ if(saveDocPlots) {
 
 ```{r deactivateDevMode, echo=FALSE, hide=T}
 dev_mode()
+```
 

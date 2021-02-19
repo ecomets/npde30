@@ -1,0 +1,26 @@
+# Rstudio
+
+>>> git pull
+warning: Cannot merge binary files: npde_3.0.tar.gz (HEAD vs. 04bb730cea1d0e5c65af1d401ff016179d924e92)
+Auto-merging npde_3.0.tar.gz
+CONFLICT (content): Merge conflict in npde_3.0.tar.gz
+Auto-merging npde/R/plotNpde-scatterplot.R
+CONFLICT (content): Merge conflict in npde/R/plotNpde-scatterplot.R
+Auto-merging npde/R/plotNpde-plotFunctions.R
+CONFLICT (content): Merge conflict in npde/R/plotNpde-plotFunctions.R
+Auto-merging npde/R/plotNpde-methods.R
+CONFLICT (content): Merge conflict in npde/R/plotNpde-methods.R
+Auto-merging notebooks/ecoDocPlots.Rmd
+CONFLICT (content): Merge conflict in notebooks/ecoDocPlots.Rmd
+Automatic merge failed; fix conflicts and then commit the result.
+
+
+# Command line
+
+git status 
+
+# A la main: 
+- créé des copies de chaque version et utilisé kompare pour visualiser les différences
+
+notebooks/ecoTestDev.Rmd
+npde/R/plotNpde-methods.R

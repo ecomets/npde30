@@ -1,0 +1,82 @@
+---
+title: "Testing package with devtools"
+author: "Emmanuelle Comets"
+date: "02/02/2021"
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+---
+
+## Notes before release
+
+- package
+  -  **TODO** automatically load libraries when loading *npde* ()
+    - ggplot2 not loaded, gridExtra, mclust not loaded
+    - check: mclust
+  - compilation: compiled package as npde 3.0
+    - version number 3.0 because reference profiles included
+    - lots of error messages for "no visible binding for global variable" in variables related to ggplot2 (Undefined global functions or variables) => hope this does not block us for CRAN
+- TODO *npde website* (bookdown, Eco)
+- code **TODO** for 3.1
+  - add an option to remove all output when required and remove warnings if requested
+  - plot for a NpdeData object
+    - change index labels to allow duplicate time points
+- **TODO** simplify output for *show()* function (v3.0 or v3.1 ?)
+
+## Setup, loading libraries
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(devtools)
+library(ggplot2)
+library(gridExtra)
+library(mclust)
+library(testthat)
+library(grid)
+workDir<-"/home/eco/work/npde/npde30/"
+setwd(workDir)
+knitr::opts_chunk$set(root.dir = workDir)
+#docFigs<-"/home/eco/work/npde/doclib/figs"
+saveDocPlots<-FALSE
+savePaperPlots<-FALSE
+```
+
+### Install package in development mode
+  
+```{r devModeInstall}
+dev_mode() # development mode
+install.packages(pkgs=file.path(workDir,"npde_3.0.tar.gz"),repos=NULL)
+library(npde)
+```
+
+
+```{r virloadRun, echo=FALSE}
+#Viral load data
+data(virload20)
+data(simvirload)
+
+yvir20<-autonpde(virload20,simvirload,iid=1,ix=2,iy=3, icens=4, boolsave=FALSE)
+yvir20.omit<-autonpde(virload20,simvirload,iid=1,ix=2,iy=3, icens=4, boolsave=FALSE, cens.method="omit")
+
+plot(yvir20)
+plot(yvir20, plot.type="loq")
+```
+
+```{r grid.arrange, echo=FALSE}
+plot.x.scatter.yvir20 = plot(yvir20,plot.type="x.scatter")
+plot.pred.scatter.yvir20 = plot(yvir20,plot.type="pred.scatter")
+grid.arrange(grobs=list(plot.x.scatter.yvir20, plot.pred.scatter.yvir20), nrow=1, ncol=2)
+
+plot.vpc.yvir20 = plot(yvir20,plot.type="vpc")
+plot.yvir20.omit = plot(yvir20.omit,plot.type="vpc")
+grid.arrange(grobs=list(plot.vpc.yvir20,plot.yvir20.omit), nrow=1, ncol=2)
+
+```
+
+## End of file, deactivating development mode
+
+```{r deactivateDevMode, echo=FALSE, hide=T}
+dev_mode()
+```
+

@@ -12,14 +12,14 @@
 \title{#################    Scatterplots - VPC, scatterplots versus independent variable, predictions, covariates  ###################
 Scatterplots and VPC}
 \usage{
-npde.plot.scatterplot(npdeObject, which.x="x", which.y="npde", ref.prof=NULL, ...)
+npde.plot.scatterplot(npdeObject, which.x="x", which.y="npd", ref.prof=NULL, ...)
 }
 \arguments{
 \item{npdeObject}{an object returned by a call to \code{\link{npde}} or \code{\link{autonpde}}}
 
 \item{which.x}{a string specifying the variable on the X-axis (one of "x", "pred", "cov")}
 
-\item{which.y}{a string specifying the variable on the Y-axis (one of "yobs", "npde", "pd", "npd")}
+\item{which.y}{a string specifying the variable on the Y-axis (one of "yobs", "npde", "pd", "npd"), defaults to "npd"}
 
 \item{ref.prof}{either the character string "covariate" or a named list}
 

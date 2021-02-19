@@ -1,0 +1,53 @@
+
+Plan:
+réorganiser en
+
+1. Diagnostic graphs with npde
+contenu: graphes et options par défaut
+1.1. Running npde
+1.2 Default diagnostic plot
+(ie le waffle plot ici)
+1.3. Plot options 
+intro: le texte actuelleemnt en p. 5 (section 3), dire tables donnent les options par défaut utilisées dans les graphes de 1.2
+1.3.1 Layout options (table 2)
+1.3.2 Colour and symbols (table 3 et 4, essayer de combiner en utilisant longtable)
+1.3.3 Options for prediction intervals (table 5, légende à changer)
+
+2. Graphes
+contenu: graphes individuels + user-defined layout
+
+Intro: table 1 (les types de graphes)
+
+2.1 Distribution plots
+2.1.1 Histogram
+2.1.2 QQ-plot
+2.1.3. Empirical cumulative density function
+
+2.2 Scatterplots
+2.2.1 Scatterplots versus independent variable
+2.2.1.1 npde/pd vs time
+2.2.1.2 VPC: observed value vs time
+2.2.2 Scatterplots versus predicted values
+2.2.3. Scatterplots versus covariates
+
+2.3 Other plots
+2.3.1. Data
+2.3.2 Plot of the probability of being below the LOQ
+2.3.3. Reference plots
+contenu: vide pour le moment, TBD
+
+2.4 Covariate plots
+2.4.1 Splitting plots by covariates
+contenu: on peut splitter chaque graphe d'avant par catégorie de covariable (option covsplit)
+2.4.2 npde versus covariates as boxplot
+contenu: option cov.scatter, renvoyer à Brendel 2010
+
+2.5 User-defined layout
+contenu: section 7 actuelle, mais détailler plus et montrer 2 exemples + expliquer cas covsplit (ça compte pour un seul graphe ?) => pe un 2e exemple avec eg covsplit pour 2 covariables (sexe et wt sur la warfarine) avec en haut x.scatter et en bas pred.scatter pour montrer nrow/ncol
+
+Vocabulaire:
+Waffle plot c'était pour nous, là ce sera User-defined layout ou Combining several plots on the same graphs
+
+Format
+Titre en toute lettre (pas Plot LOQ ou Ecdf)
+Légendes: sous le graphe et pas au-dessus (sinon on voit moins bien quand il y a un titre)

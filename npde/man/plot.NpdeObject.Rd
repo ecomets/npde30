@@ -17,7 +17,11 @@
 Plots the data and diagnostic plots in a NpdeObject object
 }
 \details{
-The default plot
+The default plot, as a 2x2 array with distribution plots on the top row (histogram and QQ-plot), and scatterplots of npde
+versus independent variable and population predictions on the bottom row. 
+The graph is plotted in a graphic device window, unless the result is stored in an object (eg myplot<-plot(x)) which can then be printed (eg using print(myplot)).
+
+ @references K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.Mentre. Metrics for external model evaluation with an application to the population pharmacokinetics of gliclazide. \emph{Pharmaceutical Research}, 23:2036--49, 2006.
 }
 \examples{
 \dontrun{
@@ -28,9 +32,6 @@ x<-autonpde(theopp,simtheopp,iid="ID",ix="Time", iy="Conc", boolsave=FALSE)
 plot(x)
 }
 
-}
-\references{
-K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.Mentre. Metrics for external model evaluation with an application to the population pharmacokinetics of gliclazide. \emph{Pharmaceutical Research}, 23:2036--49, 2006.
 }
 \seealso{
 \code{\link{set.plotoptions}}

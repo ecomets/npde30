@@ -1,0 +1,107 @@
+
+\clearpage
+\subsection{Model evaluation for remifentanil PK} \label{sec:remifentanil}
+
+\subsubsection{Data}
+
+\hskip 18pt This dataset is one of the datasets distributed in \R~in the \texttt{nlme} library. The original data was collected in a study by Minto et al.~\cite{Minto97a,Minto97b}, who studied the pharmacokinetics and pharmacodynamics of remifentanil in 65 healthy volunteers. Remifentanil is a synthetic opioid derivative, used as a major analgesic before surgery or in critical care. In the study, the subjects were given remifentanil as a continuous infusion over 4 to 20~min, and measurements were collected over a period of time varying from 45 to 230~min (mean 80~min), along with EEG measurements. The following covariates were recorded: gender, age, body weight, height, body surface area and lean body mass. The recruitment was specifically designed to investigate the effect of age, with recruitment over 3 age groups (young (20-40~yr), middle-aged (40-65~yr) and elderly (over 65~yr)).
+
+This dataset is used to illustrate the new covariate graphs. The data is not included by default in the library because it makes the package too large, but it can be downloaded from the github repository for the package \url{https://github.com/ecomets/npde30/tree/main/keep/data}.
+
+We modified the dataset to add a column with age group, and include the predictors {\sf Rate} (rate of infusion) and {\sf Amt} (dose) to generate simulations from the model.
+\begin{verbatim}
+data(remifent)
+head(remifent)
+\end{verbatim} 
+
+\subsubsection{Model}
+
+\hskip 18pt Minto et al. analysed this data using a 3-compartment model with a proportional error model and log-normal distribution for the parameters. In their base model (without covariates), they estimated the following parameters:
+
+\begin{center}
+\begin{tabular} {l c | l c}
+\hline 
+\multicolumn{2}{c}{Population mean} & \multicolumn{2}{c}{Interindividual variability (CV\%)} \\
+\hline 
+CL (L.min$^{-1}$) & 2.46 & $\omega_{CL}$ (-) & 23 \\
+V$_1$ (L) & 4.98 & $\omega_{V_1}$ (-) & 37 \\
+Q$_2$ (L.min$^{-1}$) & 1.69 & $\omega_{Q_2}$ (-) & 52 \\
+V$_2$ (L) & 9.01 & $\omega_{V_2}$ (-) & 39 \\
+Q$_3$ (L.min$^{-1}$) & 0;065 & $\omega_{Q_3}$ (-) & 56 \\
+V$_3$ (L) & 6.54 & $\omega_{V_3}$ (-) & 63 \\
+$\sigma$ (-) & 0.204 \\
+\hline
+\end{tabular}
+\end{center}
+
+Because of the size of the dataset, only 200 replications of the base model without covariates are used here but of course we advise a larger number of replications.
+\begin{verbatim}
+xrem<-autonpde(namobs="remifent.tab",namsim="simremifent_base.tab",
+  iid=1,ix=2,iy=3,icov=c(6:12),namsav="remibase",units=list(x="hr",y="ug/L",
+  covariates=c("yr","-","cm","kg","m2","kg","yr")))
+\end{verbatim}
+
+Computing the npde yields the following results:
+\begin{verbatim}
+---------------------------------------------
+Distribution of npde :
+      nb of obs: 1992
+           mean= -0.02578   (SE= 0.015 )
+       variance= 0.4637   (SE= 0.015 )
+       skewness= 0.2545
+       kurtosis= 2.077
+---------------------------------------------
+Statistical tests
+  t-test                     : 0.0912 .
+  Fisher variance test       : 1.88e-102 ***
+  SW test of normality       : 8e-18 ***
+Global adjusted p-value      : 5.65e-102 ***
+---
+Signif. codes: '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1
+---------------------------------------------
+\end{verbatim}
+Here the model is strongly rejected by the test on \npde: the t-test does not show any trend in the data, but the variance of \npde~is significantly smaller than 1. This appears clearly in the plots in figure~\ref{fig:remi.default} when comparing the distribution of \npde~to the theoretical distribution. 
+\begin{figure}[!h]
+\par\kern -0.3cm
+\begin{center}
+\epsfig{file=/home/eco/work/npde/loq_tram/loqlib/weavetest/figs/remi_default.eps,width=14cm}
+\end{center}
+\caption{Graphs plotted by the {\sf npde()} or {\sf autonpde()}
+functions.}\label{fig:remi.default}
+\end{figure}
+\newpage
+
+\begin{description}
+\item[{\bf Note:}] the very small p-value we find here is partly due to the size of the dataset (1992 observations here). Tests on \npde, especially the variance and normality tests, are almost systematically positive in large real-life datasets as the power to detect model misspecification is very large and even a small number of outliers will cause the test to fail; it is generally more informative with large datasets to just use diagnostic graphs to help diagnose model misspecifications without attaching too much importance to the p-value.
+\end{description}
+ 
+\subsubsection{Covariate graphs}
+
+\paragraph{Scatterplots:} Scatterplots of npde versus a covariate can be used to assess trends, as in figure~\ref{fig:remi.covscatter} for npde versus lean body mass. Here we removed the observed data for clarity.
+
+\begin{figure}[!h]
+\par\kern -0.5cm
+\begin{center}
+\epsfig{file=/home/eco/work/npde/loq_tram/loqlib/weavetest/figs/doc_remi1.eps,width=9cm,angle=270}
+\end{center}
+\par\kern -0.2cm
+\caption{Scatterplot of npde versus lean body mass.}\label{fig:remi.covscatter}
+\end{figure}
+
+\newpage
+Figure~\ref{fig:remi.covecdf} shows the plot of cumulative density function, split by age group.
+\begin{figure}[!h]
+\par\kern -0.5cm
+\begin{center}
+\epsfig{file=/home/eco/work/npde/loq_tram/loqlib/weavetest/figs/doc_remi2.eps,width=14cm}
+\end{center}
+\par\kern -0.2cm
+\caption{Empirical cumulative function of npde, split by quantiles of age.} \label{fig:remi.covecdf}
+\end{figure}
+
+These figures can be obtained by the following code:
+\begin{verbatim}
+plot(xrem,plot.type="cov.scatter",which.cov="LBM",plot.obs=FALSE)
+plot(xrem,plot.type="ecdf",covsplit=TRUE,which.cov="age.grp",bands=TRUE,
+plot.obs=FALSE)
+\end{verbatim} 

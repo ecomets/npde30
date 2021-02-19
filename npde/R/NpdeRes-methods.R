@@ -244,9 +244,11 @@ skewness<-function (x)
 #' \describe{
 #' \item{p.mean}{p-value for the mean test (Wilcoxon test if parametric=FALSE, Student test if parametric=TRUE)}
 #' \item{p.var}{p-value for the variance test (parametric=FALSE, Fisher test if parametric=TRUE)}
-#' \item{p.dist}{p-value for the distribution test (XXX if parametric=FALSE, XXX if parametric=TRUE)}
+#' \item{p.dist}{p-value for the distribution test (Shapiro-test for normality (npd, npde)/Kolmogorove-Smirnov test for uniformity)}
 #' \item{p.global}{p-value for the global test (combination of the mean, variance and distribution tests with a Bonferroni correction)}
 #' }
+#' The p-values are adjusted using a Bonferroni correction: the raw p-values of the 3 individual tests are multiplied by 3, and the p-value for the global test is equal to the minimum of the adjusted p-values.
+#' 
 #' @references K. Brendel, E. Comets, C. Laffont, C. Laveille, and F. Mentre. Metrics for external model evaluation with an application to the population pharmacokinetics of gliclazide. \emph{Pharmaceutical Research}, 23:2036--49, 2006.
 #' @references K. Brendel, E. Comets, C. Laffont, and F. Mentre. Evaluation of different tests based on observations for external model evaluation of  population analyses. \emph{Journal of Pharmacokinetics and Pharmacodynamics}, 37:49--65, 2010.
 #' @seealso \code{\link{kurtosis}}, \code{\link{skewness}}
@@ -310,16 +312,18 @@ gof.test.numeric<-function(object, parametric=TRUE, ...) {
   # ECO TODO: non-parametric equivalent of variance test for one-sample ?
   #    }
   xcal<-3*min(myres[1:3])
+  for(i in 1:3) myres[i]<-min(3*myres[i],1)
   myres[4]<-min(1,xcal)
   if(parametric)
-    names(myres)<-c("  t-test                    ","  Fisher variance test      ","  SW test of normality      ", "Global adjusted p-value     ") else
-      names(myres)<-c("  Wilcoxon signed rank test ","  Fisher variance test      ", "  SW test of normality      ","Global adjusted p-value     ")
-  if(which=="pd") names(myres)[3]<-"KS test of uniformity       "
+    names(myres)<-c("  t-test               ", "  Fisher variance test ", "  SW test of normality ","  Global test          ") else
+      names(myres)<-c("  Wilcoxon signed rank test ","  Fisher variance test      ", "  SW test of normality      ", "  Global test               ")
+  if(which=="pd") names(myres)[3]<-"  KS test of uniformity  "
   res$p.value<-myres
   res$nobs<-n1
   #	if(verbose) printgoftest(res, which=which)
   invisible(res)
 }
+
 
 #' @export
 
@@ -388,8 +392,8 @@ printgoftest<-function(object, which="npde", ...) {
   cat("       variance=",format(object$var,digits=4),"  (SE=",format(object$se.var,digits=2),")\n")
   cat("       skewness=",format(object$skewness,digits=4),"\n")
   cat("       kurtosis=",format(object$kurtosis,digits=4),"\n")
-  cat("---------------------------------------------\n\n")
-  cat("Statistical tests\n")
+  cat("---------------------------------------------\n")
+  cat("Statistical tests (adjusted p-values):\n")
   for(i in 1:4) {
     cat(names(object$p.value)[i],": ")
     #if (myres[i]<1)

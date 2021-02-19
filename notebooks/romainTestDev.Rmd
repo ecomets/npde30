@@ -1,3 +1,4 @@
+
 ---
 title: "Testing package with devtools"
 author: "Emmanuelle Comets"

@@ -1,5 +1,5 @@
 ---
-title: "Package compilation"
+title: "Package compilation and basic run"
 author: "Emmanuelle Comets"
 date: "02/02/2021"
 output:
@@ -35,10 +35,15 @@ knitr::opts_chunk$set(root.dir = workDir)
 - Compilation steps from Build menu
   - Document => create NAMESPACE, DESCRIPTION (update collate directive), create man pages
   - Check => update documentation, create NAMESPACE
+- **FINAL COMPILATION FOR CRAN**
+  - removed documentation (too large)
+  - removed simWararineBase 
 
 ```{r compilation}
 setwd(file.path(workDir,"npde"))
 system("rm man/*")
+cmd<-paste("cp ", file.path(workDir,"latexDoc","userguide_3_0.pdf")," ", file.path(workDir,"userguide_npde_3.0.pdf"),sep="")
+system(cmd)
 roxygenise()
 setwd(workDir)
 system("R CMD build npde")
@@ -48,6 +53,7 @@ system("R CMD check --as-cran npde_3.0.tar.gz")
 Apres correction, la compilation du package passe sans erreurs et avec 2 notes restantes.
 
 - **notes**
+  - previous version archived
   - package size too large (recommended size less than 5Mb): reduce nb of simulations for warfarin ?
   - ggplot variables (rien a faire pour ça)
 - **warnings** corriges
@@ -59,18 +65,18 @@ Apres correction, la compilation du package passe sans erreurs et avec 2 notes r
 - ggplot warnings
 
 ````
- Undefined global functions or variables:
-    .x X2.5. X50. X97.5. Y0.025 Y0.025.1 Y0.5 Y0.5.1 Y0.975 Y0.975.1 aes
-    annotation_logticks category coord_cartesian coord_flip element_blank
-    element_line element_rect element_text expand_limits facet_wrap
-    geom_bar geom_boxplot geom_crossbar geom_line geom_point geom_ribbon
-    ggplot ggtitle grid.arrange group grp guides labs lower name obs.inf
-    obs.median obs.sup pinf.lower pinf.median pinf.upper pmid.lower
-    pmid.median pmid.upper psup.lower psup.median psup.upper
-    scale_fill_manual scale_x_continuous scale_x_log10 scale_y_continuous
-    scale_y_log10 theme upper value x x1 x2 x_area_0.25 x_area_0.5
-    x_area_0.975 xcent xlab y y1 y2 y_area_0.25 y_area_0.5 y_area_0.975
-    ylab
+Undefined global functions or variables:
+  .x X2.5. X50. X97.5. Y0.025 Y0.025.1 Y0.5 Y0.5.1 Y0.975 Y0.975.1 aes
+  annotation_logticks category coord_cartesian coord_flip element_blank
+  element_line element_rect element_text expand_limits facet_wrap
+  geom_bar geom_boxplot geom_crossbar geom_hline geom_line geom_point
+  geom_ribbon ggplot ggtitle gpar grid.arrange group grp guides labs
+  lower name obs.inf obs.median obs.sup pinf.lower pinf.median
+  pinf.upper pmid.lower pmid.median pmid.upper psup.lower psup.median
+  psup.upper scale_fill_manual scale_x_continuous scale_x_discrete
+  scale_x_log10 scale_y_continuous scale_y_log10 textGrob theme upper
+  value x x1 x2 x_area_0.25 x_area_0.5 x_area_0.975 xcent y y1 y2
+  y_area_0.25 y_area_0.5 y_area_0.975
 ````
 - Warnings in first compilation (solved)
 
@@ -97,6 +103,45 @@ W  checking for missing documentation entries (346ms)
    See chapter ‘Writing R documentation files’ in the ‘Writing R
    Extensions’ manual.
 ````
+
+### Install package in development mode
+  
+```{r devModeInstall}
+dev_mode() # development mode
+install.packages(pkgs=file.path(workDir,"npde_3.0.tar.gz"),repos=NULL)
+library(npde)
+library(ggplot2)
+library(gridExtra)
+library(mclust)
+library(testthat)
+library(grid)
+```
+
+```{r baseplot, echo=FALSE}
+#Viral load data
+data(virload20)
+data(simvirload)
+
+yvir20<-autonpde(virload20,simvirload,iid=1,ix=2,iy=3, icens=4, boolsave=FALSE)
+yvir20.omit<-autonpde(virload20,simvirload,iid=1,ix=2,iy=3, icens=4, boolsave=FALSE, cens.method="omit")
+
+plot(yvir20)
+plot(yvir20, plot.type="loq")
+plot(yvir20, plot.type="vpc")
+plot(yvir20, plot.type="x.scatter")
+```
+
+
+```{r grid.arrange, echo=FALSE}
+plot.x.scatter.yvir20 = plot(yvir20,plot.type="x.scatter")
+plot.pred.scatter.yvir20 = plot(yvir20,plot.type="pred.scatter")
+grid.arrange(grobs=list(plot.x.scatter.yvir20, plot.pred.scatter.yvir20), nrow=1, ncol=2)
+
+plot.vpc.yvir20 = plot(yvir20,plot.type="vpc")
+plot.yvir20.omit = plot(yvir20.omit,plot.type="vpc")
+grid.arrange(grobs=list(plot.vpc.yvir20,plot.yvir20.omit), nrow=1, ncol=2)
+
+```
 
 ### Bugs to sort
 

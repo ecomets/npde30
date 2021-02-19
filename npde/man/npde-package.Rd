@@ -34,6 +34,8 @@ K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.
 Mentr{\'e}. Metrics for external model evaluation with an application to the
 population pharmacokinetics of gliclazide. \emph{Pharmaceutical Research},
 23:2036--49, 2006.
+
+PDF documentation for npde 3.0: \url{https://github.com/ecomets/npde30/blob/main/userguide_npde_3.0.pdf}
 }
 \author{
 Emmanuelle Comets, Karl Brendel, Thi Huyen Tram Nguyen, France Mentre

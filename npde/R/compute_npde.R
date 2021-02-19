@@ -109,21 +109,19 @@ computenpde.omit<-function(npdeObject) {
 			npdeObject["results"]["res"]$npde<-npdefull
 		}
 		npdeObject["sim.data"]["datsim"]$ydsim<-ydsimfull
-		if(!npdeObject["options"]$calc.pd) {
+		if(!npdeObject["options"]$calc.npd) {
 			ypredfull<-npdefull
 			ypredfull[not.miss]<-ypred
 			npdeObject["results"]["res"]$ypred<-ypredfull
 		}
 	} else {
 		npde<-rep(NA,length(pde))
-		npdeObject["options"]$calc.pd<-TRUE
+		npdeObject["options"]$calc.npd<-TRUE
 	}
 	return(npdeObject)
 }
 
 computenpde.loq<-function(npdeObject) {
-
-
 	# Compute (normalised) prediction distribution errors in the presence of BQL data
 
 	# ECO TODO: securiser ici, faire test
@@ -209,7 +207,7 @@ computenpde.loq<-function(npdeObject) {
 		npdeObject["sim.data"]["datsim"]$ydsim<-ydsimfull
 	} else {
 		npde<-rep(NA,length(pde))
-		npdeObject["options"]$calc.pd<-TRUE
+		npdeObject["options"]$calc.npd<-TRUE
 	}
 	return(npdeObject)
 }

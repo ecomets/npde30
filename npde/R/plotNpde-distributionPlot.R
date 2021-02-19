@@ -5,12 +5,12 @@
 #' Produces a plot of the cdistribution of a metric compared to their theoretical distribution. Three types of distribution plots are available:
 #' a histogram, a QQ-plot, or the empirical cdf.
 #'
-#' @usage npde.plot.dist(npdeObject, which="npde", dist.type="qqplot", ...)
+#' @usage npde.plot.dist(npdeObject, which="npd", dist.type="qqplot", ...)
 #'
 #' @aliases aux.npdeplot.hist aux.npdeplot.dist
 #'
 #' @param npdeObject an object returned by a call to \code{\link{npde}} or \code{\link{autonpde}}
-#' @param which a string determining which metric to plot, one of "npde", "pd" or "npd" (defaults to "npde")
+#' @param which a string determining which metric to plot (one of "npde", "pd" or "npd"), defaults to "npd"
 #' @param dist.type string, one of "ecdf" (empirical cumulative density function), "hist" (histogram) or "qqplot" (QQ-plot of the empirical distribution versus the theoretical quantiles) to determine which type of plot (default is "qqplot")
 #' @param \dots additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}})
 #'
@@ -23,26 +23,23 @@
 #' @export
 #' @importFrom stats pnorm
 
-npde.plot.dist<-function(npdeObject, which="npde", dist.type="qqplot", ...) {
+npde.plot.dist<-function(npdeObject, which="npd", dist.type="qqplot", ...) {
 
   userPlotOptions = list(...)
   plot.opt <- set.plotoptions.default( npdeObject )
   plot.opt <- modifyList( plot.opt, userPlotOptions[ intersect( names( userPlotOptions ), names( plot.opt ) ) ] )
+  # cat("In npde.plot.dist\n")
+  # print(plot.opt$covsplit)
+  # print(plot.opt$which.cov)
 
   # size replace size.pobs
-  if ( plot.opt$size %in% userPlotOptions)
-  {
-    plot.opt$size.pobs = plot.opt$size
-  }
+  if ( plot.opt$size %in% userPlotOptions) plot.opt$size.pobs = plot.opt$size
 
   # col replace  col.pobs
-  if ( plot.opt$col %in% userPlotOptions)
-  {
-    plot.opt$col.pobs = plot.opt$col
-  }
+  if ( plot.opt$col %in% userPlotOptions)    plot.opt$col.pobs = plot.opt$col
 
   # which modified or not for "npde","pd","npd"
-  which = plot.opt$which
+  # which = plot.opt$which # which is passed in the arguments !!! don't change it here !!!
 
   # -----------------------------------------------------------
   # Check inputs
@@ -128,17 +125,18 @@ npde.plot.dist<-function(npdeObject, which="npde", dist.type="qqplot", ...) {
       } else sim.ypl<-pnorm(npdeObject["results"]["npde.sim"])
     }
   }
-
   list_plot = list()   # list to stack the ggplot (not needed ?)
 
   # -----------------------------------------------------------
   # Prepare observations
 
   if(which %in% c("npde","pde")) ypl<-npdeObject["results"]["res"]$npde
-  if(which %in% c("pd","npd")) ypl<-npdeObject["results"]["res"]$pd
-  if(which=="npd") ypl<-qnorm(ypl)
-  if(which=="pde") ypl<-pnorm(ypl)
-
+  if(which %in% c("pd")) ypl<-npdeObject["results"]["res"]$pd
+  if(which %in% c("npd")) ypl<-npdeObject["results"]["res"]$npd
+  if(which=="pde") ypl<-pnorm(ypl) # we don't store pde, only npde
+  # Define nsim
+  if(length(sim.ypl)>0) nsim<-length(sim.ypl)/length(ypl)
+    
   obsmat<-data.frame(x=ypl)
   obsmat$category<-"all"
   if(length(npdeObject["data"]["icens"])>0) obsmat$cens<-npdeObject["data"]["data"]$cens else obsmat$cens<-0
@@ -178,16 +176,15 @@ npde.plot.dist<-function(npdeObject, which="npde", dist.type="qqplot", ...) {
     list_plot[[1]]<-p
 
   } else {
-
     # loop on covariate
     idobs <- npdeObject["data"]["data"][npdeObject["data"]["not.miss"], npdeObject["data"]["name.group"]]
-    iplot<-0
+    iplot <- 0
     for(icov in 1:length(plot.opt$which.cov)) {
-      iplot<-iplot+1 # Counter for list of plots
+      iplot <- iplot+1 # Counter for list of plots
       lcov <-  plot.opt$which.cov[icov]
       plot.opt2<-plot.opt
       plot.opt2$which.cov<-lcov
-      zecov = npdeObject["data"]["data"][npdeObject["data"]["not.miss"],lcov]
+      zecov <- npdeObject["data"]["data"][npdeObject["data"]["not.miss"],lcov]
       if(!is.null(not.miss2)) zecov<-zecov[not.miss2]
       ucov = zecov[match(unique(idobs),idobs)]
       if(is.numeric(ucov) & length(unique(ucov))>plot.opt$ncat){ # Continuous covariatewith more than plot.opt$ncat (default 3)
@@ -204,7 +201,7 @@ npde.plot.dist<-function(npdeObject, which="npde", dist.type="qqplot", ...) {
           zecov.cat<-factor(zecov.cat, labels=namcat)
         }
       } else { # Categorical covariate defined as factor, or covariate with less than plot.opt$ncat categories
-        namcat<-paste(lcov,unique(ucov), sep=": ")
+        namcat<-paste(lcov,sort(unique(ucov)), sep=": ")
         zecov.cat<-paste(lcov, zecov, sep=": ")
         zecov.cat<-factor(zecov.cat, labels=namcat)
       }
@@ -214,6 +211,7 @@ npde.plot.dist<-function(npdeObject, which="npde", dist.type="qqplot", ...) {
       list_plot[[iplot]]<-p
     }
   }
+  if(length(list_plot)==1) list_plot<-list_plot[[1]]
   return( list_plot )
 
   #invisible(list_plot) # return invisibly, can we return plots that we can manipulate later ?
@@ -434,10 +432,10 @@ npde.plot.loq<-function(npdeObject,xaxis="x",nsim=200,...) {
               linetype = plot.opt$lty.bands) +
 
     geom_line(aes(y = X50.),
-              color = plot.opt$col.bands,
-              alpha = plot.opt$alpha.bands,
-              size = plot.opt$lwd.bands,
-              linetype = plot.opt$lty.bands) +
+              color = plot.opt$col.ther,
+              alpha = plot.opt$alpha.ther,
+              size = plot.opt$lwd.ther,
+              linetype = plot.opt$lty.ther) +
 
     geom_line(aes(y = xobs),
               color = plot.opt$col.lobs,
@@ -447,6 +445,7 @@ npde.plot.loq<-function(npdeObject,xaxis="x",nsim=200,...) {
     scale_x_continuous(plot.opt$xlab, scales::pretty_breaks(n = plot.opt$breaks.x))+
     scale_y_continuous(plot.opt$ylab, scales::pretty_breaks(n = plot.opt$breaks.y))
 
-  print(p)
+#  print(p)
+  return(p)
 
  }

@@ -12,10 +12,10 @@ dist.pred.sim(npdeObject,nsamp, ...)
 
 \item{nsamp}{number of datasets (defaults to 100 or to the number of replications if it is smaller)}
 
-\item{\dots}{additional arguments. Currently only the value of calc.pd and calc.npde may be passed on, and will override their corresponding value in the "options" slot of npdeObject}
+\item{\dots}{additional arguments. Currently only the value of calc.npd and calc.npde may be passed on, and will override their corresponding value in the "options" slot of npdeObject}
 }
 \value{
-an object of class NpdeObject; the ["results"] slot will contain pd and/or npde for a sample of the simulated datasets (depending on whether calc.pd/calc.npde are ), stored in pd.sim and/or npde.sim
+an object of class NpdeObject; the ["results"] slot will contain pd and/or npde for a sample of the simulated datasets (depending on whether calc.npd/calc.npde are set), stored in pd.sim and/or npde.sim
 }
 \description{
 This function is used to build the distribution of pd/npde using the simulations under the model. The default is to build only the distribution of pd, and to sample from N(0,1) when building the distribution of npde under the null hypothesis.

@@ -18,6 +18,8 @@
 #' Mentr{\'e}. Metrics for external model evaluation with an application to the
 #' population pharmacokinetics of gliclazide. \emph{Pharmaceutical Research},
 #' 23:2036--49, 2006.
+#' @references PDF documentation for npde 3.0: \url{https://github.com/ecomets/npde30/blob/main/userguide_npde_3.0.pdf}
+#' 
 #' @keywords models
 #' @examples
 #' \dontrun{
@@ -82,6 +84,9 @@ NULL
 #'
 #' Pinheiro, J. C. and Bates, D. M. (2000) \emph{Mixed-effects Models in S and
 #' S-PLUS}, Springer (Appendix A.29)
+#' 
+#' @references PDF documentation for npde 3.0: \url{https://github.com/ecomets/npde30/blob/main/userguide_npde_3.0.pdf}
+#' 
 #' @keywords datasets
 #' @examples
 #' \dontrun{
@@ -132,6 +137,9 @@ NULL
 #' @source Boeckmann, A. J., Sheiner, L. B. and Beal, S. L. (1994),
 #' \emph{NONMEM Users Guide: Part V}, NONMEM Project Group, University of
 #' California, San Francisco.
+#' 
+#' @references PDF documentation for npde 3.0: \url{https://github.com/ecomets/npde30/blob/main/userguide_npde_3.0.pdf}
+#' 
 #' @keywords datasets
 #' @examples
 #'\dontrun{
@@ -186,6 +194,8 @@ NULL
 #' 
 #' Two datasets containing simulated data are associated with the \code{warfarin} data. For
 #' each dataset, 1000 simulations of the original data were performed for the computation of npde.
+#' The package contains only the simulated data simwarfarinCov because of size constraints. simwarfarinBase can be downloaded from
+#' the github for npde3.0: \url{https://github.com/ecomets/npde30/tree/main/keep/data/simwarfarinBase.tab}
 #' \describe{
 #' \item{simwarfarinBase}{the data in this dataset was simulated according to a base model without covariates: the PK model was a two-compartment model, with first-order absorption and a time-delay. Interindividual variability was modelled as log-normal distributions for parameters Tlag, ka, Cl and V1, and the error model was a combined error model. The parameters were estimated by Monolix.}
 #' \item{simwarfarinCov}{the data in this dataset was simulated according to a model including several covariates: an age (centered on 30 yr) effect on Cl, a weight (centered on 70 kg) effect on Cl and V1, and a gender effect on V1. The covariate model was built in Monolix.}
@@ -209,6 +219,9 @@ NULL
 #' 
 #' @source O’Reilly (1968). Studies on coumarin anticoagulant drugs. Initiation 
 #' of warfarin therapy without a loading dose. Circulation 1968, 38:169-177.
+#' 
+#' @references PDF documentation for npde 3.0: \url{https://github.com/ecomets/npde30/blob/main/userguide_npde_3.0.pdf}
+#' 
 #' @keywords datasets
 #' @examples
 #' \dontrun{
@@ -247,6 +260,9 @@ NULL
 #' @source Goujard, C., Barrail-Train, A., Duval, X., Nembot, G., Panhard, X., Savic, R., Descamps, D., Vrijens, B., Taburet, A., Mentre, F., and the ANRS 134 study group (2010). 
 #' Virological response to atazanavir, ritonavir and tenofovir/emtricitabine: relation to individual pharmacokinetic parameters and adherence measured by medication events monitoring system (MEMS) in naive HIV-infected patients (ANRS134 trial). 
 #' \emph{International AIDS Society 2010}, Abstr WEPE0094.
+#' 
+#' @references PDF documentation for npde 3.0: \url{https://github.com/ecomets/npde30/blob/main/userguide_npde_3.0.pdf}
+#' 
 #' @keywords datasets
 #' @examples
 #' \dontrun{
@@ -270,7 +286,9 @@ NULL
 #' @details Several methods are available to handle censored data.
 #' \describe{
 #' \item{omit}{pd and npde for censored data will be set to NA}
-#' \item{cdf}{for an observation ycens_ij under the LOQ, a pd_ij will be imputed in the uniform distribution [0-pLOQ_ij] where pLOQ_ij is the probability that y_ij is below LOQ, according to the model; the predictive distribution will then be used to obtain a corresponding y*_ij. This is also performed for all simulated data, and the npde are then computed on the completed dataset containing the observed y_ij for the uncensored data and the y*_ij imputed for the censored data. This method is the default.}
+#' \item{cdf}{for an observation ycens_ij under the LOQ, a pd_ij will be imputed in the uniform distribution [0-pLOQ_ij] where pLOQ_ij is the probability that y_ij is below LOQ, according to the model; 
+#' the predictive distribution will then be used to obtain a corresponding y*_ij. 
+#' This is also performed for all simulated data, and the npde are then computed on the completed dataset containing the observed y_ij for the uncensored data and the y*_ij imputed for the censored data. This method is the default.}
 #' \item{ipred}{an observation ycens_ij is replaced by the individual prediction according to the model (ipred, which must be present in the dataset). Simulated data are left untouched.}
 #' \item{ppred}{an observation ycens_ij is replaced by the population prediction according to the model. Simulated data are left untouched.}
 #' \item{loq}{an observation ycens_ij is replaced by the value of the LOQ. Simulated data are left untouched.}

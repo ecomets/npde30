@@ -54,7 +54,7 @@ print.NpdeObject<-
     censmet<-c("Omit LOQ data (removed from data)", "Impute pd* and compute y* as F-1(pd*)","Impute y* to the LOQ", "Impute y* as the population model prediction", "Impute y* as the individual model prediction")
     icens<-grep(x@options$cens.method,c("omit","cdf","loq","ppred","ipred"))
     cat("Methods\n")
-    cat("    compute prediction discrepancies (pd): ", ifelse(x@options$calc.pd,"yes","no"),"\n")
+    cat("    compute normalised prediction discrepancies (npd): ", ifelse(x@options$calc.npd,"yes","no"),"\n")
     cat("    compute normalised prediction distribution errors (npde): ", ifelse(x@options$calc.npde,"yes","no"),"\n")
     cat("    method for decorrelation: ",decmet[imet],"\n")
     cat("    method to treat censored data: ",censmet[icens],"\n")
@@ -97,7 +97,7 @@ showall.NpdeObject<-function(object) {
   censmet<-c("Omit LOQ data (removed from data)", "Impute pd* and compute y* as F-1(pd*)","Impute y* to the LOQ", "Impute y* as the population model prediction", "Impute y* as the individual model prediction")
   icens<-grep(object@options$cens.method,c("omit","cdf","loq","ppred","ipred"))
   cat("Methods\n")
-  cat("    compute prediction discrepancies (pd): ", ifelse(object@options$calc.pd,"yes","no"),"\n")
+  cat("    compute normalised prediction discrepancies (npd): ", ifelse(object@options$calc.npd,"yes","no"),"\n")
   cat("    compute normalised prediction distribution errors (npde): ", ifelse(object@options$calc.npde,"yes","no"),"\n")
   cat("    method for decorrelation: ",decmet[imet],"\n")
   cat("    method to treat censored data: ",censmet[icens],"\n")
@@ -337,12 +337,13 @@ gof.test.NpdeObject<-function(object, parametric=TRUE, ...) {
       glcov<-rbind(glcov,l1)
       covtest<-rbind(covtest,icovtest)
     }
-    if(parametric) colnames(glcov)[4:7]<-c("  t-test                    ","  Fisher variance test      ","  SW test of normality      ", "Global adjusted p-value     ") else colnames(glcov)[4:7]<-c("  Wilcoxon signed rank test ","  Fisher variance test      ", "  SW test of normality      ","Global adjusted p-value     ")
-    if(which=="pd") colnames(glcov)[6]<-"KS test of uniformity       "
+    if(parametric) colnames(glcov)[4:7]<-c("  t-test               ", "  Fisher variance test ", "  SW test of normality ","  Global test          ") else colnames(glcov)[4:7]<-c("  Wilcoxon signed rank test ","  Fisher variance test      ", "  SW test of normality      ", "  Global test               ")
+    if(which=="pd") colnames(glcov)[6]<-"  KS test of uniformity  "
     myres$cov.stat<-covtest
     myres$cov.p.value<-glcov
   }
   invisible(myres)
 }
+
 
 ####################################################################################

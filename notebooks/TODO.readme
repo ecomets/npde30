@@ -1,0 +1,11 @@
+      
+- **WARNING** attention aux effets de bord !!!
+  - dans **set.plotoptions.NpdeObject**, xlab et ylab étaient fixés par défaut or on veut pouvoir les fixer automatiquement dans les fonctions graphiques tout en laissant l'utilisateur les passer en argument => on ne peut pas les mettre par défaut (xlab et ylab dépendent ici des variables qu'on veut tracer) => réfléchir avant de faire un truc comme ça (ou bien documenter qu'on puisse voir pourquoi ça plante, sinon on perd du temps à trouver pourqoui ça ne marche pas)
+  
+- **Note** : dans la dernière version, la fonction NpdeControl a toujours dans ses argumens xlab="" et ylab"" + which et xaxis
+Dabs plotNpde-distributionPlot l.156-l.168 il y a différents tests qui restent en conséquence. Pour le moment ça n'empêche pas à l'utilisateur/utilisatrice de changer les labels à sa guise.
+
+
+Data
+- faire une fonction pour tracer un objet data (avant le fit) en essayant de pouvoir utiliser le même code ?
+- simplifier le code actuel pour rassembler quand il y a des données censurées ou non (on n'a pas besoin de 2 blocs, refaire ce qui est fait eg dans scatterplot pour ajouter une partie censure quand il y a besoin)

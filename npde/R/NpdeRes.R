@@ -44,7 +44,7 @@
 setClass(
   Class="NpdeRes",
   representation=representation(
-  	res="data.frame",          # a data frame containing the results:id (group), xobs (observed X), yobs (observed Y), cens (indicator for censored data), as well as the actual results: ypred (model population predictions), pd (prediction discrepancies), npde (normalised prediction distribution errors), ycomp (completed data), ydobs (decorrelated observed data)
+  	res="data.frame",          # a data frame containing the results:id (group), xobs (observed X), yobs (observed Y), cens (indicator for censored data), as well as the actual results: ypred (model population predictions), pd (prediction discrepancies), npde (normalised prediction distribution errors), npd (normalised prediction discrepancies), ycomp (completed data), ydobs (decorrelated observed data)
   	icens="numeric",		# index of the censored observations (non-missing)
     not.miss="logical",		# vector of logical, TRUE if present (=not missing), FALSE for missing data
     ploq="numeric",		# probability to be below LOQ

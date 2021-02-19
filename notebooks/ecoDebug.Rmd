@@ -63,6 +63,7 @@ source(file.path(workDir,"npde","R","plotNpde-auxDistPlot.R")) # renamed from pl
 source(file.path(workDir,"npde","R","plotNpde-distributionPlot.R")) # extracted "main" for distribution plots from plotNpde-plotFunctions.R
 source(file.path(workDir,"npde","R","plotNpde-scatterplot.R")) # extracted "main" for scatter plots f
 source(file.path(workDir,"npde","R","plotNpde-binningPI.R")) # renamed from plotNpde-unitFunctionsPI.R
+source(file.path(workDir,"npde","R","plotNpde-covplot.R")) # covariate plots as boxplots
 ```
 
 ### Run npde
@@ -112,9 +113,55 @@ yvir50.ppred<-autonpde(virload50,simvirload,iid=1,ix=2,iy=3, icens=4,boolsave=FA
 
 yvir50.ipred<-autonpde(virload50,simvirload,iid=1,ix=2,iy=3, icens=4, iipred=5, boolsave=FALSE, cens.method="ipred")
 
+# noms ds ecoDocPlots.Rmd
+xvir<-yvir1
+x20<-yvir20
+x50<-yvir50
+x50.ipred<-yvir50.ipred
+x50.omit<-yvir50.omit
+x50.ppred<-yvir50.ppred
 ```
 
 ### Debugging 
+
+
+```{r yloq, echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+plot(yvir20)
+
+plot(yvir20, plot.type="x.scatter")
+
+plot(yvir20, plot.type="pred.scatter")
+
+plot(yvir20, plot.type="hist")
+
+plot(yvir20, plot.type="qqplot")
+
+plot(yvir20, plot.type="vpc")
+
+plot(yvir20, plot.type="loq")
+
+hist20<-plot(yvir20, plot.type="hist")
+xscatter20<-plot(yvir20, plot.type="x.scatter")
+predscatter20<-plot(yvir20, plot.type="pred.scatter")
+qqplot20<-plot(yvir20, plot.type="qqplot")
+list_plot<-list(hist20, qqplot20, xscatter20, predscatter20)
+
+grid.arrange(grobs = list_plot,nrow=2, ncol=2,vjust = 1, gp = gpar(fontsize=yvir20@prefs$size.main))
+
+```
+
+#### dispatching function
+
+```{r troispetitspoints, echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+
+test_file(file.path(testsDir,"test-arguments-ellipsis.R"))
+
+test_file(file.path(testsDir,"test-modifyOptions.R"))
+
+
+```
+
+#### distribution plots
 
 ```{r debugSetup, echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
 npde.plot.dist(yvir50.omit)
@@ -132,5 +179,33 @@ ref.prof<-NULL
 
 npde.plot.scatterplot(yvir50.omit)
 plot(yvir50.omit, plot.type="x.scatter")
+
+```
+
+### Arguments to plot function
+
+```{r debugArgs, echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+
+plot.NpdeObject2 <- function(x, y, ...) {
+  
+  args1<-match.call(expand.dots=TRUE)
+  list.args <- list(...)
+  list.args<-list.args[!(names(list.args) %in% c("dist.type", "which.x", "which.y", "which"))]
+  force.new<-"new"
+  list.args$npdeObject <- x
+  list.plot.qqplot = list()
+  list.args$dist.type<-"qqplot"
+  list.args$new <- force.new
+  typmet<-"npde"
+  for(imet in typmet) {
+    list.args$which <- typmet
+    list.plot.qqplot[[imet]] <-do.call(npde.plot.dist, list.args)
+  }
+  if(length(typmet)==1) list.plot.qqplot<-list.plot.qqplot[[1]]
+  return(list.plot.qqplot)
+}
+
+x<-plot.NpdeObject2(theofit1, dist.type="qqplot")
+
 
 ```

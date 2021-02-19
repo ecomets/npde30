@@ -5,7 +5,6 @@
 \documentclass[12pt,a4paper]{article}
 \usepackage{epsfig}
 %\usepackage{graphicx}
-\usepackage[dvipsnames]{color}
 \DeclareGraphicsExtensions{.jpg, .eps}
 \DeclareGraphicsRule{.jpg}{eps}{.jpg.bb}{`jpeg2ps -h -r 600#1}
 \usepackage{amsmath,amssymb,amsthm,indentfirst,array,bbm}
@@ -23,6 +22,7 @@
 %\usepackage{color}
 %\usepackage{/home/eco/xtex/Lib/figreport}
 %\usepackage{/home/eco/cours/coursR/zemanuel/manuelfig}
+\usepackage[dvipsnames]{color}
 \usepackage[dvips,colorlinks,hyperindex]{hyperref}
 
 \definecolor{mycol}{rgb}{0.5,0.1,0.6}
@@ -91,13 +91,13 @@ $\phantom{minime}$
 {\setlength{\baselineskip}{2\baselineskip}
 {\Large \bfseries User guide for npde 3.0}
 
-{\Large \bfseries January 2021}
+{\Large \bfseries February 2021}
 
 \bigskip 
 
 {\Large \itshape \bfseries Emmanuelle Comets}
 
-{\large \itshape \bfseries Contributors to the npde package: Karl Brendel, Marc Cerou,  Romain Leroux, Thi Huyen Tram Nguyen, France Mentr\'e}
+{\large \itshape \bfseries Contributors to the npde package: Karl Brendel, Marc Cerou, Thi Huyen Tram Nguyen,  Romain Leroux, France Mentr\'e}
 
 \bigskip
 {\it
@@ -121,15 +121,19 @@ Université Paris Diderot, Sorbonne Paris Cité, Paris, France.
 
 \hskip 18pt  This is the User's guide for the add-on package {\sf npde} (version 3.0, January 2021) for the {\sf R} language. It is distributed in the \texttt{inst} directory of the package. Version 3.0 includes a complete overhaul of the graphs, which have been moved to the {\sf ggplot2} philosophy~\cite{ggplot2} by Romain Leroux, as well as the addition of reference plots.
 
-{\sf npde} computes normalised prediction distribution errors ($npde$), a metric to evaluate nonlinear mixed-effect models such as those used in population pharmacokinetic or pharmacodynamic studies. Prediction distribution errors were developed under the name prediction discrepancies by Mentr\'e and Escolano~\cite{MentrePDE}. Brendel et al~\cite{BrendelPDE} proposed an improved version taking into account repeated observations within each subject, which were called prediction distribution errors. Both prediction discrepancies and prediction distribution errors are usually transformed to a normal distribution for graphical diagnostics.
+{\sf npde} computes normalised prediction distribution errors ($npde$), a metric to evaluate nonlinear mixed-effect models such as those used in population pharmacokinetic or pharmacodynamic studies. Prediction distribution errors were developed under the name prediction discrepancies by Mentr\'e and Escolano~\cite{MentrePDE}. Brendel et al~\cite{Brendel06} proposed an improved version taking into account repeated observations within each subject, which were called prediction distribution errors. Both prediction discrepancies and prediction distribution errors are usually transformed to a normal distribution for graphical diagnostics.
 
 The program is an add-on package (or library) running under the {\sf R} software~\cite{R}. Please install and launch {\sf R} to use {\sf npde}.
 
 \bigskip
 
-In section~\ref{sec:npde}, we describe briefly the method referenced in~\cite{BrendelPDE}. Details concerning the context and the methods can be found in this publication. In section~\ref{sec:progdesc}, we describe how to use the program to compute, plot and test prediction distribution errors. Finally, in section~\ref{sec:npde.examples}, we illustrate the use of the package through two examples (included in the package).
+In section~\ref{sec:npde}, we describe briefly the method referenced in~\cite{Brendel06}. Details concerning the context and the methods can be found in this publication. In section~\ref{sec:progdesc}, we describe how to use the program to compute, plot and test prediction distribution errors. Finally, in section~\ref{sec:npde.examples}, we illustrate the use of the package through two examples (included in the package).
 
 An additional document is distributed along with the package. Using the same examples as in section~\ref{sec:npde.examples}, it contains a table of graphical options and shows many graphs to illustrate how to use these options and produce specific graphs. This companion document, \verb+ demo_npde3.0.pdf+, is also located in the \texttt{inst} directory of the package.
+
+\paragraph{Important changes with version 3.0:} the default diagnostic graphs are now proposed for $\npd$ rather than $\npde$ by default, following a white paper by the Model Evaluation group of the International Society of Pharmacometrics, recommending diagnostic tools to evaluate models for continuous responses~\cite{Nguyen17}. Diagnostic tests are however still produced for $\npde$ (see Methods).
+
+\clearpage
 
 \section{Installation and Legalese}
 
@@ -185,7 +189,7 @@ journal	={Computer Methods and Programs in Biomedicine},
 year	=2008	}
 \end{verbatim}
 
-Additional references are:
+Additional references that may be of interest regarding this topic are:
 \begin{quotation}
 \noindent Brendel K, Comets E, Laffont CM, Laveille C, Mentr{\'e} F. Metrics for
 external model evaluation with an application to the population pharmacokinetics
@@ -254,6 +258,9 @@ year    =2013	}
 
 \clearpage
 \input{examples_3.0}
+
+\clearpage
+\input{options}
 
 \clearpage
 \newpage

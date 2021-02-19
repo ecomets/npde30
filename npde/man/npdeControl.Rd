@@ -7,7 +7,7 @@
 \title{Set options for an NpdeObject}
 \usage{
 npdeControl(boolsave = TRUE, namsav = "output", type.graph = "eps",
-verbose = FALSE, calc.npde = TRUE, calc.pd = TRUE, decorr.method = "cholesky",
+verbose = FALSE, calc.npde = TRUE, calc.npd = TRUE, decorr.method = "cholesky",
 cens.method = "omit", ties = TRUE, sample = FALSE)
 
 check.control.options(opt)
@@ -29,7 +29,7 @@ check.control.options(opt)
 
 \item{calc.npde}{a boolean; TRUE to compute npde}
 
-\item{calc.pd}{a boolean; TRUE to compute pd}
+\item{calc.npd}{a boolean; TRUE to compute npd}
 
 \item{decorr.method}{the method used to decorrelate simulated and observed data (see \code{\link{npde.decorr.method}})}
 

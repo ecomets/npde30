@@ -150,5 +150,5 @@ npde.plot.covariate<-function(npdeObject, which.y="npde", ...){ #} xscale=FALSE,
 
     list_plot[[iplot]] <- p1
   } # end loop on icov
-  invisible(list_plot) # return invisibly, can we return plots that we can manipulate later ?
+  return(list_plot) # return invisibly, can we return plots that we can manipulate later ?
 }

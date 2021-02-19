@@ -57,4 +57,7 @@ ylab="Theophylline concentration (mg/L)")
 
 }
 }
+\references{
+PDF documentation for npde 3.0: \url{https://github.com/ecomets/npde30/blob/main/userguide_npde_3.0.pdf}
+}
 \keyword{datasets}

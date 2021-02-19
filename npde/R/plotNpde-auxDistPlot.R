@@ -32,7 +32,8 @@ aux.npdeplot.hist<-function(obsmat,  plot.opt, distrib="norm", nclass=10, sim.yp
     obshist.cov<-data.frame(obshist.cov, category=zecat, stringsAsFactors = FALSE)
     obshist<-rbind(obshist,obshist.cov)
   }
-
+  obsmat$category<-factor(obsmat$category, levels=namesCategories, ordered=TRUE)
+  
   # -----------------------------------------------------------------------------------
   # PI for histogram
   pimat<-NULL
@@ -65,7 +66,7 @@ aux.npdeplot.hist<-function(obsmat,  plot.opt, distrib="norm", nclass=10, sim.yp
       # pimat.cov<-data.frame(pimat.cov, category=zecat, stringsAsFactors = FALSE)
 #      pimat<-rbind(pimat, pimat.cov)
     }
-    pimat$category<-factor(pimat$category, levels=namesCategories)
+    pimat$category<-factor(pimat$category, levels=namesCategories, ordered=TRUE)
   }
 
   # -----------------------------------------------------------------------------------
@@ -93,11 +94,11 @@ aux.npdeplot.hist<-function(obsmat,  plot.opt, distrib="norm", nclass=10, sim.yp
     {  if(plot.opt$bands==TRUE)
       geom_crossbar(data=pimat, aes(x=x, y=median, ymin=lower, ymax=upper),
                     width=diff(xhist$mids)[1],
-                    colour = plot.opt$col.bands,
+                    colour = plot.opt$col.ther,
                     fill = plot.opt$fill.bands,
                     alpha = plot.opt$alpha.bands,
-                    linetype =  plot.opt$lty.bands,
-                    size = plot.opt$lwd.bands )} +
+                    linetype =  plot.opt$lty.ther,
+                    size = plot.opt$lwd.ther )} +
 
     # Plot observed histograms
     geom_bar(data=obshist, aes(x=name, y=value),
@@ -170,6 +171,7 @@ aux.npdeplot.dist<-function(obsmat,  plot.opt, dist.type="qqplot", distrib="norm
     xmat.cov<-data.frame(xmat.cov, category=zecat, stringsAsFactors = FALSE)
     xmat<-rbind(xmat,xmat.cov)
   }
+  xmat$category<-factor(xmat$category, levels=namesCategories, ordered=TRUE)
   if(dist.type=="qqplot" & distrib=="norm") xmat$y<-qnorm(xmat$y)
 
   # x-y axis labels for ecdf plot
@@ -201,7 +203,7 @@ aux.npdeplot.dist<-function(obsmat,  plot.opt, dist.type="qqplot", distrib="norm
       pimat<-rbind(pimat, pimat.cov)
 
     }
-    pimat$category<-factor(pimat$category, levels=namesCategories)
+    pimat$category<-factor(pimat$category, levels=namesCategories, ordered=TRUE)
   }
   if(dist.type=="qqplot" & distrib=="norm") pimat$x<-qnorm(pimat$x)
 
@@ -237,10 +239,10 @@ aux.npdeplot.dist<-function(obsmat,  plot.opt, dist.type="qqplot", distrib="norm
                 alpha=plot.opt$alpha.bands) } +
 
     {if(plot.opt$bands==TRUE) geom_line(data=pimat, aes(x=x, y=median),
-                                        linetype = plot.opt$lty.bands,
-                                        colour = plot.opt$col.bands,
-                                        size = plot.opt$lwd.med,
-                                        alpha=plot.opt$alpha.med) } +
+                                        linetype = plot.opt$lty.ther,
+                                        colour = plot.opt$col.ther,
+                                        size = plot.opt$lwd.ther,
+                                        alpha=plot.opt$alpha.ther) } +
 
     # Plotting observed ecdf/qqplot
     {if (plot.opt$type=="l" || plot.opt$type=="b")
@@ -252,13 +254,17 @@ aux.npdeplot.dist<-function(obsmat,  plot.opt, dist.type="qqplot", distrib="norm
     {if (plot.opt$type=="p" || plot.opt$type=="b")
       geom_point(xmat.nocens, mapping = aes(x=y, y=x),
                  colour = plot.opt$col.pobs,
+                 shape = plot.opt$pch.pobs,
+                 alpha = plot.opt$alpha.pobs,
                  size = plot.opt$size.pobs) } +
 
     { if (hasCens & plot.opt$type %in% c("p","b"))
       geom_point(xmat.cens, mapping = aes(x=y, y=x),
-                 colour = plot.opt$col.pcens,
-                 size = plot.opt$size.pcens) } +
-
+                 color = plot.opt$col.pcens,
+                 shape = plot.opt$pch.pcens,
+                 size = plot.opt$size.pcens,
+                 alpha = plot.opt$alpha.pcens) } +
+    
     # Flipping coordinates, setting scales x-y
     scale_x_continuous(plot.opt$xlab,
                        scales::pretty_breaks(n = plot.opt$breaks.x)) +

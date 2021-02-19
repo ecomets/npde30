@@ -9,17 +9,7 @@
   }
 
 
-@Article{BrendelPDE,
-author	={Karl Brendel and Emmanuelle Comets and Céline Laffont and
-Christian Laveille and France Mentr{\'e}},
-title	={Metrics for external model evaluation with an application to the
-population pharmacokinetics of gliclazide},
-volume	={23},
-pages	={2036--49},
-journal	={Pharmaceutical Research},
-year	=2006	}
-
-  @Manual{R,
+@Manual{R,
     title = {R: A Language and Environment for Statistical Computing},
     author = {{R Development Core Team}},
     organization = {R Foundation for Statistical Computing},
@@ -27,16 +17,7 @@ year	=2006	}
     year = {2006},
     note = {{ISBN} 3-900051-07-0},
     url = {http://www.R-project.org},
-  }
-  
-@Article{MentrePDE,
-author	={France Mentr{\'e} and Sylvie Escolano},
-title	={Prediction discrepancies for the evaluation of nonlinear mixed-effects
-models},
-volume	={33},
-pages	={345--67},
-journal	={Journal of Pharmacokinetics and Pharmacodynamics},
-year	=2006	}
+}
 
 @manual{NONMEM,
 title   ={NONMEM Version 5.1},
@@ -64,9 +45,9 @@ journal	={Pharmaceutical Research},
 year	=2006	}
 
 @ARTICLE{BrendelCPK07,
-  author = {Karl Brendel and Céline Dartois and Emmanuelle Comets and Annabelle
+  author = {Karl Brendel and C{\'e}line Dartois and Emmanuelle Comets and Annabelle
 	Lemenuel-Diot and Christian Laveille and Brigitte Tranchand and Pascal
-	Girard and Céline Laffont and France Mentré},
+	Girard and C{\'e}line Laffont and France Mentr{\'e}},
   title = {Are Population Pharmacokinetic and/or Pharmacodynamic Models Adequately
 	Evaluated? {A} Survey of the Literature from 2002 to 2004},
   journal = {Clinical Pharmacokinetics},
@@ -77,20 +58,32 @@ year	=2006	}
 }
 
 @Article{Brendel10,
-author  ={Karl Brendel and Emmanuelle Comets and Céline Laffont and France Mentré},
+author  ={Karl Brendel and Emmanuelle Comets and C{\'e}line Laffont and France Mentr{\'e}},
 title   ={Evaluation of different tests based on observations for external model evaluation of population analyses},
 volume  ={37},
 pages   ={49--65},
 journal ={Journal of Pharmacokinetics and Pharmacodynamics},
 year    =2010  }
 
-@Article{CometsCMPB08,
-author	={Emmanuelle Comets and Karl Brendel and France Mentr{\'e}},
-title	={Computing normalised prediction distribution errors to evaluate nonlinear mixed-effect models: the npde add-on package for {R}},
-volume	={90},
-pages	={154--66},
-journal	={Computer Methods and Programs in Biomedicine},
-year	=2008	}
+@article{Cerou18,
+	title = {Development and performance of npde for the evaluation of time-to-event models},
+	volume = {35},
+	issn = {0724-8741, 1573-904X},
+	abstract = {Purpose Normalised prediction distribution errors (npde) are used to graphically and statistically evaluate mixed-effect models for continuous responses. In this study, our aim was to extend npde to time-to-event (TTE) models and evaluate their performance.},
+	language = {en},
+	number = {2},
+	journal = {Pharm Res},
+	author = {Cerou, M. and Lavielle, M. and Brendel, K. and Chenel, M. and Comets, E.},
+	year = {2018},
+	pages = {30}
+}
+
+@Article{CerouPAGE19,
+author	={M Cerou and S Peign{\'e} and M Chenel and E Comets},
+title	={Performance of npde for the evaluation of joint model with time to event data},
+journal = {{PAGE} 28},
+note	={Abstr 8940},
+year	=2019	}
 
 @Article{CometsPAGE07,
 author	={E Comets and K Brendel and F Mentr{\'e}},
@@ -100,13 +93,37 @@ Copenhagen, Denmark},
 pages	={Abstr 1120},
 year	=2007	}
 
+@Article{CometsCMPB08,
+author	={Emmanuelle Comets and Karl Brendel and France Mentr{\'e}},
+title	={Computing normalised prediction distribution errors to evaluate nonlinear mixed-effect models: the npde add-on package for {R}},
+volume	={90},
+pages	={154--66},
+journal	={Computer Methods and Programs in Biomedicine},
+year	=2008	}
+
 @Article{Comets10,
-author	={Emmanuelle Comets and Karl Brendel and France Mentré},
+author	={Emmanuelle Comets and Karl Brendel and France Mentr{\'e}},
 title	={Model evaluation in nonlinear mixed effect models, with applications to pharmacokinetics},
 volume	={151},
 pages	={106--28},
-journal	={Journal de la Société Française de Statistique},
+journal	={Journal de la Soci{\'e}t{\'e} Française de Statistique},
 year	=2010	}
+
+@Article{CometsPAGE13,
+author	={E Comets and THT Nguyen and F Mentr{\'e}},
+title	={Additional features and graphs in the new npde library for R},
+journal	={16$^{th}$ meeting of the {P}opulation {A}pproach {G}roup in {E}urope,
+Glasgow, United Kingdom},
+pages	={Abstr 2775},
+year	=2013	}
+
+@Article{Comets17,
+author	={Emmanuelle Comets and Audrey Lavenu and Marc Lavielle},
+title	={Parameter estimation in nonlinear mixed effect models using saemix, an {R} implementation of the {SAEM} algorithm},
+volume	={80},
+pages	={1--41},
+journal	={J Stat Softw},
+year	=2017	}
 
 @ARTICLE{Ding1999,
   author = {Ding, A. A. and Wu, H.},
@@ -117,14 +134,6 @@ year	=2010	}
   volume = {160},
   pages = {63--82}
 }
-
-@Article{CometsPAGE13,
-author	={E Comets and THT Nguyen and F Mentr{\'e}},
-title	={Additional features and graphs in the new npde library for R},
-journal	={16$^{th}$ meeting of the {P}opulation {A}pproach {G}roup in {E}urope,
-Glasgow, United Kingdom},
-pages	={Abstr 2775},
-year	=2013	}
 
 @Article{Fraley02,
 author  ={C Fraley and A E Raftery},
@@ -150,13 +159,28 @@ year    =2006}
 }
 
 @Article{GoujardISA2010,
-  author = {Goujard, C. and Barrail-Tran, A. and Duval,X. and Nembot, G. and Panhard, X. and Savic, R. and Descamps, D. and Vrijens, B. and Taburet, A.M. and Mentré, F. and {the ANRS 134 study group}},
+  author = {Goujard, C. and Barrail-Tran, A. and Duval,X. and Nembot, G. and Panhard, X. and Savic, R. and Descamps, D. and Vrijens, B. and Taburet, A.M. and Mentr{\'e}, F. and {the ANRS 134 study group}},
   title = {{Virological response to atazanavir, ritonavir and tenofovir/emtricitabine: relation to individual pharmacokinetic parameters and adherence measured by medication events monitoring system (MEMS) in naïve HIV-infected patients (ANRS134 trial)}},
   year = {2010},
   pages = {Abstr WEPE0094},
   journal = {International AIDS Society 2010}
 }
 %  url = {http://www.iasociety.org/Default.aspx?pageId=11&abstractId=200738161}
+
+@Article{HolfordPAGEtuto,
+author  ={Karlsson, M and Holford, N},
+title   ={A tutorial on {V}isual {P}redictive {C}hecks},
+note   ={Abstr 1434},
+journal ={{PAGE} 17},
+year    =2008}
+
+@Article{HolfordPAGE05,
+  title={The visual predictive check?superiority to standard diagnostic ({R}orschach) plots},
+  author={Holford, Nick},
+  note={Abstr 738},
+journal ={{PAGE} 14},
+  year={2005}
+}
 
 @Article{Lavielle11,
 author  ={M Lavielle and K Bleakley},
@@ -165,6 +189,15 @@ volume  ={38},
 pages   ={861--71},
 journal ={Journal of Pharmacokinetics and Pharmacodynamics},
 year    =2011}
+  
+@Article{MentrePDE,
+author	={France Mentr{\'e} and Sylvie Escolano},
+title	={Prediction discrepancies for the evaluation of nonlinear mixed-effects
+models},
+volume	={33},
+pages	={345--67},
+journal	={Journal of Pharmacokinetics and Pharmacodynamics},
+year	=2006	}
 
 @Article{Mesnil,
 author  ={F Mesnil and F Mentr{\'e} and C Dubruc and JP Th{\'e}not and A Mallet},
@@ -193,7 +226,7 @@ journal ={Anesthesiology},
 year    =1997	}
 
 @Article{Nguyen2011,
-  author = {T H T Nguyen and E Comets and F Mentré},
+  author = {T H T Nguyen and E Comets and F Mentr{\'e}},
   title = {{Prediction discrepancies (pd) for evaluation of models with data under limit of quantification}},
   year = {2011},
   pages = {Abstr 2182},
@@ -202,12 +235,22 @@ year    =1997	}
 }
 
 @Article{Nguyen2012,
-  author = {T H T Nguyen and E Comets and F Mentré},
+  author = {T H T Nguyen and E Comets and F Mentr{\'e}},
 title   ={{Prediction discrepancies (pd) for evaluation of models with data under limit of quantification}},
 volume  ={39},
 pages   ={499-518},
 journal ={Journal of Pharmacokinetics and Pharmacodynamics},
 year    =2012	}
+
+@article {Nguyen17,
+	author = {Nguyen, THT and Mouksassi, M-S and Holford, N and Al-Huniti, N and Freedman, I and Hooker, AC and John, J and Karlsson, MO and Mould, DR and P{\'e}rez Ruixo, JJ and Plan, EL and Savic, R and van Hasselt, JGC and Weber, B and Zhou, C and Comets, E and Mentr{\'e}, F and for the Model Evaluation Group of the International Society of Pharmacometrics (ISoP) Best Practice Committee},
+	title = {Model evaluation of continuous data pharmacometric models: metrics and graphics},
+	journal = {CPT Pharmacometrics Syst Pharmacol},
+	volume = {6},
+	number = {2},
+	pages = {87--109},
+	year = {2017},
+}
 
 @Article{OReilly68,
 author  ={RA {O?R}eilly},

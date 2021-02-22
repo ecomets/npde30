@@ -20,6 +20,9 @@
 
 \item{...}{Additional arguments (ignored)}
 }
+\value{
+A list with elements N (nb of subjects), data (dataframe containing the data), ntot.obs (total nb of observations), nind.obs (nb of observations per subject)
+}
 \description{
 Extracts elements from a NpdeData object
 }

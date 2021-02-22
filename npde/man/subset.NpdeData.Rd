@@ -16,6 +16,9 @@
 
 \item{...}{Additional arguments (ignored)}
 }
+\value{
+a NpdeData object with a subset of the original data
+}
 \description{
 Return subset of data from a NpdeData object
 }

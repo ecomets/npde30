@@ -14,6 +14,8 @@
 #' @param ref.prof either the character string "covariate" or a named list
 #' @param \dots additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}} and \code{\link{npdeControl}})
 #'
+#' @return a ggplot object or a list of ggplot objects (grobs)
+#' 
 #' @details VPC: obtained using which.x="x", which.y="yobs"
 #' @details Scatterplots of npde/pd/npd can be obtained versus "x" (independent variable) or "pred" (population predictions from the model)
 #' @details Scatterplots of npde/pd/npd/observations can be obtained versus covariates by setting the which.x argument to "cov" and selecting the appropriate which.y. The function will use the covariates in the which.cov element of the prefs slot. This can be overriden to cycle over all the covariates in the dataset by supplying the argument which.cov="all" in the call to the function.
@@ -58,39 +60,34 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npd", ref.prof
   plot.opt <- modifyList( plot.opt, userPlotOptions[ intersect( names( userPlotOptions ), names( plot.opt ) ) ] )
 
   # size replace size.pobs
-  if ( plot.opt$size %in% userPlotOptions)
-  {
-    plot.opt$size.pobs = plot.opt$size
-  }
-
+  if ( plot.opt$size %in% userPlotOptions)  plot.opt$size.pobs = plot.opt$size
   # col replace  col.pobs
-  if ( plot.opt$col %in% userPlotOptions)
-  {
-    plot.opt$col.pobs = plot.opt$col
-  }
+  if ( plot.opt$col %in% userPlotOptions) plot.opt$col.pobs = plot.opt$col
+  
+  verbose<-npdeObject@options$verbose
 
 # -----------------------------------------------------------------------------------
 # Check inputs
 
   if(match(which.x,c("x","pred","cov"),nomatch=0)==0) {
-    cat("Option which.x=",which.x,"not recognised\n")
-    return()
+    if(verbose) message(paste("Option which.x=",which.x,"not recognised"))
+    return("Option which.x not recognised")
   }
   if(match(which.y,c("npde","tnpde","pd","npd","yobs"),nomatch=0)==0) {
-    cat("Option which.y=",which.y,"not recognised\n")
-    return()
+    if(verbose) message(paste("Option which.y=",which.y,"not recognised"))
+    return("Option which.y not recognised")
   }
 
   if(which.x=="npde" | which.y=="npde") {
-    if(is.na(match("npde",colnames(npdeObject@results@res)))) return()
+    if(is.na(match("npde",colnames(npdeObject@results@res)))) return("Compute npde first")
   }
   if(which.x=="npd" | which.y=="npd") {
     if(is.na(match("npd",colnames(npdeObject@results@res)))) {
       if(!is.na(match("pd",colnames(npdeObject@results@res)))) npdeObject@results@res$npd<-qnorm(npdeObject@results@res$pd)
-    } else return()
+    } else return("Compute pd first")
   }
   if(which.x=="pd" | which.y=="pd") {
-    if(is.na(match("pd",colnames(npdeObject@results@res)))) return()
+    if(is.na(match("pd",colnames(npdeObject@results@res)))) return("Compute pd first")
   }
   if(which.x=="cov" | plot.opt$covsplit) { # Test if covariates are present in the dataset for plots vs cov or for plots split by cov
     if(length(plot.opt$which.cov)==1) {
@@ -98,8 +95,8 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npd", ref.prof
     }
     idx.cov = match(plot.opt$which.cov,npdeObject["data"]["name.covariates"])
     if (length(idx.cov)==0) {
-      cat("Error: plot over covariates required but no matching covariate found in dataset")
-      return()
+      if(verbose) message("Error: plot over covariates required but no matching covariate found in dataset")
+      return("Splitting over covariates requested, but covariate(s) not found in dataset")
     }
   }
   if(which.x=="cov") plot.opt$covsplit<-TRUE # covsplit is used to loop on covariates
@@ -169,7 +166,7 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npd", ref.prof
 
   # Binning
   if(is.numeric(obsmat$x)) {
-    xbin<-npde.binning(obsmat$x,plot.opt,verbose=FALSE)
+    xbin<-npde.binning(obsmat$x,plot.opt,verbose=verbose)
     obsmat$grp <- xbin$xgrp
     matbin<-data.frame(grp=1:length(xbin$xcent), xcent=xbin$xcent, binlabel = names(xbin$xcent)) # keep binning matrix
   } else obsmat$grp <- 1 # for covariates in "cov.scatter", binning will be done later
@@ -192,7 +189,7 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npd", ref.prof
        msim<-data.frame(ysim=msim, grp=rep(obsmat$grp, nrep))
      } else {
        if(!is.list(ref.prof)) {
-         cat("The reference profile must be entered as a named list, eg list(ID=c(1,5)) to select subjects with ID=1 and 5 as reference; names should refer to columns in the data file.\n")
+         if(verbose) message("The reference profile must be entered as a named list, eg list(ID=c(1,5)) to select subjects with ID=1 and 5 as reference; names should refer to columns in the data file.\n")
          ref.prof<-NULL
          hasRefprof<-FALSE
        } else { # one reference profile for all the plots
@@ -232,8 +229,8 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npd", ref.prof
                     "yobs"=npdeObject["sim.data"]["datsim"]$ysim)
     if(which.y=="pde") sim.ypl<-pnorm(sim.ypl)
     if(length(sim.ypl)==0) {
-      if(which.y!="yobs") plot.opt$approx.pi<-TRUE else return()
-      if(npdeObject@options$verbose) cat("No simulated values for",which.y," found in data, switching to approximate PI.")
+      if(which.y!="yobs") plot.opt$approx.pi<-TRUE else return("VPC requested but no simulated data given")
+      if(verbose) message(paste("No simulated values for",which.y," found in data, switching to approximate PI."))
     } else {
       sim.ypl<-sim.ypl[rep(not.miss, nrep)]
       if(!is.null(not.miss2)) sim.ypl<-sim.ypl[rep(not.miss2, nrep)]
@@ -273,7 +270,7 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npd", ref.prof
         obsmat2<-obsmat
         if(is.numeric(ucov)) {
           obsmat2$x<-zecov
-          xbin2<-npde.binning(obsmat2$x,plot.opt,verbose=FALSE)
+          xbin2<-npde.binning(obsmat2$x,plot.opt,verbose=verbose)
           obsmat2$grp <- xbin2$xgrp
           xcent2<-xbin2$xcent
           } else {
@@ -320,7 +317,7 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npd", ref.prof
        if(hasRefprof) {
          if(refprof.by.cov) { # create reference profile for the current category
            msim.cov<-msim[rep(obsmat$category==icat,nrep),]
-           cat(icat,dim(obsmat.cov),"   sim:",dim(msim.cov),"\n")
+           if(verbose) message(paste(icat,dim(obsmat.cov),"   sim:",dim(msim.cov)))
            mpref.cov<-aux.npdeplot.meanprof(mbin=matbin,msim=msim.cov)
          } else { # use global reference profile
            mpref.cov<-mpref

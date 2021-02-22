@@ -58,7 +58,7 @@ aux.npdeplot.meanprof<-function(mbin,msim) {
     # Linear interpolation
     #				ypmed<-approx(xcent,ymed,xout=mbin$xcent,rule=2)$y
     # Spline interpolation
-    cat("Not all time points/bins are represented in the subset used for the reference profile: spline interpolation will be used to predict the entire profile, but this may distort the aspect of the plot significantly; we advise using another reference profile.\n")
+    message("Not all time points/bins are represented in the subset used for the reference profile: spline interpolation will be used to predict the entire profile, but this may distort the aspect of the plot significantly; we advise using another reference profile.\n")
     xcent<-mbin$xcent[mbin$grp %in% names(ymed)]
     if ( length(xcent)!=0){
       ypmed<-spline(xcent,ymed,xout=mbin$xcent)$y
@@ -114,7 +114,7 @@ aux.npdeplot.transformPI <-function(pimat, mpref, distrib="norm") {
   # Returns modified pimat
   for(icol in 4:15) {
     if(distrib=="norm")
-      pimat[,icol]<-mpref$mean[pimat$grp] + mpref$sd[pimat$grp]*pimat[,icol] else cat("TODO\n")
+      pimat[,icol]<-mpref$mean[pimat$grp] + mpref$sd[pimat$grp]*pimat[,icol] else message("Not implemented for pd - TODO\n")
   }
   return(pimat)
 }
@@ -125,6 +125,6 @@ aux.npdeplot.transformObs <-function(obsmat, mpref, distrib="norm") {
   ## matches grp in obsmat to grp in mpref
   # Returns modified obsmat
   if(distrib=="norm")
-    obsmat$y<-mpref$mean[obsmat$grp] + mpref$sd[obsmat$grp]*obsmat$y else cat("TODO\n")
+    obsmat$y<-mpref$mean[obsmat$grp] + mpref$sd[obsmat$grp]*obsmat$y else message("Not implemented for pd - TODO\n")
   return(obsmat)
 }

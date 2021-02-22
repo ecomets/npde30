@@ -43,10 +43,7 @@ A longitudinal data structure
 }
 
 \examples{
-\dontrun{
 methods(class="NpdeData")
-
-showClass("NpdeData")}
-
+showClass("NpdeData")
 }
 \keyword{classes}

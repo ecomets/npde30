@@ -10,7 +10,6 @@ designed to evaluate non-linear mixed effect models such as those used in
 pharmacokinetics and pharmacodynamics
 }
 \examples{
-\dontrun{
 data(theopp)
 data(simtheopp)
 
@@ -19,15 +18,6 @@ data(simtheopp)
 x<-autonpde(theopp,simtheopp,ix="Time",iy="Conc",iid="ID",boolsave=FALSE)
 print(x)
 
-# Calling autonpde with names of files to be read from disk
-
-write.table(theopp,"theopp.tab",quote=FALSE,row.names=FALSE)
-write.table(simtheopp,"simtheopp.tab",quote=FALSE,row.names=FALSE)
-x<-autonpde(namobs="theopp.tab", namsim="simtheopp.tab", iid = 1,
-ix = 3, iy = 4, boolsave = FALSE)
-
-print(x)
-}
 }
 \references{
 K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.

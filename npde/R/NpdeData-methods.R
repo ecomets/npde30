@@ -63,10 +63,8 @@ setMethod("show","NpdeSimData",
 setMethod("read",
           signature="NpdeData",
           function(object,name.data,header=TRUE,sep="",na.strings=c("NA","."),detect=TRUE,verbose=FALSE) {
-            ow <- options("warn")
-            options("warn"=-1)
             if(class(name.data)!="character") {
-              cat("Please provide the name of the data (data.frame or path to file on disk) as a character string.\n")
+              if(verbose) cat("Please provide the name of the data (data.frame or path to file on disk) as a character string.\n")
               return("Creation of npdeData failed")
             }
             if(exists(name.data)) {
@@ -82,7 +80,7 @@ setMethod("read",
               }
             }
             if(dim(dat)[2]<2) {
-              cat("The dataset contains only one column. To compute npde, we need at least 3 columns, with subject ID, predictor (at least one) and response. \nPlease check the field separator, currently given as:", paste("sep=\"",sep,"\"",sep=""), "\n")
+              if(verbose) cat("The dataset contains only one column. To compute npde, we need at least 3 columns, with subject ID, predictor (at least one) and response. \nPlease check the field separator, currently given as:", paste("sep=\"",sep,"\"",sep=""), "\n")
               return("Creation of npdeData failed")
             }
             # Automatic recognition of columns
@@ -97,7 +95,7 @@ setMethod("read",
             }
             if(is.na(object@name.group) || object@name.group=="") {
               if(!detect) {
-                cat("Missing ID column and automatic detection is OFF. Please provide a valid name for the ID column\n")
+                if(verbose) cat("Missing ID column and automatic detection is OFF. Please provide a valid name for the ID column\n")
                 return("Creation of npdeData failed")
               }
               if(verbose) cat("Missing ID column, attempting to detect it\n")
@@ -112,7 +110,7 @@ setMethod("read",
               }
             }
             if(object@name.group=="" | is.na(match(object@name.group,colnames(dat)))) {
-              cat("Please provide a name for the ID column.\n")
+              if(verbose) cat("Please provide a name for the ID column.\n")
               return("Creation of npdeData failed")
             }
             # Predictors
@@ -122,7 +120,7 @@ setMethod("read",
             }
             if(is.na(object@name.predictor) | length(object@name.predictor)==0 | (length(object@name.predictor)==1 & object@name.predictor[1]=="")) {
               if(!detect) {
-                cat("Missing X column and automatic detection is OFF. Please provide a valid name for the column with the predictor.\n")
+                if(verbose) cat("Missing X column and automatic detection is OFF. Please provide a valid name for the column with the predictor.\n")
                 return("Creation of npdeData failed")
               }
               if(verbose) cat("Missing predictor column, attempting to detect it\n")
@@ -141,8 +139,8 @@ setMethod("read",
             xnam<-object@name.predictor[id1>0]
             if(length(xnam)==0) object@name.predictor<-"" else object@name.predictor<-xnam
             if(length(xnam)==0) {
-              cat("Please provide at least one predictor.\n")
-              return("Creation of npdeData failed")
+              if(verbose) cat("Please provide at least one predictor.\n")
+              return("Creation of npdeData failed: missing predictor name")
             }
             # Response
             if(!is.na(as.integer(object@name.response))) {
@@ -151,8 +149,8 @@ setMethod("read",
             }
             if(is.na(object@name.response) || object@name.response=="") {
               if(!detect) {
-                cat("Missing response column and automatic detection is OFF. Please provide a valid name for the column with the response.\n")
-                return("Creation of npdeData failed")
+                if(verbose)  cat("Missing response column and automatic detection is OFF. Please provide a valid name for the column with the response.\n")
+                return("Creation of npdeData failed: missing response column")
               }
               if(verbose) cat("Missing response column, attempting to detect it\n")
               object@name.response<-""
@@ -168,8 +166,8 @@ setMethod("read",
             }
             if(is.na(object@name.response)) object@name.response<-""
             if(object@name.response=="" | is.na(match(object@name.response,colnames(dat)))) {
-              cat("Please provide a name for the response column.\n")
-              return("Creation of npdeData failed")
+              if(verbose) cat("Please provide a name for the response column.\n")
+              return("Creation of npdeData failed: no response name")
             }
             # ECO TODO: verifier que les colonnes existent et sinon corriger
 
@@ -292,7 +290,6 @@ setMethod("read",
             object@nind.obs<-c(nind.obs)
 
             #    object@names<-list(group=object@name.group,predictors=object@name.predictor, response=object@name.response, covariates=object@name.covariates)
-            options(ow) # reset
             validObject(object)
             return(object)
           }
@@ -305,8 +302,6 @@ setMethod("read",
 setMethod("read",
           signature="NpdeSimData",
           function(object, name.data, header=TRUE, sep="", na.strings=c("NA","."), verbose=FALSE) {
-            ow <- options("warn")
-            options("warn"=-1)
             if(exists(name.data)) {
               if(verbose) cat("Using the object called",name.data,"in this R session as the data.\n")
               dat<-get(name.data)
@@ -330,12 +325,14 @@ setMethod("read",
               if(!is.numeric(dat[1,1]))
                 dat<-read.table(name.data,na.strings=c(".","NA"),header=TRUE,sep=mysep)
               if(!is.numeric(dat[1,1])) {
+                if(verbose) {
                 cat("The format of the file containing the simulated data is unknown.\n")
                 cat("Please use a standard R table format, with or without header,\n")
                 cat("and with one of the following separators: \n")
                 cat("         TAB or space(s), commas (',') or semicolons (';')\n")
                 cat("Also note that a dot should be used to indicate digits in numbers.\n")
-                stop("Exiting npde\n")
+                }
+                stop("Can't read data, please check format\n")
               }
               if(verbose) {
                 cat("These are the first lines of the dataset as read into R. Please check the format of the data is appropriate, if not, modify the na and/or sep items and retry:\n")
@@ -345,7 +342,6 @@ setMethod("read",
             colnames(dat)<-c("idsim","xsim","ysim")
             object@datsim<-dat
 
-            options(ow) # reset
             validObject(object)
             return(object)
           }
@@ -405,7 +401,6 @@ setMethod("read",
 #' @keywords models
 #' @export
 #' @examples
-#' \dontrun{
 #' data(theopp)
 #'
 #' x<-npdeData(theopp) # Automatic detection
@@ -413,14 +408,14 @@ setMethod("read",
 #' x<-npdeData(theopp,name.group="ID",name.predictor="Time",name.response="Conc",
 #' name.covariates=c("Wt"),units=list(x="hr",y="mg/L",covariates="kg")) # Explicit
 #' print(x)
-#' plot(x)}
+
 npdeData<-function(name.data,header=TRUE,sep="",na.strings=c(".","NA"),name.group, name.predictor,
                    name.response, name.covariates,name.cens,name.miss,name.ipred, 
                    units=list(x="",y="",covariates=c()),detect=TRUE,verbose=FALSE) {
   # setting proper types for the NpdeData class
   if(missing(name.data) ||length(name.data)==0) {
-    cat("Error in npdeData: please provide the name of the datafile or dataframe (between quotes)\n")
-    return("Creation of NpdeData failed")
+    if(verbose) cat("Error in npdeData: please provide the name of the datafile or dataframe (between quotes)\n")
+    return("Creation of NpdeData failed: no data given")
   }
   if(is.data.frame(name.data)) name.data<-deparse(substitute(name.data))
   if(missing(name.group)) name.group<-"" else name.group<-as.character(name.group)
@@ -444,7 +439,7 @@ npdeData<-function(name.data,header=TRUE,sep="",na.strings=c(".","NA"),name.grou
           if(verbose) cat("Same LOQ for all missing data, loq=",loq,"\n")
         } else {
           loq<-min(unique(yloq),na.rm=TRUE)
-          if(verbose)cat("There are different LOQ for different observations, setting loq to the lowest value of",loq,"\n")
+          if(verbose) cat("There are different LOQ for different observations, setting loq to the lowest value of",loq,"\n")
         }
       }
       x1["loq"]<-loq
@@ -481,33 +476,33 @@ npdeSimData<-function(npde.data,name.simdata,header=TRUE,verbose=FALSE) {
   ierror<-FALSE
   if(missing(npde.data)) {
     ierror<-TRUE
-    cat("   Error: Missing first argument.\n")
+    if(verbose) message("   Error: Missing first argument.\n")
   }
   if(!ierror) {
     x1<-try(class(npde.data))
     if(class(x1)=="try-error") {
       ierror<-TRUE
-      cat("   Error:", deparse(substitute(npde.data)),"does not exist.\n")
+      if(verbose) message("   Error:", deparse(substitute(npde.data)),"does not exist.\n")
     }
     if(!ierror && x1!="NpdeData") {
       ierror<-TRUE
-      cat("   Error:", deparse(substitute(npde.data)),"is not a NpdeData object.\n")
+      if(verbose) message("   Error:", deparse(substitute(npde.data)),"is not a NpdeData object.\n")
     }
   }
   if(ierror) {
-    cat("Function npdeSimData requires two mandatory arguments: first, a NpdeData object created by a call to npdeData() (see help page for the syntax of that function), and the name of a matching dataset containing the simulated data (either a file on disk or a data.frame. Please refer to the documentation for details and examples.\n")
-    return("Creation of NpdeSimData failed")
+    if(verbose) message("Function npdeSimData requires two mandatory arguments: first, a NpdeData object created by a call to npdeData() (see help page for the syntax of that function), and the name of a matching dataset containing the simulated data (either a file on disk or a data.frame. Please refer to the documentation for details and examples.\n")
+    return("Creation of NpdeSimData failed: need two arguments npde.data and name.simData")
   }
   x1<-new(Class="NpdeSimData")
   x<-read(x1,name.data=name.simdata,header=header,verbose=verbose)
   if(sum(npde.data["data"][,npde.data["name.miss"]])>0) {
-    if(verbose) cat("There are rows with MDV=1 in the original dataset, the corresponding rows will be removed from the simulated dataset.\n")
+    if(verbose) message("There are rows with MDV=1 in the original dataset, the corresponding rows will be removed from the simulated dataset.\n")
   }
   nrep<-dim(x@datsim)[1]/dim(npde.data@data)[1]
   x@nrep<-as.integer(nrep)
   if(nrep<1000 & verbose) {
-    cat("Warning: the number of simulations is",nrep,"which may be too small.\n")
-    cat("We advise performing at least 1000 simulations to compute npde.\n")
+    message("Warning: the number of simulations is",nrep,"which may be too small.\n")
+    message("We advise performing at least 1000 simulations to compute npde.\n")
   }
   irsim<-rep(1:nrep,each=dim(npde.data@data)[1])
   x@datsim$irsim<-irsim
@@ -531,6 +526,9 @@ npdeSimData<-function(npde.data,name.simdata,header=TRUE,verbose=FALSE) {
 #' @param x an object of class NpdeData, NpdeSimData, NpdeRes or NpdeObject
 #' @param nlines number of lines from the dataset to print
 #' @param ... Additional arguments (ignored)
+#' 
+#' @return None
+#' 
 #' @export
 
 print.NpdeData <- function(x,nlines=10,...) {
@@ -562,8 +560,8 @@ print.NpdeData <- function(x,nlines=10,...) {
         nrowShow <- min (nlines , nrow(x@data))
         print(x@data[1:nrowShow,])
       }
-    } else cat("No data.\n")
-  } else cat("Empty object\n")
+    } else message("No data.\n")
+  } else message("Empty object\n")
 }
 
 #' @export
@@ -584,8 +582,8 @@ print.NpdeSimData <- function(x,nlines=10,...) {
         nrowShow <- min (nlines , nrow(x@datsim))
         print(x@datsim[1:nrowShow,])
       }
-    } else cat("No data.\n")
-  } else cat("Empty object\n")
+    } else message("No data.\n")
+  } else message("Empty object\n")
 }
 
 
@@ -600,6 +598,9 @@ print.NpdeSimData <- function(x,nlines=10,...) {
 #' @name showall
 #' @aliases showall showall.NpdeData showall,NpdeData-method showall.default showall,method
 #' @param object a NpdeData object
+#' 
+#' @return No return value, shows the object
+#' 
 #' @keywords print
 #' @export
 
@@ -650,8 +651,8 @@ showall.NpdeData <- function(object) {
       cat("First lines of data:\n")
       nrowShow <- min (10 , nrow(object@data))
       print(object@data[1:nrowShow,])
-    } else cat("No data.\n")
-  } else cat("Empty object\n")
+    } else message("No data.\n")
+  } else message("Empty object\n")
 }
 #)
 
@@ -665,11 +666,14 @@ showall.NpdeData <- function(object) {
 #' @param object A NpdeData object
 #' @param print whether to print to data to stdev
 #' @param ... Additional arguments (ignored)
+#' 
+#' @return A list with elements N (nb of subjects), data (dataframe containing the data), ntot.obs (total nb of observations), nind.obs (nb of observations per subject)
+#' 
 #' @export
 
 summary.NpdeData <- function(object, print=TRUE, ...) {
   if(length(object@data)==0) {
-    cat("Object of class NpdeData, empty.\n")
+    message("Object of class NpdeData, empty.\n")
     return()
   }
   res<-list(N=object@N,data=object@data, ntot.obs=object@ntot.obs,nind.obs=object@nind.obs)
@@ -687,6 +691,9 @@ summary.NpdeData <- function(object, print=TRUE, ...) {
 #' @param x A NpdeData object
 #' @param subset logical expression indicating elements or rows to keep: missing values are taken as false.
 #' @param ... Additional arguments (ignored)
+#' 
+#' @return a NpdeData object with a subset of the original data
+#' 
 #' @export
 
 subset.NpdeData<-function (x, subset, ...) {

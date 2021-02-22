@@ -46,6 +46,15 @@ knitr::opts_chunk$set(root.dir = workDir)
     - workaround by defining global variables so check won't complain about them, but we need to use the .data systematically in ggplot aes() => **Romain TODO**
 
 ```{r compilation}
+# Reduce size of viral load simulation data (to 500 simulations) for CRAN
+if(FALSE) {
+  cmd<-paste("mv ", file.path(workDir,"npde","data","simvirload.tab")," ", file.path(workDir,"keep","data","/"),sep="")
+  system(cmd)
+  tab<-read.table(file.path(workDir,"npde","data","simvirload.tab"), header=TRUE)
+  tab1<-tab[1:(dim(tab)[1]/2),]
+  write.table(tab1, file.path(workDir,"npde","data","simvirload.tab"), quote=FALSE, row.names=FALSE, col.names=TRUE)
+}
+
 setwd(file.path(workDir,"npde"))
 system("rm man/*")
 cmd<-paste("cp ", file.path(workDir,"latexDoc","userguide_3_0.pdf")," ", file.path(workDir,"userguide_npde_3.0.pdf"),sep="")
@@ -54,7 +63,7 @@ devtools::document()
 roxygenise()
 setwd(workDir)
 system("R CMD build npde")
-system("R CMD check --as-cran npde_3.0.tar.gz")
+system("R CMD check --as-cran --run-donttest npde_3.0.tar.gz")
 ```
 
 Apres correction, la compilation du package passe sans erreurs et avec 2 notes restantes.
@@ -124,6 +133,22 @@ library(testthat)
 library(grid)
 ```
 
+# Theophylline
+
+```{r theo, echo=FALSE}
+data(theopp)
+data(simtheopp)
+
+# Calling autonpde with dataframes
+x<-autonpde(theopp,simtheopp,1,3,4,boolsave=FALSE)
+plot(x)
+head(x["results"]["res"])
+```
+
+
+# Viral load, base plots
+
+
 ```{r baseplot, echo=FALSE}
 #Viral load data
 data(virload20)
@@ -150,7 +175,21 @@ grid.arrange(grobs=list(plot.vpc.yvir20,plot.yvir20.omit), nrow=1, ncol=2)
 
 ```
 
+
+## End of file, deactivating development mode
+
+```{r deactivateDevMode, echo=FALSE, hide=T}
+dev_mode()
+```
+
 ### Bugs to sort
+
+### Sort out covariate plots
+
+There were two functions with almost the same name
+- npde.plot.covariates: regular plots split by covariates, only for x, pred, ecdf => renamed to **npde.plot.splitcov** and added options hist and qqplot
+  - do we need those subplots, or maybe just simplify call to function (use covsplit and capture arguments instead of using which.plot)
+- npde.plot.covariate: covariate plots as in Brendel => kept as is
 
 #### plot.NpdeRes (dans plotNpde-methods.R)
 

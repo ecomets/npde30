@@ -210,9 +210,9 @@ aux.npdeplot.dist<-function(obsmat,  plot.opt, dist.type="qqplot", distrib="norm
   # -----------------------------------------------------------------------------------
   # Plot, facetting by covariate category
 
-  if(is.null(plot.opt$xlim) || plot.opt$xlim=="") plot.opt$ylim<-c(min(pimat$lower,na.rm=TRUE), max(pimat$upper,na.rm=TRUE))
-  if(is.null(plot.opt$ylim) || plot.opt$ylim=="") {
-    if(dist.type=="qqplot") plot.opt$xlim<--c(min(xmat$y,na.rm=TRUE), max(xmat$y,na.rm=TRUE)) else plot.opt$xlim<-c(0, 1)
+  if(is.null(plot.opt$xlim) || length(plot.opt$xlim)!=2) plot.opt$ylim<-c(min(pimat$lower,na.rm=TRUE), max(pimat$upper,na.rm=TRUE))
+  if(is.null(plot.opt$ylim) || length(plot.opt$ylim)!=2) {
+    if(dist.type=="qqplot") plot.opt$xlim<-c(min(xmat$y,na.rm=TRUE), max(xmat$y,na.rm=TRUE)) else plot.opt$xlim<-c(0, 1)
   }
 
   xmat.nocens<-xmat[xmat$cens==1,]

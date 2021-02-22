@@ -21,7 +21,7 @@ an object of class NpdeObject; the ["results"] slot will contain pd and/or npde 
 This function is used to build the distribution of pd/npde using the simulations under the model. The default is to build only the distribution of pd, and to sample from N(0,1) when building the distribution of npde under the null hypothesis.
 }
 \examples{
-\dontrun{
+\donttest{
 data(theopp)
 data(simtheopp)
 x<-autonpde(theopp,simtheopp,1,3,4,boolsave=FALSE)

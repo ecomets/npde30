@@ -12,6 +12,9 @@ npde.graphs(object, ...)
 
 \item{\dots}{optional arguments to replace options in object}
 }
+\value{
+No return value, called for side effects
+}
 \description{
 Save the graphs to a file on disk
 }

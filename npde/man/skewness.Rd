@@ -22,10 +22,8 @@ is defined as \deqn{N^{-1} \mathrm{sd}(x)^{-3} \sum_i (x_i -
 \mathrm{mean}(x))^3.}{ N^(-1) sd(x)^(-3) sum_i (x_i - mean(x))^3.}
 }
 \examples{
-\dontrun{
 x <- rnorm(100)
 skewness(x)
-}
 }
 \references{
 G. Snedecor, W. Cochran. \emph{Statistical Methods},

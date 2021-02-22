@@ -27,9 +27,7 @@ A longitudinal data structure, with simulated data
 }
 
 \examples{
-\dontrun{
 showClass("NpdeSimData")
-}
 }
 \seealso{
 \code{\link{npde}}, \code{\link{autonpde}}

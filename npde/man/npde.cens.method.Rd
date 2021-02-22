@@ -5,6 +5,11 @@
 \alias{computenpde.omit}
 \alias{computenpde.loq}
 \title{Method used to handle censored data}
+\value{
+This is not a function and does not have a return value, this is a statistical method.
+
+More details can be found in the PDF documentation.
+}
 \description{
 Specifies the method used to handle censored data (data below the limit of quantification LOQ
 }
@@ -19,10 +24,9 @@ This is also performed for all simulated data, and the npde are then computed on
 \item{ppred}{an observation ycens_ij is replaced by the population prediction according to the model. Simulated data are left untouched.}
 \item{loq}{an observation ycens_ij is replaced by the value of the LOQ. Simulated data are left untouched.}
 }
-More details can be found in the PDF documentation.
 }
 \examples{
-\dontrun{
+\donttest{
   data(warfarin)
   data(simwarfarinCov)
   wcov<-autonpde(namobs=warfarin,namsim=simwarfarinCov, iid=1,ix=2,iy=4,icov=c(3,6:8),

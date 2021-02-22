@@ -48,21 +48,19 @@ dataset.
 Two datasets containing simulated data are associated with the \code{warfarin} data. For
 each dataset, 1000 simulations of the original data were performed for the computation of npde.
 The package contains only the simulated data simwarfarinCov because of size constraints. simwarfarinBase can be downloaded from
-the github for npde3.0: \url{https://github.com/ecomets/npde30/tree/main/keep/data/simwarfarinBase.tab}
+the github for npde3.0: \url{https://github.com/ecomets/npde30/blob/main/keep/data/simwarfarinBase.tab}
 \describe{
 \item{simwarfarinBase}{the data in this dataset was simulated according to a base model without covariates: the PK model was a two-compartment model, with first-order absorption and a time-delay. Interindividual variability was modelled as log-normal distributions for parameters Tlag, ka, Cl and V1, and the error model was a combined error model. The parameters were estimated by Monolix.}
 \item{simwarfarinCov}{the data in this dataset was simulated according to a model including several covariates: an age (centered on 30 yr) effect on Cl, a weight (centered on 70 kg) effect on Cl and V1, and a gender effect on V1. The covariate model was built in Monolix.}
 }
 }
 \examples{
-\dontrun{
 data(warfarin)
 
 #Plotting the warfarin PK data
 plot(dv~time,data=warfarin,xlab="Time after dose (hr)",
 ylab="Warfarin concentration (mg/L)")
 
-}
 }
 \references{
 PDF documentation for npde 3.0: \url{https://github.com/ecomets/npde30/blob/main/userguide_npde_3.0.pdf}

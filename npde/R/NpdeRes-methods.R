@@ -132,7 +132,7 @@ showall.NpdeRes <- function(object) {
 
 summary.NpdeRes <- function(object, print=TRUE, ...) {
   if(length(object@res)==0) {
-    cat("Object of class NpdeRes, empty.\n")
+    if(print) message("Object of class NpdeRes, empty.\n")
     return()
   }
   res<-list(N=object@N,data=object@res,ntot.obs=object@ntot.obs)
@@ -160,9 +160,8 @@ summary.NpdeRes <- function(object, print=TRUE, ...) {
 #' Wiley-Blackwell, 1989
 #' @keywords univar
 #' @examples
-#' \dontrun{
 #' x <- rnorm(100)
-#' kurtosis(x)}
+#' kurtosis(x)
 #' @export
 #' @importFrom stats ks.test pchisq qnorm sd shapiro.test t.test var wilcox.test
 
@@ -192,10 +191,8 @@ kurtosis<-function (x)
 #' Wiley-Blackwell, 1989
 #' @keywords univar
 #' @examples
-#'\dontrun{
 #' x <- rnorm(100)
 #' skewness(x)
-#'}
 #' @export
 
 skewness<-function (x)
@@ -253,9 +250,13 @@ skewness<-function (x)
 #' @references K. Brendel, E. Comets, C. Laffont, and F. Mentre. Evaluation of different tests based on observations for external model evaluation of  population analyses. \emph{Journal of Pharmacokinetics and Pharmacodynamics}, 37:49--65, 2010.
 #' @seealso \code{\link{kurtosis}}, \code{\link{skewness}}
 #' @examples
-#'\dontrun{
-##' data(theopp)
-##'}
+#' \donttest{
+#' data(theopp)
+#' data(simtheopp)
+#' #' # Calling autonpde with dataframes
+#' x<-autonpde(theopp,simtheopp,1,3,4,boolsave=FALSE)
+#' gof.test(x)
+#' }
 #' @docType methods
 #' @keywords methods
 #' @keywords test
@@ -339,26 +340,28 @@ gof.test.NpdeRes<-function(object, parametric=TRUE, ...) {
   ### uniformity (Kolmogorov-Smirnov)
   args1<-match.call(expand.dots=TRUE)
   if(length(object@res)==0) {
-    cat("No data available.\n")
-    return()
+    message("No results in the object\n")
+    return("Please run npde first")
   }
+  verbose<-FALSE
+  i1<-match("verbose",names(args1))
+  if(!is.na(i1) && !is.na(as.logical(args1[[i1]]))) verbose<-as.logical(args1[[i1]])
   i1<-match("which",names(args1))
   if(!is.na(i1) && !is.na(as.logical(as.character(args1[[i1]])))) which<-as.character(args1[[i1]]) else which<-"npde"
   if(!which%in%c("pd","npde","npd")) {
-    cat("Tests can be performed on one of: npde (default), pd, npd. Please choose one using the which argument.\n")
+    if(verbose) message("Tests can be performed on one of: npde (default), pd, npd. Please choose one using the which argument.\n")
     return()
   }
   if(which=="npde" & length(object@res$npde)==0) {
-    cat("    Missing npde object.\n")
-    return()
+    if(verbose) message("    Missing npde object.\n")
+    return("Missing npde object")
   }
   if(which%in%c("pd","npd") & length(object@res$pd)==0) {
-    cat("    Missing pd object.\n")
-    return()
+    if(verbose) message("    Missing pd object.\n")
+    return("Missing pd object")
   }
   npde<-switch(which,npde=object@res$npde,pd=object@res$pd, npd=qnorm(object@res$pd))
   npde<-npde[object@not.miss] # Removing values for MDV=1 (pd, npde not computed)
-  verbose<-TRUE
   i1<-match("verbose",names(args1))
   if(!is.na(i1) && !is.na(as.logical(as.character(args1[[i1]])))) verbose<-as.logical(as.character(args1[[i1]]))
   args1<-match.call(expand.dots=TRUE)
@@ -366,8 +369,8 @@ gof.test.NpdeRes<-function(object, parametric=TRUE, ...) {
   na.action<-"na.omit"
   if(!is.na(i1) && as.character(args1[[i1]]) %in% c("na.omit","na.fail","na.exclude","na.pass")) na.action<-as.character(args1[[i1]])
   if(na.action=="na.fail" & sum(is.na(npde))>0) {
-    cat("Missing values and na.action is set to na.fail.\n")
-    return()
+    if(verbose) message("Missing values and na.action is set to na.fail.\n")
+    return("Missing values and na.action=na.fail")
   }
   if(na.action=="na.pass" & sum(is.na(npde))>0) {
     if(verbose) cat("Warning: there are missing values and na.action is set to na.pass. Results and tests will be obtained removing the missing data (nmis=", sum(is.na(npde)),").\n")

@@ -28,6 +28,7 @@
 #' @param opt a list of control options to be checked
 #' @param ... named parameters to be changed. The names will be compared to the names of the control variables and changed, with warnings issued for names that do not match.
 #'
+#' @return A list of settings for the computation of pd/npde
 #' @export
 #' @keywords methods
 
@@ -64,7 +65,7 @@ replace.control.options<-function(opt,...) {
       if(match(names(args1)[i],names(opt),nomatch=0)>0) {
         if(!is.null(eval(args1[[i]]))) opt[[names(args1)[i]]]<-eval(args1[[i]])
       } else {
-        if(is.na(match(names(args1)[i],legacy))) message("Argument",names(args1)[i],"not available, check spelling.\n")
+        if(is.na(match(names(args1)[i],legacy))) message(paste("Argument",names(args1)[i],"not available, check spelling"))
       }
     }
   }
@@ -77,25 +78,25 @@ replace.control.options<-function(opt,...) {
 
 check.control.options<-function(opt) {
   if(!(opt$cens.method %in% c("omit","loq","ipred","ppred","fix","cdf"))) {
-    cat("Warning: Censoring method",opt$cens.method,"unavailable, switching to default method (cdf)\n")
+    message(paste("Warning: Censoring method",opt$cens.method,"unavailable, switching to default method (cdf)"))
     opt$cens.method<-"cdf"
   }
   if(!(opt$decorr.method %in% c("cholesky","inverse","polar"))) {
-    cat("Warning: Method",opt$decorr.method,"to decorrelate residuals is unavailable, switching to default method (cholesky)\n")
+    message(paste("Warning: Method",opt$decorr.method,"to decorrelate residuals is unavailable, switching to default method (cholesky)"))
     opt$decorr.method<-"cholesky"
   }
   if(!(opt$type.graph %in% c("eps","png","pdf","jpeg"))) {
-    cat("Warning: Type",opt$type.graph,"unrecognised; type of graph must be one of eps, png, pdf, jpeg, switching to default type (eps=Postcript)\n")
+    message(paste("Warning: Type",opt$type.graph,"unrecognised; type of graph must be one of eps, png, pdf, jpeg, switching to default type (eps=Postcript)"))
     opt$type.graph<-"eps"
   }
   for(bool.true in c("boolsave","verbose","calc.npd","calc.npde","ties")) {
     if(is.na(as.logical(opt[bool.true]))) {
-      cat("Warning: Option",bool.true,"must be a logical (TRUE/FALSE), setting it to TRUE.\n")
+      message(paste("Warning: Option",bool.true,"must be a logical (TRUE/FALSE), setting it to TRUE"))
       opt[bool.true]<-TRUE
     }
   }
   if(!is.logical(opt$sample)) {
-    cat("Warning: Option",opt$sample,"must be a logical (TRUE/FALSE), setting it to FALSE.\n")
+    message(paste("Warning: Option",opt$sample,"must be a logical (TRUE/FALSE), setting it to FALSE"))
     opt$sample<-FALSE
   }
   invisible(opt)
@@ -359,7 +360,7 @@ replace.plotoptions<-function(plot.opt,...) {
         #    plot.opt[[names(args1)[i]]]<-args1[[i]] else {
         if(!is.null(eval(args1[[i]]))) plot.opt[[names(args1)[i]]]<-eval(args1[[i]])
       } else {
-        if(is.na(match(names(args1)[i],legacy))) message("Argument",names(args1)[i],"not available, check spelling.\n")
+        if(is.na(match(names(args1)[i],legacy))) message(paste("Argument",names(args1)[i],"not available, check spelling"))
       }
     }
   }

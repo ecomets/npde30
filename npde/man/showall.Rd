@@ -20,6 +20,9 @@ showall(object)
 \arguments{
 \item{object}{a NpdeData object}
 }
+\value{
+No return value, shows the object
+}
 \description{
 Prints the contents of an object
 }

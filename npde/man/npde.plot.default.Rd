@@ -12,6 +12,9 @@ npde.plot.default(npdeObject, ...)
 
 \item{\dots}{additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}})}
 }
+\value{
+a ggplot object or a list of ggplot objects (grobs)
+}
 \description{
 The default diagnostic plots produced after a call to \code{\link{npde}} or \code{\link{autonpde}} include a histogram of the distribution, a QQ-plot compared to the theoretical distribution, and scatterplots versus the independent variable and versus the population predictions from the model
 }

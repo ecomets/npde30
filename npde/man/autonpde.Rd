@@ -119,23 +119,15 @@ results file, and with extension depending on the format.}
 }
 }
 \examples{
-\dontrun{
 data(theopp)
 data(simtheopp)
 
 # Calling autonpde with dataframes
-
 x<-autonpde(theopp,simtheopp,1,3,4,boolsave=FALSE)
 x
-
-# Calling autonpde with names of files to be read from disk
-
-write.table(theopp,"theopp.tab",quote=FALSE,row.names=FALSE)
-write.table(simtheopp,"simtheopp.tab",quote=FALSE,row.names=FALSE)
-x<-autonpde(namobs="theopp.tab", namsim="simtheopp.tab", iid = 1,
-ix = 3, iy = 4, imdv=0, boolsave = FALSE)
-
 head(x["results"]["res"])
+\donttest{
+plot(x)
 }
 }
 \references{

@@ -41,13 +41,9 @@ The results component of a NpdeObject object
 }
 
 \examples{
-\dontrun{
-data(theopp)
-
 methods(class="NpdeRes")
 
 showClass("NpdeRes")
-}
 }
 \seealso{
 \code{\link{npde}}, \code{\link{autonpde}}, \code{\link{plot.NpdeRes}}, \code{\link{NpdeObject}}

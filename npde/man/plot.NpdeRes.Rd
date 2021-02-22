@@ -9,6 +9,9 @@
 \arguments{
 \item{x}{a NpdeRes object}
 }
+\value{
+a ggplot object or a list of ggplot objects (grobs)
+}
 \description{
 Plots distribution and scatterplots for the npde in a NpdeRes object. Users are advised to use the plot() function on the NpdeObject object resulting from a call to npde() or autonpde() instead of trying to plot only the results element of this object.
 }
@@ -21,7 +24,7 @@ Four graphs are produced:
 }
 }
 \examples{
-\dontrun{
+\donttest{
 data(theopp)
 }
 }

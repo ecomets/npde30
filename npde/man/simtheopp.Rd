@@ -46,7 +46,7 @@ information can be found in the User Guide distributed along with this
 package, which contains a run-through of the theophylline example.
 }
 \examples{
-\dontrun{
+\donttest{
 data(simtheopp)
 
 # Plotting the simulated data for subject 1 in the first simulation

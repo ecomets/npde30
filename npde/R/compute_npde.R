@@ -24,7 +24,7 @@
 computenpde<-function(npdeObject,...) {
 	npdeObject@options<-replace.control.options(npdeObject@options,...)
 	if(npdeObject["options"]$cens.method=="cdf" & length(npdeObject["data"]["icens"])>0 & length(npdeObject["results"]["res"]$ycomp)==0) {
-		cat("With method",npdeObject["options"]$cens.method,"prediction discrepancies need to be computed first \n")
+		if(npdeObject@options$verbose) cat("With method",npdeObject["options"]$cens.method,"prediction discrepancies need to be computed first \n")
 		npdeObject<-computepd(npdeObject)
 	}
 	if(npdeObject["options"]$cens.method=="omit" | length(npdeObject["data"]["icens"])==0)
@@ -68,20 +68,27 @@ computenpde.omit<-function(npdeObject) {
 		if (xerr>0) break
 	}
 	if(xerr>0) {
-		cat("The computation of the pde has failed for subject",isuj,"because \n")
+	  if(npdeObject@options$verbose) message("The computation of the pde has failed for subject",isuj,"because \n")
 		if(xerr==1) {
-			if(npdeObject["options"]$decorr.method=="cholesky") cat("the Cholesky decomposition of the covariance matrix of the simulated data could not be obtained.\n")
-			if(npdeObject["options"]$decorr.method=="inverse") cat("the covariance matrix of the simulated data could not be diagonalised through eigen().\n")
-			if(npdeObject["options"]$decorr.method=="polar") cat("the Cholesky decomposition of the covariance matrix of the simulated data could not be obtained.\n")
+			if(npdeObject["options"]$decorr.method=="cholesky") {
+			  if(npdeObject@options$verbose) message("the Cholesky decomposition of the covariance matrix of the simulated data could not be obtained.\n")}
+			if(npdeObject["options"]$decorr.method=="inverse") {
+			  if(npdeObject@options$verbose) message("the covariance matrix of the simulated data could not be diagonalised through eigen().\n")}
+			if(npdeObject["options"]$decorr.method=="polar") {
+			  if(npdeObject@options$verbose) message("the Cholesky decomposition of the covariance matrix of the simulated data could not be obtained.\n")}
 		}
-		if(xerr==2) cat("the covariance matrix of the simulated data could not be inverted.\n")
-		cat("This usually means that the covariance matrix is not positive-definite, or that is is poorly conditioned.\n")
-		cat("This can be caused by simulations widely different from observations (in \n")
-		cat("other words, a poor model).\n")
-		cat("We suggest to plot a prediction interval from the simulated data to check\n")
-		cat("whether the simulations are reasonable, and to consider prediction\n")
-		cat("discrepancies (obtained without the decorrelation step).\n")
-		cat("Prediction discrepancies will now be computed.\n")
+		if(xerr==2) {
+		  if(npdeObject@options$verbose){
+		  message("the covariance matrix of the simulated data could not be inverted.\n")
+		message("This usually means that the covariance matrix is not positive-definite, or that is is poorly conditioned.\n")
+		message("This can be caused by simulations widely different from observations (in \n")
+		message("other words, a poor model).\n")
+		message("We suggest to plot a prediction interval from the simulated data to check\n")
+		message("whether the simulations are reasonable, and to consider prediction\n")
+		message("discrepancies (obtained without the decorrelation step).\n")
+		message("Prediction discrepancies will now be computed.\n")
+		  }
+		}
 #		break
 	}
 
@@ -297,6 +304,8 @@ calcnpde.sim<-function(yobs,matsim,nrep,decorr.method) {
 #'  \item{inverse}{decorrelation is performed by inverting Vi through the \code{eigen} function}
 #'  \item{polar}{the singular-value decomposition (\code{svd}) is used}
 #'  }
+#'  
+#'  @return This is not a function and does not have a return value, this is a statistical method.
 #'
 #' @details More details can be found in the PDF documentation.
 #' @references K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.

@@ -1,0 +1,41 @@
+Please find enclosed an updated version of npde3.0, with the requested changes.
+
+The following words are not misspelled
+   Brendel
+   (8:433) => name of a collaborator
+   github (8:283)
+   => repository
+   et al. => et alia used to reference
+   co-authors
+   pharmacodynamics (8:190) => my job xD
+      pharmacokinetics (8:169)
+
+The reasons for which the npde package was removed from the archive in 2018 have been fixed. The package passes checks with --as-cran and --run-donttest enabled, and was checked on win-build.
+
+I've tried to catch all the cat/print lines not in summary/showall/print/show functions with prior verbose tests so if you find any that isn't suppressed, please tell me where they are.
+
+Most tests are not run on CRAN because they take too long to run, so they have been encapsulated in \donttest.
+Examples with CPU or elapsed time > 5s
+                  user system elapsed
+npde.cens.method 8.346   0.04   8.419
+
+Best,
+Emmanuelle 
+
+
+------------------
+
+Please add \value to .Rd files regarding exported methods and explain the functions results in the documentation. Please write about the structure of the output (class) and also what the output means. (If a function does not return a value, please document that too, e.g. \value{No return value, called for side effects} or similar)
+Missing Rd-tags:
+     npde.cens.method.Rd: \value
+     npde.decorr.method.Rd: \value
+     showall.Rd: \value
+     summary.NpdeData.Rd: \value
+
+You write information messages to the console that cannot be easily suppressed.
+It is more R like to generate objects that can be used to extract the information a user is interested in, and then print() that object.
+Instead of print()/cat() rather use message()/warning()  or if(verbose)cat(..) (or maybe stop()) if you really have to write text to the console.
+(except for print, summary, interactive functions)
+
+@return No return value, called for side effects
+

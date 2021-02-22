@@ -35,11 +35,8 @@
 #' }
 #' @keywords classes
 #' @examples
-#' \dontrun{
 #' methods(class="NpdeData")
-#'
-#' showClass("NpdeData")}
-#'
+#' showClass("NpdeData")
 #' @exportClass NpdeData
 
 setClass(

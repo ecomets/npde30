@@ -5,7 +5,8 @@
 #'
 #' @usage npde.plot.select(npdeObject,data=FALSE,ecdf=FALSE,qqplot=FALSE, histogram=FALSE,
 #' x.scatter=FALSE,pred.scatter=FALSE,x.box=FALSE,pred.box=FALSE, cov.x.scatter=FALSE,
-#' cov.pred.scatter=FALSE,cov.x.box=FALSE,cov.pred.box=FALSE, cov.ecdf=FALSE, vpc=FALSE,...)
+#' cov.pred.scatter=FALSE,cov.x.box=FALSE,cov.pred.box=FALSE, cov.ecdf=FALSE, 
+#' cov.hist=FALSE, cov.qqplot=FALSE, vpc=FALSE,...)
 #' @param npdeObject an object returned by a call to \code{\link{npde}} or \code{\link{autonpde}}
 #' @param data boolean, whether to produce a plot of the data
 #' @param ecdf boolean, whether to produce a distribution plot of the empirical distribution function
@@ -20,8 +21,13 @@
 #' @param cov.x.box boolean, whether to produce whisker plots of the metric as a function of X, split by covariate(s)
 #' @param cov.pred.box boolean, whether to produce whisker plots of the metric as a function of predictions, split by covariate(s)
 #' @param cov.ecdf boolean, whether to produce a distribution plot of the empirical distribution function, split by covariate(s)
+#' @param cov.hist boolean, whether to produce a distribution plot of the empirical distribution function, split by covariate(s)
+#' @param cov.qqplot boolean, whether to produce a distribution plot of the empirical distribution function, split by covariate(s)
 #' @param vpc boolean, whether to produce a VPC
 #' @param \dots additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}})
+#' 
+#' @return a ggplot object or a list of ggplot objects (grobs)
+#' 
 #' @author Emmanuelle Comets <emmanuelle.comets@@bichat.inserm.fr>
 #' @seealso \code{\link{npde}}, \code{\link{autonpde}}, \code{\link{set.plotoptions}}
 #' @references K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.
@@ -33,7 +39,10 @@
 #' @importFrom grid textGrob gpar 
 #' @importFrom gridExtra grid.arrange
 
-npde.plot.select<-function(npdeObject,data=FALSE,ecdf=FALSE,qqplot=FALSE, histogram=FALSE,x.scatter=FALSE,pred.scatter=FALSE,x.box=FALSE,pred.box=FALSE, cov.x.scatter=FALSE,cov.pred.scatter=FALSE,cov.x.box=FALSE,cov.pred.box=FALSE, cov.ecdf=FALSE, vpc=FALSE,...) {
+npde.plot.select<-function(npdeObject,data=FALSE,ecdf=FALSE,qqplot=FALSE, histogram=FALSE,x.scatter=FALSE,
+                           pred.scatter=FALSE,x.box=FALSE,pred.box=FALSE, cov.x.scatter=FALSE,
+                           cov.pred.scatter=FALSE,cov.x.box=FALSE,
+                           cov.pred.box=FALSE, cov.ecdf=FALSE, cov.hist=FALSE, cov.qqplot=FALSE, vpc=FALSE,...) {
   # Function selecting which plots are to be drawn
   namObj<-deparse(substitute(npdeObject))
   interactive<-npdeObject["prefs"]$interactive
@@ -49,6 +58,8 @@ npde.plot.select<-function(npdeObject,data=FALSE,ecdf=FALSE,qqplot=FALSE, histog
   if(cov.x.scatter) plot(npdeObject,plot.type="cov.x.scatter",...)
   if(cov.pred.scatter) plot(npdeObject,plot.type="cov.pred.scatter",...)
   if(cov.ecdf) plot(npdeObject,plot.type="cov.ecdf",...)
+  if(cov.hist) plot(npdeObject,plot.type="cov.hist",...)
+  if(cov.qqplot) plot(npdeObject,plot.type="cov.qqplot",...)
   if(cov.x.box) plot(npdeObject,plot.type="cov.x.scatter",box=TRUE,...)
   if(cov.pred.box) plot(npdeObject,plot.type="cov.pred.scatter",box=TRUE,...)
   if(vpc) plot(npdeObject,plot.type="vpc",...)
@@ -61,6 +72,7 @@ npde.plot.select<-function(npdeObject,data=FALSE,ecdf=FALSE,qqplot=FALSE, histog
 #' @usage default.npde.plots(npdeObject, ...)
 #' @param npdeObject an object returned by a call to \code{\link{npde}} or \code{\link{autonpde}}
 #' @param \dots additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}})
+#' @return a ggplot object
 #' @keywords plot internal
 
 #### Meta-niveau
@@ -70,27 +82,36 @@ default.npde.plots<-function(npdeObject,...) {
   npde.plot.select(npdeObject,qqplot=TRUE,histogram=TRUE, x.scatter=TRUE,pred.scatter=TRUE,new=FALSE,...)
 }
 
-#' Covariate plots for a NpdeObject object
+#' Plots split by covariate for a NpdeObject object
 #'
-#' Covariate plots for a NpdeObject object
+#' Plots split by covariate for a NpdeObject object (equivalent to using covsplit=TRUE with the appropriate plot.type)
 #'
-#' @usage npde.plot.covariates(npdeObject, which="x", ...)
+#' @usage npde.plot.splitcov(npdeObject, which.plot="x", ...)
 #' @param npdeObject an object returned by a call to \code{\link{npde}} or \code{\link{autonpde}}
-#' @param which one of "x" (scatterplots of the metric versus X), "pred" (scatterplots of the metric versus predictions) or "ecdf" (empirical distribution function)
+#' @param which.plot one of "x" (scatterplots of the metric versus X), "pred" (scatterplots of the metric versus predictions), "ecdf" (empirical distribution function), "hist" (histogram), "qqplot"
 #' @param \dots additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}})
+#' 
+#' @return a ggplot object or a list of ggplot objects (grobs)
+#' 
 #' @keywords plot
 #' @export
 
-npde.plot.covariates<-function(npdeObject,which="x",...) {
+npde.plot.splitcov<-function(npdeObject,which.plot="x",...) {
   # Parameters or random effects versus covariates
-  if(which=="x") {
+  if(which.plot=="x") {
     plot(npdeObject,plot.type="cov.x.scatter",...)
   }
-  if(which=="pred") {
+  if(which.plot=="pred") {
     plot(npdeObject,plot.type="cov.pred.scatter",...)
   }
-  if(which=="ecdf") {
+  if(which.plot=="ecdf") {
     plot(npdeObject,plot.type="cov.ecdf",...)
+  }
+  if(which.plot=="qqplot") {
+    plot(npdeObject,plot.type="cov.qqplot",...)
+  }
+  if(which.plot=="hist") {
+    plot(npdeObject,plot.type="cov.hist",...)
   }
 }
 
@@ -98,11 +119,15 @@ npde.plot.covariates<-function(npdeObject,which="x",...) {
 #'
 #' Plots for pd and npde
 #'
-#' @aliases npde.plot.pd npde.plot.npde
+#' @aliases npde.plot.pd npde.plot.npde npde.plot.npd
 #' @usage npde.plot.pd(npdeObject, ...)
 #' @usage npde.plot.npde(npdeObject, ...)
+#' @usage npde.plot.npd(npdeObject, ...)
 #' @param npdeObject an object returned by a call to \code{\link{npde}} or \code{\link{autonpde}}
 #' @param \dots additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}})
+#' 
+#' @return a ggplot object or a list of ggplot objects (grobs)
+#' 
 #' @keywords plot
 #' @export
 
@@ -111,6 +136,15 @@ npde.plot.npde<-function(npdeObject,...) {
   if(npdeObject@options$verbose) cat("Plots for npde\n")
   default.npde.plots(npdeObject,...)
 }
+
+#' @export
+
+npde.plot.npd<-function(npdeObject,...) {
+  # Advanced goodness of fit plots
+  if(npdeObject@options$verbose) cat("Plots for npd\n")
+  default.npde.plots(npdeObject,which="npd",...)
+}
+
 
 #' @export
 
@@ -129,6 +163,9 @@ npde.plot.pd<-function(npdeObject,...) {
 #' @aliases npde.plot.data
 #' @param npdeObject an object returned by a call to \code{\link{npde}} or \code{\link{autonpde}}
 #' @param \dots additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}})
+#' 
+#' @return a ggplot object or a list of ggplot objects (grobs)
+#' 
 #' @keywords plot
 #' @export
 
@@ -362,6 +399,9 @@ npde.plot.data<-function(npdeObject,...) {
 #' @aliases plot
 #' @param npdeObject an object returned by a call to \code{\link{npde}} or \code{\link{autonpde}}
 #' @param \dots additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}})
+#' 
+#' @return a ggplot object or a list of ggplot objects (grobs)
+#' 
 #' @export
 #' @keywords plot
 ## #' @keywords plot by default : qqplot, hist, x.scatter, pred.scatter

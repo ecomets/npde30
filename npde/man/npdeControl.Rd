@@ -43,6 +43,9 @@ check.control.options(opt)
 
 \item{...}{named parameters to be changed. The names will be compared to the names of the control variables and changed, with warnings issued for names that do not match.}
 }
+\value{
+A list of settings for the computation of pd/npde
+}
 \description{
 Set, replace and check options for an NpdeObject
 }

@@ -31,10 +31,9 @@
 ##' @seealso \code{\link{npde}}, \code{\link{autonpde}}, \code{\link{NpdeData}}, \code{\link{NpdeSimData}}, \code{\link{NpdeRes}}, \code{\link{gof.test}}
 ##' @keywords classes
 ##' @examples
-##' \dontrun{
 ##' methods(class="NpdeObject")
 ##'
-##' showClass("NpdeObject")}
+##' showClass("NpdeObject")
 ##'
 ##' @exportClass NpdeObject
 ##' @include NpdeRes.R
@@ -68,7 +67,7 @@ setMethod(
     opt<-npdeControl()
     if(length(options)>0) {
       for(i in names(options)) {
-      	if(length(grep(i,names(opt)))==0) message("Option",i, "not found, check spelling\n") else
+      	if(length(grep(i,names(opt)))==0) message(paste("Option",i, "not found, check spelling")) else
       	opt[i]<-options[i]
       }
       i1<-grep("namsav",names(options))
@@ -83,7 +82,7 @@ setMethod(
     graph.opt<-set.plotoptions(.Object)
     if(length(prefs)>0) {
     	for(i in names(prefs)) {
-    		if(length(grep(i,names(graph.opt)))==0) message("Graphical option",i, "not found, check spelling\n") else	graph.opt[i]<-prefs[i]
+    		if(length(grep(i,names(graph.opt)))==0) message(paste("Graphical option",i, "not found, check spelling")) else	graph.opt[i]<-prefs[i]
     	}
     }
     .Object@prefs<-graph.opt

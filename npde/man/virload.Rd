@@ -34,10 +34,11 @@ The datasets were generated in a simulation study designed to evaluate the new m
 
 The \code{virload} data frame has 300 rows and 4 columns of data. The dataset was then censored at two different LOQ levels (LOQ=20 or 50~copies/mL) to generate two datasets containing different proportions of BQL data, creating the data frames \code{virload20} and\code{virload50} respectively
 
-The file simvirload contains 1000 simulations under the same model.
+The file simvirload contains 500 simulations under the same model. A full version of the simulated data with 1000 simulations 
+can be downloaded from the github for npde3.0: \url{https://github.com/ecomets/npde30/blob/main/keep/data/simvirload.tab}
 }
 \examples{
-\dontrun{
+\donttest{
   data(virload)
   str(virload)
   data(virload50)

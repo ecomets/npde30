@@ -19,7 +19,7 @@
 #' 23:2036--49, 2006.
 #' @export
 #' @examples
-#'\dontrun{
+#'\donttest{
 #' data(theopp)
 #' data(simtheopp)
 #' x<-autonpde(theopp,simtheopp,1,3,4,boolsave=FALSE)
@@ -43,11 +43,9 @@ dist.pred.sim<-function(npdeObject,nsamp, ...) {
   if(!is.na(i1)) calc.npde<-as.logical(as.character(args1[[i1]]))
   if(is.na(calc.npde)) calc.npde<- npdeObject["options"]$calc.npde
   if(!calc.npd & !calc.npde) {
-    cat("At least one of calc.npd or calc.npde must be TRUE.\n")
+    if(npdeObject@options$verbose) message("At least one of calc.npd or calc.npde must be TRUE.\n")
     return(npdeObject)
   }
-
-
 
   # ECO not necessary since we're not using the imputed data... why not ??? maybe should ?
   # 	if(npdeObject["options"]$cens.method=="cdf" && length(npdeObject["sim.data"]["icens"])>0 && length(npdeObject["sim.data"]["datsim"]$ysim.imp)==0) {
@@ -102,7 +100,7 @@ dist.pred.sim<-function(npdeObject,nsamp, ...) {
           pde<-pde+runif(length(pde),0,1/nrep)
         npde<-rbind(npde,qnorm(pde))
       } else {
-        cat("Problem computing npde for subject",isuj,"\n")
+        if(npdeObject@options$verbose) message(paste("Problem computing npde for subject",isuj))
         return(npdeObject)
       }
     }
@@ -111,7 +109,6 @@ dist.pred.sim<-function(npdeObject,nsamp, ...) {
   # Saving results
   if(calc.npd) {
     npdeObject["results"]["pd.sim"]<-pd
-    npdeObject["results"]["npd.sim"]<-qnorm(pd)
   }
  if(calc.npde) npdeObject["results"]["npde.sim"]<-npde
   return(npdeObject)

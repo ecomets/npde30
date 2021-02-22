@@ -12,6 +12,9 @@ npde.save(object, ...)
 
 \item{\dots}{optional arguments to replace options in object}
 }
+\value{
+No return value, called for side effects
+}
 \description{
 Save the results to a table on disk
 }

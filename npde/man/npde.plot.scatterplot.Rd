@@ -25,6 +25,9 @@ npde.plot.scatterplot(npdeObject, which.x="x", which.y="npd", ref.prof=NULL, ...
 
 \item{\dots}{additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}} and \code{\link{npdeControl}})}
 }
+\value{
+a ggplot object or a list of ggplot objects (grobs)
+}
 \description{
 Produces a scatterplot. Different types of scatterplots can be produced, with associated prediction bands (see details).
 }

@@ -48,14 +48,12 @@ These data are also available in the library \code{datasets} under the name
 installation path (see the User Guide for that software for details).
 }
 \examples{
-\dontrun{
 data(theopp)
 
 #Plotting the theophylline data
 plot(Conc~Time,data=theopp,xlab="Time after dose (hr)",
 ylab="Theophylline concentration (mg/L)")
 
-}
 }
 \references{
 PDF documentation for npde 3.0: \url{https://github.com/ecomets/npde30/blob/main/userguide_npde_3.0.pdf}

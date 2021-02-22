@@ -20,7 +20,7 @@ setMethod("show","NpdeObject",
               cat("----        Component results        ----\n")
               cat("-----------------------------------------\n")
               show(object@results)
-            } else cat("  No results\n")
+            } else message("  No results\n")
           }
 )
 
@@ -71,7 +71,7 @@ print.NpdeObject<-
       cat("----      Results      ----\n")
       cat("-----------------------------------\n")
       print(x@results,nlines=nlines)
-    } else cat("  No results\n")
+    } else message("  No results\n")
   }
 #)
 
@@ -114,7 +114,7 @@ showall.NpdeObject<-function(object) {
     cat("----              Results            ----\n")
     cat("-----------------------------------------\n")
     showall(object@results)
-  } else cat("  No results\n")
+  } else message("  No results\n")
 }
 
 ######## summary for NpdeObject
@@ -149,7 +149,7 @@ summary.NpdeObject <- function(object,...) {
     }
     cat("   options: options for computations\n")
     cat("   prefs: options for graphs\n")
-  } else cat(", currently empty\n")
+  } else message(", currently empty\n")
   # The first elements of the list are the same as those returned previously, to maintain compatibility with the previous version of npde (1.2)
   obsdat<-data.frame(id=object@data@data[,object@data@name.group], xobs=object@data@data[,object@data@name.predictor], yobs=object@data@data[,object@data@name.response])
   addcol<-c(object@data@name.covariates,object@data@name.miss,object@data@name.cens,object@data@name.ipred)
@@ -221,13 +221,13 @@ gof.test.NpdeObject<-function(object, parametric=TRUE, ...) {
   # If covsplit is TRUE, performs the test split by covariate
   args1<-match.call(expand.dots=TRUE)
   if(length(object@results)==0) {
-    cat("No results\n")
+    if(object@options$verbose) message("No result element in object, please run npde first\n")
     return()
   }
   i1<-match("which",names(args1))
   if(!is.na(i1) && !is.na(as.logical(as.character(args1[[i1]])))) which<-as.character(args1[[i1]]) else which<-"npde"
   if(!which%in%c("pd","npde","npd")) {
-    cat("Tests can be performed on one of: npde (default), pd, npd. Please choose one using the which argument.\n")
+    if(object@options$verbose) cat("Tests can be performed on one of: npde (default), pd, npd. Please choose one using the which argument.\n")
     return()
   }
   x<-switch(which, npde=object@results@res$npde, pd=object@results@res$pd, npd=qnorm(object@results@res$pd))
@@ -254,7 +254,7 @@ gof.test.NpdeObject<-function(object, parametric=TRUE, ...) {
       which.cov2<-which.cov[match(which.cov, object@data@name.covariates,nomatch=0)>0]
     which.cov2<-unique(which.cov2)
     if(length(which.cov2)==0) {
-      cat("No covariate matching names",which.cov,", performing a global test.\n")
+      message(paste("No covariate matching names",which.cov,", performing a global test"))
       covsplit<-FALSE
     } else which.cov<-which.cov2
   } else covsplit<-FALSE

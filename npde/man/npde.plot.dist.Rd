@@ -17,6 +17,9 @@ npde.plot.dist(npdeObject, which="npd", dist.type="qqplot", ...)
 
 \item{\dots}{additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}})}
 }
+\value{
+a ggplot object or a list of ggplot objects (grobs)
+}
 \description{
 Produces a plot of the cdistribution of a metric compared to their theoretical distribution. Three types of distribution plots are available:
 a histogram, a QQ-plot, or the empirical cdf.

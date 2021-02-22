@@ -13,6 +13,9 @@
 
 \item{\dots}{additional graphical parameters to be passed on to the plot}
 }
+\value{
+currently does not return anything, use plot(x, plot.type="data") on the npdeObject x (TODO; a ggplot object)
+}
 \description{
 Plots the data in a NpdeData object
 }
@@ -20,7 +23,7 @@ Plots the data in a NpdeData object
 The default plot is a spaghetti plot of all the data, with a line joining the observations for each subject. If censored data is present, it is shown with a different symbol and colour.
 }
 \examples{
-\dontrun{
+\donttest{
 data(theopp)
 
 x<-npdeData(theopp,name.group="ID",name.predictor="Time",name.response="Conc",

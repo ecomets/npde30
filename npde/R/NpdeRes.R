@@ -32,13 +32,9 @@
 ##' @seealso \code{\link{npde}}, \code{\link{autonpde}}, \code{\link{plot.NpdeRes}}, \code{\link{NpdeObject}}
 ##' @keywords classes internal
 ##' @examples
-##' \dontrun{
-##' data(theopp)
-##'
 ##' methods(class="NpdeRes")
 ##'
 ##' showClass("NpdeRes")
-##' }
 ##' @exportClass NpdeRes
 
 setClass(
@@ -57,11 +53,11 @@ setClass(
 #    cat ("--- Checking NpdeRes object ---\n")
   	if(length(object@res)>0) {
   		if(length(object@not.miss)>0 && length(object@not.miss)!=dim(object@res)[1]) {
-  			cat("Size mismatch between indicator variable not.miss and the data.\n")
+  			message("Size mismatch between indicator variable not.miss and the data.\n")
   			return(FALSE)
   		}
   		if(length(object@ntot.obs)>0 && length(object@not.miss)>0 && object@ntot.obs!=dim(object@res[object@not.miss,])[1]) {
-  			cat("Size mismatch between the total number of observations and the data.\n")
+  			message("Size mismatch between the total number of observations and the data.\n")
   			return(FALSE)
   		}
   	}

@@ -12,7 +12,9 @@
  \item{cholesky}{decorrelation is performed through the Cholesky decomposition (default)}
  \item{inverse}{decorrelation is performed by inverting Vi through the \code{eigen} function}
  \item{polar}{the singular-value decomposition (\code{svd}) is used}
- }}
+ }
+ 
+ @return This is not a function and does not have a return value, this is a statistical method.}
 }
 \description{
 Specifies the method used to decorrelate observed and simulated data

@@ -14,6 +14,7 @@
 #' @param dist.type string, one of "ecdf" (empirical cumulative density function), "hist" (histogram) or "qqplot" (QQ-plot of the empirical distribution versus the theoretical quantiles) to determine which type of plot (default is "qqplot")
 #' @param \dots additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}})
 #'
+#' @return a ggplot object or a list of ggplot objects (grobs)
 #' @author Emmanuelle Comets <emmanuelle.comets@@bichat.inserm.fr>
 #' @seealso \code{\link{npde}}, \code{\link{autonpde}}, \code{\link{set.plotoptions}}
 #' @references K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.  Mentre.
@@ -34,9 +35,10 @@ npde.plot.dist<-function(npdeObject, which="npd", dist.type="qqplot", ...) {
 
   # size replace size.pobs
   if ( plot.opt$size %in% userPlotOptions) plot.opt$size.pobs = plot.opt$size
-
   # col replace  col.pobs
   if ( plot.opt$col %in% userPlotOptions)    plot.opt$col.pobs = plot.opt$col
+  
+  verbose<-npdeObject@options$verbose
 
   # which modified or not for "npde","pd","npd"
   # which = plot.opt$which # which is passed in the arguments !!! don't change it here !!!
@@ -57,20 +59,20 @@ npde.plot.dist<-function(npdeObject, which="npd", dist.type="qqplot", ...) {
   # } else change.ncat<-FALSE
 
   if(match(which,c("npde","pd","npd"),nomatch=0)==0) {
-    cat("Option which=",which,"not recognised\n")
-    return()
+    if(verbose) message(paste("Option which=",which,"not recognised\n"))
+    return("Option which not recognised")
   }
   if(match(dist.type,c("ecdf","qqplot","hist"),nomatch=0)==0) {
-    cat("Option dist.type=",dist.type,"not recognised\n")
-    return()
+    if(verbose) message(paste("Option dist.type=",dist.type,"not recognised\n"))
+    return("Option dist.type not recognised")
   }
   if(which %in% c("npde","pde") & length(npdeObject["results"]["res"]$npde)==0)  {
-    cat("    Missing npde object to plot.\n")
-    return()
+    if(verbose) message("    Missing npde object to plot.\n")
+    return("Missing (n)pde object to plot")
   }
   if(which %in% c("pd","npd") & length(npdeObject["results"]["res"]$pd)==0) {
-    cat("    Missing pd object to plot.\n")
-    return()
+    if(verbose) message("    Missing pd object to plot.\n")
+    return("Missing (n)pd object to plot")
   }
 
   # -----------------------------------------------------------
@@ -105,7 +107,7 @@ npde.plot.dist<-function(npdeObject, which="npd", dist.type="qqplot", ...) {
   if(!plot.opt$approx.pi) {
     if(which %in% c("pd","npd")) {
       if(length(npdeObject["results"]["pd.sim"])==0) {
-        cat("You have requested to use simulations to provide the prediction intervals, but the simulated pd are not present.\n")
+        if(verbose) message("You have requested to use simulations to provide the prediction intervals, but the simulated pd are not present.\n")
         plot.opt$approx.pi<-TRUE
       } else {
         sim.ypl<-npdeObject["results"]["pd.sim"]
@@ -114,13 +116,13 @@ npde.plot.dist<-function(npdeObject, which="npd", dist.type="qqplot", ...) {
     }
     if(which=="npde") {
       if(length(npdeObject["results"]["npde.sim"])==0) {
-        cat("You have requested to use simulations to provide the prediction intervals, but the simulated npde are not present.\n")
+        if(verbose) message("You have requested to use simulations to provide the prediction intervals, but the simulated npde are not present.\n")
         plot.opt$approx.pi<-TRUE
       } else sim.ypl<-npdeObject["results"]["npde.sim"]
     }
     if(which=="pde") {
       if(length(npdeObject["results"]["npde.sim"])==0) {
-        cat("You have requested to use simulations to provide the prediction intervals, but the simulated npde are not present.\n")
+        if(verbose) message("You have requested to use simulations to provide the prediction intervals, but the simulated npde are not present.\n")
         plot.opt$approx.pi<-TRUE
       } else sim.ypl<-pnorm(npdeObject["results"]["npde.sim"])
     }
@@ -229,7 +231,9 @@ npde.plot.dist<-function(npdeObject, which="npd", dist.type="qqplot", ...) {
 #' @param xaxis a string character, one of "x" (to plot P(Y<LOQ) versus the value of the independent predictor) or "ypred" (versus the value of the population predictions). Defaults to "x"
 #' @param nsim number of simulations to be used for the computation of the prediction interval
 #' @param \dots additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}})
-#'
+#' 
+#' @return a ggplot object or a list of ggplot objects (grobs)
+#' 
 #' @author Emmanuelle Comets <emmanuelle.comets@@bichat.inserm.fr>
 #' @seealso \code{\link{npde}}, \code{\link{autonpde}}, \code{\link{set.plotoptions}}
 #' @references K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.
@@ -260,21 +264,21 @@ npde.plot.loq<-function(npdeObject,xaxis="x",nsim=200,...) {
       yobs<-npdeObject["data"]["data"][,npdeObject["data"]["name.response"]]
       if(length(npdeObject["data"]["loq"])>0) {
         loq<-npdeObject["data"]["loq"]
-        if(npdeObject@options$verbose) cat("Computing p(y<LOQ) using LOQ=",loq,"\n")
+        if(npdeObject@options$verbose) message(paste("Computing p(y<LOQ) using LOQ=",loq))
       } else {
         yloq<-yobs[npdeObject["data"]["icens"]]
         if(length(unique(yloq))==1) {
-          if(npdeObject@options$verbose) cat("Same LOQ for all missing data, loq=",loq,"\n")
+          if(npdeObject@options$verbose) message(paste("Same LOQ for all missing data, loq=",loq))
           loq<-unique(yloq)
         } else {
           loq<-min(unique(yloq))
-          if(npdeObject@options$verbose) cat("Computing p(y<LOQ) for the lowest LOQ, loq=",loq,"\n")
+          if(npdeObject@options$verbose) message(paste("Computing p(y<LOQ) for the lowest LOQ, loq=",loq))
         }
         npdeObject["data"]["loq"]<-loq
       }
       if(is.infinite(npdeObject["data"]["loq"])) {
-        if(npdeObject@options$verbose) cat("No loq defined in the data, and no censored data to define it, please call npde.plot.loq with the option loq=XXX where XXX is the value of the LOQ.\n")
-        return()
+        if(npdeObject@options$verbose) message("No loq defined in the data, and no censored data to define it, please call npde.plot.loq with the option loq=XXX where XXX is the value of the LOQ.\n")
+        return("No loq defined in the data")
       }
     } else loq<-npdeObject["data"]["loq"]
   }

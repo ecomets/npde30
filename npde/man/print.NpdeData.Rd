@@ -20,6 +20,9 @@
 
 \item{...}{Additional arguments (ignored)}
 }
+\value{
+None
+}
 \description{
 prints  objects of classes NpdeData, NpdeSimData, NpdeRes and NpdeObject
 }

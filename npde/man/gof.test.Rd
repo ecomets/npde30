@@ -54,8 +54,12 @@ The p.value elements is a named vector with four components:
 The p-values are adjusted using a Bonferroni correction: the raw p-values of the 3 individual tests are multiplied by 3, and the p-value for the global test is equal to the minimum of the adjusted p-values.
 }
 \examples{
-\dontrun{
+\donttest{
 data(theopp)
+data(simtheopp)
+#' # Calling autonpde with dataframes
+x<-autonpde(theopp,simtheopp,1,3,4,boolsave=FALSE)
+gof.test(x)
 }
 }
 \references{

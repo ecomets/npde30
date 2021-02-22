@@ -63,7 +63,6 @@ an object of class NpdeData
 This function is used to create a NpdeData object, representing a longitudinal data structure, and fill it with data from a dataframe or a file on disk
 }
 \examples{
-\dontrun{
 data(theopp)
 
 x<-npdeData(theopp) # Automatic detection
@@ -71,7 +70,6 @@ print(x)
 x<-npdeData(theopp,name.group="ID",name.predictor="Time",name.response="Conc",
 name.covariates=c("Wt"),units=list(x="hr",y="mg/L",covariates="kg")) # Explicit
 print(x)
-plot(x)}
 }
 \references{
 K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.

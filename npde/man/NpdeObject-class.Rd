@@ -42,10 +42,9 @@ An object of class NpdeObject
 }
 
 \examples{
-\dontrun{
 methods(class="NpdeObject")
 
-showClass("NpdeObject")}
+showClass("NpdeObject")
 
 }
 \seealso{

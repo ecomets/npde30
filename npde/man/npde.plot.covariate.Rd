@@ -5,7 +5,7 @@
 \alias{aux.npdeplot.boxcov}
 \title{Covariate diagnostic plots}
 \usage{
-npde.plot.covariate(npdeObject, which.y="npde", ...)
+npde.plot.covariate(npdeObject, which.y="npd", ...)
 }
 \arguments{
 \item{npdeObject}{an object returned by a call to \code{\link{npde}} or \code{\link{autonpde}}}
@@ -13,6 +13,9 @@ npde.plot.covariate(npdeObject, which.y="npde", ...)
 \item{which.y}{a string specifying the variable on the Y-axis (one of "yobs", "npde", "pd", "npd")}
 
 \item{\dots}{additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}} and \code{\link{npdeControl}})}
+}
+\value{
+a ggplot object or a list of ggplot objects (grobs)
 }
 \description{
 Boxplot of the selected variable versus categories of covariates

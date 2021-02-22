@@ -3,16 +3,22 @@
 \name{npde.plot.npde}
 \alias{npde.plot.npde}
 \alias{npde.plot.pd}
+\alias{npde.plot.npd}
 \title{Plots for pd and npde}
 \usage{
 npde.plot.pd(npdeObject, ...)
 
 npde.plot.npde(npdeObject, ...)
+
+npde.plot.npd(npdeObject, ...)
 }
 \arguments{
 \item{npdeObject}{an object returned by a call to \code{\link{npde}} or \code{\link{autonpde}}}
 
 \item{\dots}{additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}})}
+}
+\value{
+a ggplot object or a list of ggplot objects (grobs)
 }
 \description{
 Plots for pd and npde

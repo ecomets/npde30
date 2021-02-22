@@ -14,6 +14,7 @@
 #' @author Emmanuelle Comets, Karl Brendel, Thi Huyen Tram Nguyen, France Mentre
 #'
 #' Maintainer: Emmanuelle Comets <emmanuelle.comets@@bichat.inserm.fr>
+#' 
 #' @references K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.
 #' Mentr{\'e}. Metrics for external model evaluation with an application to the
 #' population pharmacokinetics of gliclazide. \emph{Pharmaceutical Research},
@@ -22,7 +23,6 @@
 #' 
 #' @keywords models
 #' @examples
-#' \dontrun{
 #' data(theopp)
 #' data(simtheopp)
 #'
@@ -31,20 +31,11 @@
 #' x<-autonpde(theopp,simtheopp,ix="Time",iy="Conc",iid="ID",boolsave=FALSE)
 #' print(x)
 #'
-#' # Calling autonpde with names of files to be read from disk
-#'
-#' write.table(theopp,"theopp.tab",quote=FALSE,row.names=FALSE)
-#' write.table(simtheopp,"simtheopp.tab",quote=FALSE,row.names=FALSE)
-#' x<-autonpde(namobs="theopp.tab", namsim="simtheopp.tab", iid = 1,
-#' ix = 3, iy = 4, boolsave = FALSE)
-#'
-#' print(x)
-#' }
 
 NULL
 
-
 ############################# help files for datasets included with the package
+
 #' Pharmacokinetics of theophylline
 #'
 #' The \code{theopp} data frame has 132 rows and 5 columns of data from an
@@ -89,14 +80,12 @@ NULL
 #' 
 #' @keywords datasets
 #' @examples
-#' \dontrun{
 #' data(theopp)
 #'
 #' #Plotting the theophylline data
 #' plot(Conc~Time,data=theopp,xlab="Time after dose (hr)",
 #' ylab="Theophylline concentration (mg/L)")
 #'
-#'}
 NULL
 
 #' Simulated data for the computation of normalised prediction distribution
@@ -142,7 +131,7 @@ NULL
 #' 
 #' @keywords datasets
 #' @examples
-#'\dontrun{
+#'\donttest{
 #' data(simtheopp)
 #'
 #' # Plotting the simulated data for subject 1 in the first simulation
@@ -195,7 +184,7 @@ NULL
 #' Two datasets containing simulated data are associated with the \code{warfarin} data. For
 #' each dataset, 1000 simulations of the original data were performed for the computation of npde.
 #' The package contains only the simulated data simwarfarinCov because of size constraints. simwarfarinBase can be downloaded from
-#' the github for npde3.0: \url{https://github.com/ecomets/npde30/tree/main/keep/data/simwarfarinBase.tab}
+#' the github for npde3.0: \url{https://github.com/ecomets/npde30/blob/main/keep/data/simwarfarinBase.tab}
 #' \describe{
 #' \item{simwarfarinBase}{the data in this dataset was simulated according to a base model without covariates: the PK model was a two-compartment model, with first-order absorption and a time-delay. Interindividual variability was modelled as log-normal distributions for parameters Tlag, ka, Cl and V1, and the error model was a combined error model. The parameters were estimated by Monolix.}
 #' \item{simwarfarinCov}{the data in this dataset was simulated according to a model including several covariates: an age (centered on 30 yr) effect on Cl, a weight (centered on 70 kg) effect on Cl and V1, and a gender effect on V1. The covariate model was built in Monolix.}
@@ -224,14 +213,12 @@ NULL
 #' 
 #' @keywords datasets
 #' @examples
-#' \dontrun{
 #' data(warfarin)
 #'
 #' #Plotting the warfarin PK data
 #' plot(dv~time,data=warfarin,xlab="Time after dose (hr)",
 #' ylab="Warfarin concentration (mg/L)")
 #'
-#'}
 NULL
 
 #' Simulated HIV viral loads in HIV patients
@@ -242,7 +229,8 @@ NULL
 #' 
 #' The \code{virload} data frame has 300 rows and 4 columns of data. The dataset was then censored at two different LOQ levels (LOQ=20 or 50~copies/mL) to generate two datasets containing different proportions of BQL data, creating the data frames \code{virload20} and\code{virload50} respectively
 #' 
-#' The file simvirload contains 1000 simulations under the same model.
+#' The file simvirload contains 500 simulations under the same model. A full version of the simulated data with 1000 simulations 
+#' can be downloaded from the github for npde3.0: \url{https://github.com/ecomets/npde30/blob/main/keep/data/simvirload.tab}
 #' 
 #' @docType data
 #' @name virload
@@ -265,7 +253,7 @@ NULL
 #' 
 #' @keywords datasets
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   data(virload)
 #'   str(virload)
 #'   data(virload50)
@@ -293,6 +281,9 @@ NULL
 #' \item{ppred}{an observation ycens_ij is replaced by the population prediction according to the model. Simulated data are left untouched.}
 #' \item{loq}{an observation ycens_ij is replaced by the value of the LOQ. Simulated data are left untouched.}
 #' }
+#' 
+#' @return This is not a function and does not have a return value, this is a statistical method.
+#' 
 #' More details can be found in the PDF documentation.
 #' @references K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.
 #' Mentre. Metrics for external model evaluation with an application to the
@@ -300,7 +291,7 @@ NULL
 #' 23:2036--49, 2006.
 #' @keywords methods
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   data(warfarin)
 #'   data(simwarfarinCov)
 #'   wcov<-autonpde(namobs=warfarin,namsim=simwarfarinCov, iid=1,ix=2,iy=4,icov=c(3,6:8),

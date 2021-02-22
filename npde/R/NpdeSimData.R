@@ -20,9 +20,7 @@
 #' @seealso \code{\link{npde}}, \code{\link{autonpde}}
 #' @keywords classes
 #' @examples
-#' \dontrun{
 #' showClass("NpdeSimData")
-#' }
 #' @exportClass NpdeSimData
 
 setClass(

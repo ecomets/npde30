@@ -24,9 +24,8 @@ is defined as: \deqn{N sum_i (x_i-\mathrm{mean}(x))^4 (sum_i
 (x_i-mean(x))^2)^(-2) - 3}
 }
 \examples{
-\dontrun{
 x <- rnorm(100)
-kurtosis(x)}
+kurtosis(x)
 }
 \references{
 G. Snedecor, W. Cochran. \emph{Statistical Methods},

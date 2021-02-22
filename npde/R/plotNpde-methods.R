@@ -8,12 +8,15 @@
 #' @param x a NpdeData object
 #' @param y unused, here for compatibility with the base plot function
 #' @param \dots additional graphical parameters to be passed on to the plot
+#' 
+#' @return currently does not return anything, use plot(x, plot.type="data") on the npdeObject x (TODO; a ggplot object)
+#' 
 #' @details The default plot is a spaghetti plot of all the data, with a line joining the observations for each subject. If censored data is present, it is shown with a different symbol and colour.
 #' @references K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.Mentre. Metrics for external model evaluation with an application to the population pharmacokinetics of gliclazide. \emph{Pharmaceutical Research}, 23:2036--49, 2006.
 #' @seealso \code{\link{set.plotoptions}}
 #' @keywords plot
 #' @examples
-#'\dontrun{
+#'\donttest{
 #' data(theopp)
 #'
 #' x<-npdeData(theopp,name.group="ID",name.predictor="Time",name.response="Conc",
@@ -41,7 +44,7 @@ plot.NpdeData <- function(x, y, ...) {
     plot.opt$ylab<-paste(x@name.response," (",x@units$y,")",sep="")
     plot.opt<-replace.plotoptions(plot.opt,...)
     logtyp<-paste(ifelse(plot.opt$xlog,"x",""),ifelse(plot.opt$ylog,"y",""),sep="")
-    if(plot.opt$new) par(mfrow=c(1,1))
+#    if(plot.opt$new) par(mfrow=c(1,1))
     tab<-x@data[x@ind,] # remove missing data
     has.cens<-(length(x@name.cens)>0)
     if(has.cens && max(tab[,x@name.cens])==0) has.cens<-FALSE
@@ -63,7 +66,7 @@ plot.NpdeData <- function(x, y, ...) {
     # }
     # if(has.cens) abline(h=x@loq,col=plot.opt$ablinecol,lty=plot.opt$ablinelty, lwd=plot.opt$ablinelwd)
 
-  } else cat("No data to plot.\n")
+  } else return("No data to plot")
 }
 
 # Plot for NpdeRes
@@ -73,6 +76,9 @@ plot.NpdeData <- function(x, y, ...) {
 #' Plots distribution and scatterplots for the npde in a NpdeRes object. Users are advised to use the plot() function on the NpdeObject object resulting from a call to npde() or autonpde() instead of trying to plot only the results element of this object.
 #'
 #' @param x a NpdeRes object
+#' 
+#' @return a ggplot object or a list of ggplot objects (grobs)
+#' 
 #' @details Four graphs are produced:
 #' \describe{
 #' \item{a quantile-quantile plot}{plot of the npde versus the corresponding quantiles of a normal distribution, with the line y=x overlayed.}
@@ -83,7 +89,7 @@ plot.NpdeData <- function(x, y, ...) {
 #' @seealso \code{\link{set.plotoptions}}
 #' @keywords plot internal
 #' @examples
-#'\dontrun{
+#'\donttest{
 #' data(theopp)
 #'}
 #' @method plot NpdeRes
@@ -95,7 +101,8 @@ plot.NpdeRes <- function(x, y, ...) {
   # ggplot
   # qqplot : pd, npde
   # ------------------------------------------------------------------------------------------
-
+  oldpar <- par(no.readonly = TRUE) 
+  on.exit(par(oldpar))   
   xres <- x@results@res[x@results@not.miss,]
   xobs =  x@data@data[x@data@name.predictor][,1]
 
@@ -121,8 +128,6 @@ plot.NpdeRes <- function(x, y, ...) {
     plot(xres$ypred,pd,xlab= paste(x@data@name.response,"(",x@data@units$y,")"),ylab="pd",cex.lab=1.5)
     abline(h=0,lty=2)
     abline(h=x1,lty=3);abline(h=(-x1),lty=3)
-
-
   }
 }
 
@@ -137,15 +142,17 @@ plot.NpdeRes <- function(x, y, ...) {
 #' @param y unused, here for compatibility with the base plot function
 #' @param \dots additional graphical parameters, which when given will supersede graphical preferences stored in the object
 #' 
-#' @details The default plot, as a 2x2 array with distribution plots on the top row (histogram and QQ-plot), and scatterplots of npde
-#' versus independent variable and population predictions on the bottom row. 
+#' @return a ggplot object or a list of ggplot objects (grobs)
+#' 
+#' @details The default plots are represented as a 2x2 array with distribution plots on the top row (histogram and QQ-plot),
+#'  and scatterplots of npde versus independent variable and population predictions on the bottom row. 
 #' The graph is plotted in a graphic device window, unless the result is stored in an object (eg myplot<-plot(x)) which can then be printed (eg using print(myplot)).
 #'
 #'  @references K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.Mentre. Metrics for external model evaluation with an application to the population pharmacokinetics of gliclazide. \emph{Pharmaceutical Research}, 23:2036--49, 2006.
 #' @seealso \code{\link{set.plotoptions}}
 #' @keywords plot
 #' @examples
-#'\dontrun{
+#'\donttest{
 #' data(theopp)
 #' data(simtheopp)
 #'
@@ -191,7 +198,7 @@ plot.NpdeObject <- function(x, y, ...) {
   pltyp<-c("data","default", "ecdf","qqplot","histogram","x.scatter","pred.scatter", "covariates","cov.x.scatter","cov.pred.scatter","cov.hist","cov.qqplot", "cov.ecdf","vpc","loq")
   ifnd<-pmatch(plot.type,pltyp)
   if(sum(is.na(ifnd))>0) {
-    cat("The following plot types were not found or are ambiguous:", plot.type[is.na(ifnd)],"\n")
+    if(verbose) cat("The following plot types were not found or are ambiguous:", plot.type[is.na(ifnd)],"\n")
   }
   ifnd<-ifnd[!is.na(ifnd)]
 
@@ -413,7 +420,7 @@ plot.NpdeObject <- function(x, y, ...) {
                 return( suppressWarnings(list.plot.loq ))
               }
             },
-            cat("Plot ",ipl," not implemented yet\n")
+           message(paste("Plot ",ipl," not implemented yet"))
     )
   }
 }

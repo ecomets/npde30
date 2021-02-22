@@ -15,6 +15,9 @@ npde.plot.loq(npdeObject,xaxis="x",nsim=200,...)
 
 \item{\dots}{additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}})}
 }
+\value{
+a ggplot object or a list of ggplot objects (grobs)
+}
 \description{
 Plots the probability that the observations are below the LOQ along with the model predicted interval
 }

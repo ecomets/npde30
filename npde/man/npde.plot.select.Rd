@@ -6,7 +6,8 @@
 \usage{
 npde.plot.select(npdeObject,data=FALSE,ecdf=FALSE,qqplot=FALSE, histogram=FALSE,
 x.scatter=FALSE,pred.scatter=FALSE,x.box=FALSE,pred.box=FALSE, cov.x.scatter=FALSE,
-cov.pred.scatter=FALSE,cov.x.box=FALSE,cov.pred.box=FALSE, cov.ecdf=FALSE, vpc=FALSE,...)
+cov.pred.scatter=FALSE,cov.x.box=FALSE,cov.pred.box=FALSE, cov.ecdf=FALSE, 
+cov.hist=FALSE, cov.qqplot=FALSE, vpc=FALSE,...)
 }
 \arguments{
 \item{npdeObject}{an object returned by a call to \code{\link{npde}} or \code{\link{autonpde}}}
@@ -37,9 +38,16 @@ cov.pred.scatter=FALSE,cov.x.box=FALSE,cov.pred.box=FALSE, cov.ecdf=FALSE, vpc=F
 
 \item{cov.ecdf}{boolean, whether to produce a distribution plot of the empirical distribution function, split by covariate(s)}
 
+\item{cov.hist}{boolean, whether to produce a distribution plot of the empirical distribution function, split by covariate(s)}
+
+\item{cov.qqplot}{boolean, whether to produce a distribution plot of the empirical distribution function, split by covariate(s)}
+
 \item{vpc}{boolean, whether to produce a VPC}
 
 \item{\dots}{additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}})}
+}
+\value{
+a ggplot object or a list of ggplot objects (grobs)
 }
 \description{
 Select plot for a NpdeObject object

@@ -99,23 +99,15 @@
 #' @keywords models
 #' @export
 #' @examples
-#' \dontrun{
 #' data(theopp)
 #' data(simtheopp)
 #'
 #' # Calling autonpde with dataframes
-#'
 #' x<-autonpde(theopp,simtheopp,1,3,4,boolsave=FALSE)
 #' x
-#'
-#' # Calling autonpde with names of files to be read from disk
-#'
-#' write.table(theopp,"theopp.tab",quote=FALSE,row.names=FALSE)
-#' write.table(simtheopp,"simtheopp.tab",quote=FALSE,row.names=FALSE)
-#' x<-autonpde(namobs="theopp.tab", namsim="simtheopp.tab", iid = 1,
-#' ix = 3, iy = 4, imdv=0, boolsave = FALSE)
-#'
 #' head(x["results"]["res"])
+#' \donttest{
+#' plot(x)
 #' }
 
 autonpde<-function(namobs,namsim,iid,ix,iy,imdv=0,icens=0,icov=0, iipred=0,boolsave=TRUE,namsav="output",type.graph="eps",verbose=FALSE, calc.npde=TRUE,calc.npd=TRUE,decorr.method="cholesky",cens.method="cdf", units=list(x="",y=""), detect=FALSE, ties=TRUE,header=TRUE) {
@@ -133,7 +125,7 @@ autonpde<-function(namobs,namsim,iid,ix,iy,imdv=0,icens=0,icov=0, iipred=0,bools
 
   if(cens.method!="omit" & !calc.npd) {
     calc.npd<-TRUE
-    cat("To compute npde with the",cens.method," method, pd need to be computed first, changing to calc.npd.\n")
+    if(verbose) message("To compute npde with the",cens.method," method, pd need to be computed first, changing to calc.npd.\n")
   }
 
   opt<-list(boolsave=boolsave,namsav=namsav,type.graph=type.graph, verbose=verbose,calc.npde=calc.npde, calc.npd=calc.npd,decorr.method=decorr.method, cens.method=cens.method, ties=ties)
@@ -169,7 +161,7 @@ npde<-function() {
   xinput<-pdemenu()
   
   xdat<-npdeData(name.data=xinput$namobs,header=TRUE,name.group=xinput$iid, name.predictor=xinput$ix,name.response=xinput$iy,name.miss=xinput$imdv, name.cens=xinput$icens,name.ipred=xinput$iipred,name.covariates=xinput$icov, detect=xinput$detect)
-  cat("Simulated data:",xinput$namsim,"\n")
+  if(xdat$verbose) message("Simulated data:",xinput$namsim,"\n")
   xsim<-npdeSimData(npde.data=xdat,name.simdata=xinput$namsim)
   
   opt<-list(boolsave=xinput$boolsave,namsav=xinput$namfile, type.graph=xinput$type.graph,verbose=xinput$verbose,calc.npde=xinput$calc.npde, calc.npd=xinput$calc.npd,decorr.method=xinput$decorr.method,cens.method=xinput$cens.method,ties=xinput$ties, header=xinput$header)
@@ -361,6 +353,7 @@ npde.main <- function(object) {
 #' @usage npde.save(object, ...)
 #' @param object a NpdeObject object
 #' @param \dots optional arguments to replace options in object
+#' @return No return value, called for side effects
 #' @details The following options can be changed by passing the appropriate arguments: namsav (string giving the root name of the files, an extension .npde will be added), nameres (string giving the full name of the file)
 #' @references K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.Mentre. Metrics for external model evaluation with an application to the population pharmacokinetics of gliclazide. \emph{Pharmaceutical Research}, 23:2036--49, 2006.
 #' @keywords IO files
@@ -403,6 +396,8 @@ npde.save <- function(object, ...) {
 #' @usage npde.graphs(object, ...)
 #' @param object a NpdeObject object
 #' @param \dots optional arguments to replace options in object
+#' 
+#' @return No return value, called for side effects
 #' @details The following options can be changed by passing the appropriate arguments: namsav (string giving the root name of the files, an extension depending on the type of graph will be added), namgr (string giving the full name of the file), type.graph (one of "eps", "pdf", "jpeg", "png")
 #' @references K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.Mentre. Metrics for external model evaluation with an application to the population pharmacokinetics of gliclazide. \emph{Pharmaceutical Research}, 23:2036--49, 2006.
 #' @keywords IO files
@@ -437,12 +432,12 @@ npde.graphs <- function(object,...) {
   }
   if(type.graph=="eps") postscript(namgr,onefile=TRUE,print.it=FALSE, horizontal=TRUE)
   if(type.graph=="jpeg") if(capabilities("jpeg")) jpeg(namgr) else {
-    cat("R was not compiled with jpeg capabilities, switching to PDF format.\n")
+    if(object@options$verbose) cat("R was not compiled with jpeg capabilities, switching to PDF format.\n")
     type.graph<-"pdf"
     namgr<-paste(namsav,type.graph,sep=".")
   }
   if(type.graph=="png") if(capabilities("png")) png(namgr) else {
-    cat("R was not compiled with png capabilities, switching to PDF format.\n")
+    if(object@options$verbose) cat("R was not compiled with png capabilities, switching to PDF format.\n")
     type.graph<-"pdf"
     namgr<-paste(namsav,type.graph,sep=".")
   }

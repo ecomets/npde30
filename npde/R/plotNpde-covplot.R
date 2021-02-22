@@ -2,7 +2,7 @@
 #'
 #' Boxplot of the selected variable versus categories of covariates
 #'
-#' @usage npde.plot.covariate(npdeObject, which.y="npde", ...)
+#' @usage npde.plot.covariate(npdeObject, which.y="npd", ...)
 #'
 #' @aliases aux.npdeplot.boxcov
 #'
@@ -10,6 +10,7 @@
 #' @param which.y a string specifying the variable on the Y-axis (one of "yobs", "npde", "pd", "npd")
 #' @param \dots additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}} and \code{\link{npdeControl}})
 #'
+#' @return a ggplot object or a list of ggplot objects (grobs)
 #' @details For a categorical covariate, boxplots are produced for each category. Continous covariates are split into quantile (by default, first quartile (<Q1), interquartile range (Q1-Q3) and upper quartile (>Q3), but the number of categories can be set by using the ncat argument).
 #' @details For each category, the median according to simulations under the model is shown (it can be suppressed by using the argument bands=FALSE)..
 #'
@@ -20,7 +21,7 @@
 #' @export
 #'
 
-npde.plot.covariate<-function(npdeObject, which.y="npde", ...){ #} xscale=FALSE, onlog=FALSE, ref.prof=NULL, ...) {
+npde.plot.covariate<-function(npdeObject, which.y="npd", ...){ #} xscale=FALSE, onlog=FALSE, ref.prof=NULL, ...) {
   # npdeObject: object returned from a npde run
   # which.y: variable on the Y-axis, one of "npde", "npd", "pd", "yobs" (VPC)  + (? "pde", "cov" ?)
 
@@ -33,27 +34,27 @@ npde.plot.covariate<-function(npdeObject, which.y="npde", ...){ #} xscale=FALSE,
   # Check inputs
   
   if(match(which.y,c("npde","tnpde","pd","npd","yobs"),nomatch=0)==0) {
-    cat("Option which.y=",which.y,"not recognised\n")
-    return()
+    if(npdeObject@options$verbose) message(paste("Option which.y=",which.y,"not recognised"))
+    return("Option which not recognised")
   }
   if(which.y=="npde") {
-    if(is.na(match("npde",colnames(npdeObject@results@res)))) return()
+    if(is.na(match("npde",colnames(npdeObject@results@res)))) return("npde not computed")
   }
   if(which.y=="npd") {
     if(is.na(match("npd",colnames(npdeObject@results@res)))) {
       if(!is.na(match("pd",colnames(npdeObject@results@res)))) npdeObject@results@res$npd<-qnorm(npdeObject@results@res$pd)
-    } else return()
+    } else return("pd not computed")
   }
   if(which.y=="pd") {
-    if(is.na(match("pd",colnames(npdeObject@results@res)))) return()
+    if(is.na(match("pd",colnames(npdeObject@results@res)))) return("pd not computed")
   }
   if(length(plot.opt$which.cov)==1) {
     if(plot.opt$which.cov=="all" | plot.opt$which.cov=="") plot.opt$which.cov<-npdeObject["data"]["name.covariates"]
   }
   idx.cov = match(plot.opt$which.cov,npdeObject["data"]["name.covariates"])
   if (length(idx.cov)==0) {
-    cat("Error: plot over covariates required but no matching covariate found in dataset")
-    return()
+    if(npdeObject@options$verbose) message("Error: plot over covariates required but no matching covariate found in dataset")
+    return("No matching covariate")
   }
   
   # -----------------------------------------------------------------------------------

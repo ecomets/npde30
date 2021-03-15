@@ -41,7 +41,7 @@ saveDocPlots<-TRUE
   
 ```{r devModeInstall}
 dev_mode() # development mode
-install.packages(pkgs=file.path(workDir,"npde_3.0.tar.gz"),repos=NULL)
+install.packages(pkgs=file.path(workDir,"npde_3.1.tar.gz"),repos=NULL)
 library(npde)
 ```
 
@@ -327,6 +327,18 @@ covariates=c("yr","-","cm","kg","m2","kg","yr")))
 
 }
 ```
+
+## Saving
+
+(not sure where this goes in dev_mode...)
+
+**TODO** test different output formats using ggsave + an example with cairo_ps() loading library Cairo
+
+namfile<-"output.eps"
+cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 600, height=8.27, width=11.69)
+plot(x)
+dev.off()
+
 
 ## End of file, deactivating development mode
 

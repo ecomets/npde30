@@ -44,6 +44,8 @@ knitr::opts_chunk$set(root.dir = workDir)
   - 'solved' problem by adding a dependency on rlang
     - partially fixed with rlang
     - workaround by defining global variables so check won't complain about them, but we need to use the .data systematically in ggplot aes() => **Romain TODO**
+- **March 2021**
+  - mail Fu (15/03): added again the option to save the output in autonpde (probably removed by Romain :-/ )
 
 ```{r compilation}
 # Reduce size of viral load simulation data (to 500 simulations) for CRAN
@@ -63,7 +65,7 @@ devtools::document()
 roxygenise()
 setwd(workDir)
 system("R CMD build npde")
-system("R CMD check --as-cran --run-donttest npde_3.0.tar.gz")
+system("R CMD check --as-cran --run-donttest npde_3.1.tar.gz")
 ```
 
 Apres correction, la compilation du package passe sans erreurs et avec 2 notes restantes.
@@ -124,7 +126,7 @@ W  checking for missing documentation entries (346ms)
   
 ```{r devModeInstall}
 dev_mode() # development mode
-install.packages(pkgs=file.path(workDir,"npde_3.0.tar.gz"),repos=NULL)
+install.packages(pkgs=file.path(workDir,"npde_3.1.tar.gz"),repos=NULL)
 library(npde)
 library(ggplot2)
 library(gridExtra)

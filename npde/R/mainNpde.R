@@ -135,21 +135,13 @@ autonpde<-function(namobs,namsim,iid,ix,iy,imdv=0,icens=0,icov=0, iipred=0,bools
   npde.obj["prefs"]<-set.plotoptions(npde.obj)
 
   xret<-npde.main(npde.obj)
-
 # ----------------------------------------------------------------------
-# TRANSFORMED NPD/NPDE t-npd t-npde
-# remove this part car déjà dans transform
-# ----------------------------------------------------------------------
-
-  npde <- xret["results"]["res"]$npde
-  mean_ysim = mean(xsim@datsim$ysim)
-  sd_ysim = sd(xsim@datsim$ysim)
-  tnpde = mean_ysim + sd_ysim*npde
-  xret["results"]["res"]$tnpde <- tnpde
-  xret["results"]["res"]$npde <- npde
-
-# ----------------------------------------------------------------------
-
+  # Saving results
+  if(npde.obj["options"]$boolsave) {
+    npde.save(xret)
+    npde.graphs(xret)
+  }
+  
   invisible(xret)
 
 }
@@ -380,9 +372,9 @@ npde.save <- function(object, ...) {
     if(object@options$verbose) cat("Saving results in file",namres,"\n")
   }
   namcol<-c(object@data@name.group,object@data@name.predictor, object@data@name.response,object@data@name.cens,object@data@name.miss, object@data@name.covariates,object@data@name.ipred)
-  saveres<-object["data"]["data"][,namcol]
+  saveres<-object["data"]["data"][,intersect(namcol, colnames(object@data@data))]
   namcol2<-c("ypred","pd","npde", "npd")
-  saveres<-cbind(saveres,object["results"]["res"][,namcol2])
+  saveres<-cbind(saveres,object["results"]["res"][,intersect(namcol2,colnames(object@results@res))])
   write.table(saveres,namres,row.names=FALSE,quote=FALSE)
 }
 
@@ -430,20 +422,22 @@ npde.graphs <- function(object,...) {
   } else {
     if(object@options$verbose) cat("Saving graphs in file",namgr,"\n")
   }
-  if(type.graph=="eps") postscript(namgr,onefile=TRUE,print.it=FALSE, horizontal=TRUE)
-  if(type.graph=="jpeg") if(capabilities("jpeg")) jpeg(namgr) else {
-    if(object@options$verbose) cat("R was not compiled with jpeg capabilities, switching to PDF format.\n")
-    type.graph<-"pdf"
-    namgr<-paste(namsav,type.graph,sep=".")
+  if(type.graph=="jpeg") {
+    if(!capabilities("jpeg")) {
+      if(object@options$verbose) cat("R was not compiled with jpeg capabilities, switching to PDF format.\n")
+      type.graph<-"pdf"
+      namgr<-paste(namsav,type.graph,sep=".")
+  }}
+  if(type.graph=="png") {
+    if(!capabilities("png")) {
+      if(object@options$verbose) cat("R was not compiled with png capabilities, switching to PDF format.\n")
+      type.graph<-"pdf"
+      namgr<-paste(namsav,type.graph,sep=".")
+  }}
+  if(type.graph=="eps") {
+      if(object@options$verbose) cat("Transparency options not working with ggsave, please use cairo to save the plot in eps format or choose another output format (pdf, png, jpeg).\n")
   }
-  if(type.graph=="png") if(capabilities("png")) png(namgr) else {
-    if(object@options$verbose) cat("R was not compiled with png capabilities, switching to PDF format.\n")
-    type.graph<-"pdf"
-    namgr<-paste(namsav,type.graph,sep=".")
-  }
-  if(type.graph=="pdf") pdf(namgr, onefile = TRUE)
-  plot(object,...)
-  dev.off()
+  if(type.graph %in% c("eps","jpeg","pdf","png")) ggsave(plot=plot(object, ...), filename=namgr, width=29.7, height=21, units="cm")
 }
 
 ####################################################################################

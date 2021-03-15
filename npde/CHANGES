@@ -1,3 +1,11 @@
+Version 3.1 - March 2021
+
+ o Bugfixes
+   * added the lines to save the output in the main function, which had been removed from the code
+
+o Note: to avoid adding a dependency on Cairo the plots are saved using ggsave() from ggplot2
+   * this means the postscript output lacks all the prediction intervals as transparency is not supported (warning messages) => to output to eps, use cairo_ps with the Cairo library to save the required plots
+   
 Version 3.0 - January 2021
 
  o Bugfixes

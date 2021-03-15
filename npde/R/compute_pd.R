@@ -105,6 +105,7 @@ computepd.omit<-function(npdeObject) {
     npdeObject["results"]["res"]$ypred<-ypredfull
     npdeObject["results"]["res"]$ycomp<-ycomp
     npdeObject["results"]["res"]$pd<-pdfull
+    npdeObject["results"]["res"]$npd<-qnorm(pdfull)
   }
   
   return(npdeObject)
@@ -172,6 +173,7 @@ computepd.replace<-function(npdeObject,fix=NULL) {
     npdeObject["results"]["res"]$ypred<-ypredfull
     npdeObject["results"]["res"]$ycomp<-ycomp
     npdeObject["results"]["res"]$pd<-pdfull
+    npdeObject["results"]["res"]$npd<-qnorm(pdfull)
   }
   return(npdeObject)
 }
@@ -285,6 +287,7 @@ computepd.cdf<-function(npdeObject) {
     npdeObject["results"]["res"]$ypred<-ypredfull
     npdeObject["results"]["res"]$ycomp<-ycomp
     npdeObject["results"]["res"]$pd<-pdfull
+    npdeObject["results"]["res"]$npd<-qnorm(pdfull)
   }
   return(npdeObject)
 }

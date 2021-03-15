@@ -47,7 +47,7 @@ savePaperPlots<-FALSE
   
 ```{r devModeInstall}
 dev_mode() # development mode
-install.packages(pkgs=file.path(workDir,"npde_3.0.tar.gz"),repos=NULL)
+install.packages(pkgs=file.path(workDir,"npde_3.1.tar.gz"),repos=NULL)
 library(npde)
 
 if(FALSE) {

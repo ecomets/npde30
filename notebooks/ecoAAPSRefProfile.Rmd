@@ -1,0 +1,173 @@
+---
+title: "Reference profile for an extreme case (review R2 AAPS J)"
+author: "Emmanuelle Comets"
+date: "26/03/2021"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+## Objective
+
+## Reference profiles
+
+${\rm tnpde}_{ij}$ are defined as
+${\rm tnpde}_{ij} = E(ysim^{ref}_{bin(t_{ij})}) + SD(ysim^{ref}_{bin(t_{ij})}) {\rm npde}_{ij}$
+where $bin(t_{ij})$ denotes the bin in which lies the time $t_{ij}$ corresponding to ${\rm npde}_{ij}$, and $E(ysim^{ref}_{bin(t_{ij})})$ and $SD(ysim^{ref}_{bin(t_{ij})})$ are respectively the mean and standard deviation of the simulated data in the bin that belong to individuals in the reference group. Therefore, if under the model we expect:
+${\rm npde}_{ij} \sim \mathcal{N}(0,1)$
+then it follows that
+${\rm tnpde}_{ij} \sim \mathcal{N}(E(ysim^{ref}_{bin(t_{ij})}),SD(ysim^{ref}_{bin(t_{ij})}))$
+
+
+## Setup, loading libraries
+
+```{r setup, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+workDir<-"/home/eco/work/npde/npde30"
+notesDir<-file.path(workDir,"notebooks")
+testsDir<-file.path(workDir,"npde","tests","testthat")
+provDir<-file.path(workDir,"kompareCode") # Code change, temporary folder and files (Eco)
+setwd(workDir)
+createDat<-FALSE
+useLib<-FALSE
+
+
+if(useLib) library(npde) else {
+  library(ggplot2)
+  library(gridExtra)
+  library(grid)
+  library(mclust)
+  library(testthat)
+# Classes from the package
+  source(file.path(workDir,"npde","R","aaa_generics.R"))
+  source(file.path(workDir,"npde","R","npdeControl.R"))
+  source(file.path(workDir,"npde","R","NpdeData.R"))
+  source(file.path(workDir,"npde","R","NpdeSimData.R"))
+  source(file.path(workDir,"npde","R","NpdeData-methods.R"))
+  source(file.path(workDir,"npde","R","NpdeRes.R"))
+  source(file.path(workDir,"npde","R","NpdeRes-methods.R"))
+  source(file.path(workDir,"npde","R","NpdeObject.R"))
+  source(file.path(workDir,"npde","R","NpdeObject-methods.R"))
+  
+  # Computational functions from the package
+  source(file.path(workDir,"npde","R","compute_distribution.R"))
+  source(file.path(workDir,"npde","R","compute_npde.R"))
+  source(file.path(workDir,"npde","R","compute_pd.R"))
+  source(file.path(workDir,"npde","R","compute_ploq.R"))
+  source(file.path(workDir,"npde","R","mainNpde.R"))
+  source(file.path(workDir,"npde","R","npde.R"))
+  
+  # Plot functions from the package - kept, some changes
+  source(file.path(workDir,"npde","R","plotNpde-methods.R"))
+  source(file.path(workDir,"npde","R","plotNpde-plotFunctions.R"))
+  source(file.path(workDir,"npde","R","plotNpde-auxScatter.R")) 
+  source(file.path(workDir,"npde","R","plotNpde-auxScatterPlot.R")) 
+  source(file.path(workDir,"npde","R","plotNpde-auxDistPlot.R")) # renamed from plotNpde-unitFunctionsAux.R
+  source(file.path(workDir,"npde","R","plotNpde-distributionPlot.R")) # extracted "main" for distribution plots from plotNpde-plotFunctions.R
+  source(file.path(workDir,"npde","R","plotNpde-scatterplot.R")) # extracted "main" for scatter plots f
+  source(file.path(workDir,"npde","R","plotNpde-binningPI.R")) # renamed from plotNpde-unitFunctionsPI.R
+  source(file.path(workDir,"npde","R","plotNpde-covplot.R")) # covariate plots as boxplots
+}
+```
+
+
+### Creating datafile
+
+- one-compartment PK model:
+  - parameters: ka~LN(2,0.2), V~LN(V_0,0.2), CL~LN(CL_0=1, 0.2) (30% IIV)
+  - covariate effects: V_0(sex=0)=10, V_0(sex=1)=6
+- design:
+  - 120 subjects: 60 male, 60 female
+  - rich design (0.5, 1, then 2 to 24h every 2h)
+  - 3 dose groups (10, 100, 1000) with 20 subjects of each gender
+- save to or read from file (save once with createDat set to TRUE)
+
+```{r createDataset,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+nrep<-500 # nb of simulations
+sdiiv<-0.3
+nsuj<-120
+# Creating dataRef with different number of observations per subject
+if(createDat) {
+  onecpt<-function(t, dose, ka, V, CL)
+  dose/V*ka/(ka-CL/V)*(exp(-CL/V*t) - exp(-ka*t))
+  sexseq<-rep(c(0,1),60)
+  doseseq<-rep(c(10,100,1000),each=40)
+  #xtim<-c(0.5,1,seq(2,24,2))
+  xtim<-c(0.5,1,2,6,12,24)
+  kai<-2*exp(rnorm(nsuj,sd=sdiiv))
+  etaV<-rnorm(nsuj,sd=sdiiv)
+  Vi<-(10*(1-sexseq)+6*sexseq)*exp(etaV)
+  etaCl<-rnorm(nsuj,sd=sdiiv)
+  Cli<- exp(etaCl)
+
+  dataRef<-NULL
+  for(i in 1:nsuj) {
+    dataRef<-rbind(dataRef,
+                   data.frame(id=i,time=xtim,y=onecpt(xtim,doseseq[i], kai[i], Vi[i], Cli[i]),sex=sexseq[i], dose=doseseq[i]))
+  }
+# ggplot(dataRef, aes(x=time, y=y, colour=as.factor(dose))) + geom_point()
+
+# Creating simulated data with the same structure as dataRef, from the same model
+matsim<-NULL
+for(irep in 1:nrep) {
+  kai<-2*exp(rnorm(nsuj,sd=sdiiv))
+  etaV<-rnorm(nsuj,sd=sdiiv)
+  Vi<-(10*(1-sexseq)+6*sexseq)*exp(etaV)
+  etaCl<-rnorm(nsuj,sd=sdiiv)
+  Cli<- exp(etaCl)
+  for(i in 1:nsuj) {
+    matsim<-rbind(matsim,
+                  data.frame(irep=irep,id=i,time=xtim,y=onecpt(xtim,doseseq[i], kai[i], Vi[i], Cli[i])))
+  }
+}
+# adding covariate
+matsim$sex<-rep(dataRef$sex,nrep)
+matsim$dose<-rep(dataRef$dose,nrep)
+npdesim<-dataRef[,c(1,2)]
+npdesim$npde<-rnorm(dim(npdesim)[1],0,1) # simulating from N(0,1) to create npde
+npdesim$pd<-pnorm(npdesim$npde)
+# plot(matsim$time,matsim$y)
+
+# Saving to disk
+  saveRDS(dataRef,file.path(notesDir,"obsdat_reviewAAPS.rds"))
+  saveRDS(matsim,file.path(notesDir,"simdat_reviewAAPS.rds"))
+  saveRDS(npdesim,file.path(notesDir,"npdesim_reviewAAPS.rds"))
+} else { # Read from disk
+  dataRef<-readRDS(file.path(notesDir,"obsdat_reviewAAPS.rds"))
+  matsim<-readRDS(file.path(notesDir,"simdat_reviewAAPS.rds"))
+  npdesim<-readRDS(file.path(notesDir,"npdesim_reviewAAPS.rds"))
+}
+
+head(dataRef)
+head(matsim)
+
+if(FALSE) {
+  ggplot(dataRef, aes(x=time, y=y, group=dose)) + geom_point() + facet_wrap(.~dose)
+  ggplot(dataRef, aes(x=time, y=y, group=dose)) + geom_point() + scale_y_continuous( "my-ylab", limits = NULL) + facet_wrap(.~dose, scales="free_y")
+  ggplot(dataRef, aes(x=time, y=y, group=dose)) + geom_point() + scale_y_continuous( "my-ylab", limits = NULL) + coord_cartesian(xlim=c(0,20), ylim=NULL) + facet_wrap(.~dose, scales="free_y")
+}
+```
+
+# Compute npde
+
+Use only a subset, too many points here
+
+```{r computenpde,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+
+#dataRef<-dataRef[dataRef$time %in% c(0.5,1,2,6,12,24),]
+#matsim<-matsim[matsim$time %in% c(0.5,1,2,6,12,24),]
+matsim2<-matsim[,-c(1)]
+
+y <- autonpde(dataRef,matsim2,iid=1, ix=2, iy=3, icov=c(4,5), boolsave=FALSE, units=list(x="h",y="mg/L",covariates=c("-","mg")))
+plot(y)
+
+x1<-plot(y, plot.type="vpc")
+x2<-plot(y, plot.type="x.scatter")
+x3<-plot(y, plot.type="x.scatter", ref.prof=list(id=1:120))
+x4<-plot(y, plot.type="x.scatter", ref.prof=list(dose=100))
+grid.arrange(grobs=list(x2,x3,x4), nrow=1, ncol=3)
+
+plot(y, plot.type="x.scatter", ref.prof="covariate", covsplit=TRUE, which.cov=c("dose"), scales='free_y')
+
+```
+

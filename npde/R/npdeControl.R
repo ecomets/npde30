@@ -201,6 +201,7 @@ set.plotoptions.default <- function(object) {
     # axis limits
     xlim = c(),
     ylim = c(),
+    scales = 'fixed', # used in facet_grid and facet_wrap, fixed=same X-scale and Y-scale on all plots in an array (ggplot default), free_x: ajust X-scale to each plot, free_y: ajust Y-scale to each plot, free= ajust both X and Y scales
     # log scales x-y axis
     xlog=FALSE,
     ylog=FALSE,

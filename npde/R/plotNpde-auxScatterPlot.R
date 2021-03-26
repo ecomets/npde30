@@ -86,14 +86,15 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
   if(is.null(namesCategories)) namesCategories<-c("all")
   numberCategories =  length(namesCategories)  # nombre de catégories pour la covariable
 
-  # set xlim & ylim - add a scale_free option
-
+  # set xlim & ylim - added a scale_free option
   if ("xlim" %in% names(plot.opt) & length(plot.opt$xlim)==2)
     x.limits = c(plot.opt$xlim[1],plot.opt$xlim[2])  else
       x.limits = c(min(obsmat$x,na.rm=TRUE),max(obsmat$x,na.rm=TRUE))
   if ("ylim" %in% names(plot.opt) & length(plot.opt$ylim)==2)
     y.limits = c(plot.opt$ylim[1],plot.opt$ylim[2])  else
       y.limits = c(min(pimat$pinf.lower),max(pimat$psup.upper))
+  if(plot.opt$scales %in% c("free_x", "free")) x.limits<-NULL
+  if(plot.opt$scales %in% c("free_y", "free")) y.limits<-NULL
 
   # intersection area between ICs and curves to fill intersection area
   n_interp = 500 # nb of point for interpolation
@@ -157,7 +158,7 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
               panel.grid.minor.x = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid),
               panel.grid.major.y = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid),
               panel.grid.minor.y = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid))+
-        expand_limits(y = 0) +
+        expand_limits(y = 0) +  # Eco=>Romain: not sure we want this !!! we need some kind of test (some responses may be very far from 0!!!)
         guides( fill = FALSE ) +
         
         # Model predicted and observed percentiles
@@ -212,14 +213,12 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
         scale_fill_manual( values = rep( plot.opt$col.pobs,
                                          length(unique(obsmat$grp)) ) ) +
 
-        scale_y_continuous( plot.opt$ylab, limits = y.limits,
-                            scales::pretty_breaks(n = plot.opt$breaks.y) ) +
+        scale_y_continuous( plot.opt$ylab, limits = y.limits, scales::pretty_breaks(n = plot.opt$breaks.y) ) +
 
-        scale_x_continuous( plot.opt$xlab, limits = x.limits,
-                            scales::pretty_breaks(n = plot.opt$breaks.y ) ) +
+        scale_x_continuous( plot.opt$xlab, limits = x.limits,scales::pretty_breaks(n = plot.opt$breaks.y ) ) +
 
         # facet wrap over covariate categories
-        facet_wrap(.~factor(category), nrow=1) +
+        facet_wrap(.~factor(category), nrow=1, scales = plot.opt$scales) +
 
         {if(numberCategories==1)
           theme(strip.background = element_blank(), strip.text.x = element_blank())
@@ -249,7 +248,7 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
 
         # coordinates x-y
         coord_cartesian(xlim=x.limits, ylim=y.limits) +
-        expand_limits(x = 0,y=0) +
+        expand_limits(x = 0, y=0) + # Eco=>Romain: not sure we want this !!! we need some kind of test
 
         # bands
         { if ( plot.opt$bands == TRUE )
@@ -329,9 +328,9 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
                       color = plot.opt$col.pcens, shape =  plot.opt$pch.pcens, size = plot.opt$size.pcens ) } +
 
         # x-y log-scales
-        { if (plot.opt$xlog == FALSE)  scale_x_continuous(plot.opt$xlab,scales::pretty_breaks(n = plot.opt$breaks.x))
+        { if (plot.opt$xlog == FALSE)  scale_x_continuous(plot.opt$xlab, scales::pretty_breaks(n = plot.opt$breaks.x))
         } +
-        { if (plot.opt$ylog == FALSE)  scale_y_continuous(plot.opt$ylab,scales::pretty_breaks(n = plot.opt$breaks.y))
+        { if (plot.opt$ylog == FALSE)  scale_y_continuous(plot.opt$ylab, scales::pretty_breaks(n = plot.opt$breaks.y))
         } +
         { if (plot.opt$xlog == TRUE)
           scale_x_log10(plot.opt$xlab,breaks = scales::trans_breaks("log10", function(x) 10 ^ x),
@@ -348,7 +347,7 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
         {if (plot.opt$main!="") ggtitle(plot.opt$main)} +
 
         # facet wrap over covariate categories
-        facet_wrap(.~factor(category), nrow=1) +
+        facet_wrap(.~factor(category), nrow=1, scales=plot.opt$scales) +
 
         {if(numberCategories==1)
           theme(strip.background = element_blank(), strip.text.x = element_blank())

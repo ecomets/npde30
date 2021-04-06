@@ -11,7 +11,7 @@
 #' @param npdeObject an object returned by a call to \code{\link{npde}} or \code{\link{autonpde}}
 #' @param which.x a string specifying the variable on the X-axis (one of "x", "pred", "cov")
 #' @param which.y a string specifying the variable on the Y-axis (one of "yobs", "npde", "pd", "npd"), defaults to "npd"
-#' @param ref.prof either the character string "covariate" or a named list
+#' @param ref.prof either a character string (one of "covariate" or "all"), or a named list specifying the characteristics of the reference profile (see details)
 #' @param \dots additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}} and \code{\link{npdeControl}})
 #'
 #' @return a ggplot object or a list of ggplot objects (grobs)
@@ -20,6 +20,7 @@
 #' @details Scatterplots of npde/pd/npd can be obtained versus "x" (independent variable) or "pred" (population predictions from the model)
 #' @details Scatterplots of npde/pd/npd/observations can be obtained versus covariates by setting the which.x argument to "cov" and selecting the appropriate which.y. The function will use the covariates in the which.cov element of the prefs slot. This can be overriden to cycle over all the covariates in the dataset by supplying the argument which.cov="all" in the call to the function.
 #' @details Reference profile: a reference profile can be added to scatterplots of npd and npde versus the independent variable (see Comets et al. 2013)
+#' @details If ref.prof="all" (and covsplit is FALSE), the reference plot will be computed over all subjects using the mean and SD of all simulated data in each bin (see documentation).
 #' @details If ref.prof="covariate" and an additional argument covsplit is given (covsplit=TRUE), the reference plot will be adjusted for each covariate category over all the covariates in the which.cov element of the prefs slot (see  \code{\link{npdeControl}} for details on the prefs slot of the npdeObject).
 #' @details If ref.prof is given as a named list (eg list(ID=c(1,5)) or list(sex=0, dose=c(50,100)), where names should refer to columns in the data file (eg ID should be a column in the data)), the reference profile will be obtained by combining (in the first example above, the reference profile will be obtained using the simulated data for subjects 1 and 5, while in the second example it will be computed using the subjects with sex=0 given doses 50 or 100).
 #'
@@ -47,6 +48,7 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npd", ref.prof
     # which.y: variable on the Y-axis, one of "npde", "npd", "pd", "yobs" (VPC)  + (? "pde", "cov" ?)
     # ref.prof: reference profile (if present, will plot only tnpde or tnpd, no VPC or cov plots)
     ## if ref.prof="covariate" and covsplit is TRUE, the reference plot will be adjusted for each covariate category
+    ## if ref.prof="all" and covsplit is FALSE, the reference plot is taken to be the entire subject population
     ## otherwise, ref.prof must be a named list, eg list(ID=c(1,5)) to select subjects with ID=1 and 5 as reference; names should refer to columns in the data file (eg ID should be a column in the data)
     ## Note: maybe try to pass ref.prof as an expression ???
 
@@ -178,7 +180,7 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npd", ref.prof
   refprof.by.cov<-FALSE # create indicator variable
   hasRefprof<-!(is.null(ref.prof))
   if(hasRefprof) {
-    hasRefprof<-TRUE
+#    hasRefprof<-TRUE
    if(hasCovariates) {
      if(tolower(ref.prof) %in% c("covariate","cov","covariates")) { # keep all simulations, add all covariates to msim
        refprof.by.cov<-TRUE
@@ -188,8 +190,12 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npd", ref.prof
        if(!is.null(not.miss2)) msim<-msim[rep(not.miss2, nrep)]
        msim<-data.frame(ysim=msim, grp=rep(obsmat$grp, nrep))
      } else {
+       if(tolower(ref.prof) %in% c("all")) {
+         ref.prof<-list(id=unique(npdeObject@data@data[,npdeObject@data@name.group]))
+         names(ref.prof)[[1]]<-npdeObject@data@name.group
+       }
        if(!is.list(ref.prof)) {
-         if(verbose) message("The reference profile must be entered as a named list, eg list(ID=c(1,5)) to select subjects with ID=1 and 5 as reference; names should refer to columns in the data file.\n")
+         if(verbose) message("The reference profile must be entered either as a string (valid options are: 'covariates' to adapt the reference profile to each covariate group, or 'all' to use all subjects to define the reference profile) or as a named list, eg list(ID=c(1,5)) to select subjects with ID=1 and 5 as reference; names should refer to columns in the data file.\n")
          ref.prof<-NULL
          hasRefprof<-FALSE
        } else { # one reference profile for all the plots

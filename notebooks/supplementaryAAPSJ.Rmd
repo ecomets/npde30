@@ -70,12 +70,16 @@ data(simwarfarinCov)
 wcov<-autonpde(namobs=warfarin,namsim=simwarfarinCov, iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfCov", units=list(x="hr",y="mg/L", covariates=c("mg","kg","-","yr")))
 ```
 
-Reference plot for subject 2
+Reference plot using all subjects (commented out: reference plot for subject 2)
 
 ```{r warfarinRefPlot, echo=FALSE}
-plot.tnpde<-plot(wcov, plot.type="x.scatter", ref.prof=list(id=2), main="tnpd with reference profile ID=2")
-plot.vpc<-plot(wcov, plot.type="vpc", main="VPC")
+plot.tnpde<-plot(wcov, plot.type="x.scatter", ref.prof="all", main="tnpd", ylim=c(0,20))
+plot.vpc<-plot(wcov, plot.type="vpc", main="VPC", ylim=c(0,20))
 grid.arrange(grobs=list(plot.tnpde, plot.vpc), nrow=1, ncol=2)
+
+# Reference plot for subject 2 instead
+# plot.tnpde<-plot(wcov, plot.type="x.scatter", ref.prof=list(id=2), main="tnpd with reference profile ID=2")
+
 
 if(FALSE) {
   namfile<-file.path(figsDir,paste("referenceProfile.","eps",sep=""))

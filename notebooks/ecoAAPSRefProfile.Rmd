@@ -169,5 +169,7 @@ grid.arrange(grobs=list(x2,x3,x4), nrow=1, ncol=3)
 
 plot(y, plot.type="x.scatter", ref.prof="covariate", covsplit=TRUE, which.cov=c("dose"), scales='free_y')
 
+x5<-plot(y, plot.type="x.scatter", ref.prof="all")
+
 ```
 

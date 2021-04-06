@@ -32,7 +32,8 @@ library(ggplot2)
 library(gridExtra)
 library(grid)
 library(testthat)
-workDir<-"D:/RECHERCHES/_NPDE/Npde-2021/npde30-main"
+#workDir<-"D:/RECHERCHES/_NPDE/Npde-2021/npde30-main"
+workDir<-"/home/eco/work/npde/npde30"
 notesDir<-file.path(workDir,"notebooks")
 testsDir<-file.path(workDir,"npde","tests","testthat")
 provDir<-file.path(workDir,"kompareCode") # Code change, temporary folder and files (Eco)

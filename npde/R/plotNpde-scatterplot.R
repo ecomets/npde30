@@ -289,6 +289,7 @@ npde.plot.scatterplot<-function(npdeObject, which.x="x", which.y="npd", ref.prof
         }
         pimat<-aux.npdeplot.pimat(obsmat2, xcent=xcent2 , quantiles=c(alpha, 0.5, 1-alpha), pi.size=plot.opt$pi.size, distrib=distrib, approx.pi=plot.opt$approx.pi, sim.ypl=sim.ypl)
         p1<-aux.npdeplot.scatter(obsmat2, pimat, plot.opt2)
+        list_plot[[iplot]]<-p1
       } else { # plot split by covariates
         if(is.numeric(ucov) & length(unique(ucov))>plot.opt$ncat){ # Continuous covariate with more than plot.opt$ncat (default 3)
           if(plot.opt$ncat!=3) { # 3 categories or less

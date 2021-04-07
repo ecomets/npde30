@@ -59,7 +59,7 @@ if(FALSE) {
 
 setwd(file.path(workDir,"npde"))
 system("rm man/*")
-cmd<-paste("cp ", file.path(workDir,"latexDoc","userguide_3_0.pdf")," ", file.path(workDir,"userguide_npde_3.0.pdf"),sep="")
+cmd<-paste("cp ", file.path(workDir,"latexDoc","userguide_3_1.pdf")," ", file.path(workDir,"userguide_npde_3.1.pdf"),sep="")
 system(cmd)
 devtools::document()
 roxygenise()

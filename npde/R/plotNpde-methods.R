@@ -195,7 +195,7 @@ plot.NpdeObject <- function(x, y, ...) {
   if(length(typmet)==0) typmet<-"npd" # defaults to npd
 
   if(verbose) cat("Selected plot type:",plot.type,"\n")
-  pltyp<-c("data","default", "ecdf","qqplot","histogram","x.scatter","pred.scatter", "covariates","cov.x.scatter","cov.pred.scatter","cov.hist","cov.qqplot", "cov.ecdf","vpc","loq")
+  pltyp<-c("data","default", "ecdf","qqplot","histogram","x.scatter","pred.scatter", "covariates","cov.x.scatter","cov.pred.scatter","cov.hist","cov.qqplot", "cov.ecdf","vpc","loq", "cov.scatter")
   ifnd<-pmatch(plot.type,pltyp)
   if(sum(is.na(ifnd))>0) {
     if(verbose) cat("The following plot types were not found or are ambiguous:", plot.type[is.na(ifnd)],"\n")
@@ -342,9 +342,24 @@ plot.NpdeObject <- function(x, y, ...) {
               return( suppressWarnings( plot.vpc))
             },
 
+            "cov.scatter"={ # scatterplots of variable versus covariates
+              if(verbose) cat("Plotting scatterplot versus covariate(s)\n")
+              list.args$covsplit<-TRUE
+              list.args$which.x <-"cov"
+              # we could probably just iteratively call the same function (but maybe pbs with ggplot objects...)
+              list.plot.cov = list()
+              for(imet in typmet) {
+                list.args$which.y <- imet
+                list.plot.cov[[imet]]<-do.call(npde.plot.scatterplot, list.args)
+              }
+              if(length(typmet)==1) list.plot.cov<-list.plot.cov[[1]]
+              return( suppressWarnings(list.plot.cov ))
+            },
+
+
             "cov.x.scatter"={ # alias for plot.type="x.scatter", covsplit=TRUE
               if(verbose) cat("Plotting scatterplot versus X, split by covariate(s)\n")
-              list.args$covplit<-TRUE
+              list.args$covsplit<-TRUE
               list.args$which.x <-"x"
               # we could probably just iteratively call the same function (but maybe pbs with ggplot objects...)
               list.plot.cov = list()

@@ -5,9 +5,9 @@
 \title{Select plot for a NpdeObject object}
 \usage{
 npde.plot.select(npdeObject,data=FALSE,ecdf=FALSE,qqplot=FALSE, histogram=FALSE,
-x.scatter=FALSE,pred.scatter=FALSE,x.box=FALSE,pred.box=FALSE, cov.x.scatter=FALSE,
-cov.pred.scatter=FALSE,cov.x.box=FALSE,cov.pred.box=FALSE, cov.ecdf=FALSE, 
-cov.hist=FALSE, cov.qqplot=FALSE, vpc=FALSE,...)
+x.scatter=FALSE,pred.scatter=FALSE,x.box=FALSE,pred.box=FALSE, cov.scatter=FALSE, 
+cov.x.scatter=FALSE, cov.pred.scatter=FALSE,cov.x.box=FALSE,cov.pred.box=FALSE, 
+cov.ecdf=FALSE, cov.hist=FALSE, cov.qqplot=FALSE, vpc=FALSE,...)
 }
 \arguments{
 \item{npdeObject}{an object returned by a call to \code{\link{npde}} or \code{\link{autonpde}}}
@@ -27,6 +27,8 @@ cov.hist=FALSE, cov.qqplot=FALSE, vpc=FALSE,...)
 \item{x.box}{boolean, whether to produce whisker plots of the metric as a function of X}
 
 \item{pred.box}{boolean, whether to produce whisker plots of the metric as a function of predictions}
+
+\item{cov.scatter}{boolean, whether to produce a scatterplot of the metric as a function of covariate(s)}
 
 \item{cov.x.scatter}{boolean, whether to produce a scatterplot of the metric as a function of X, split by covariate(s)}
 

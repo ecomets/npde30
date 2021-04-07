@@ -162,6 +162,20 @@ test_file(file.path(testsDir,"test-modifyOptions.R"))
 
 ```
 
+#### covariate plots
+
+```{r covariate, echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+npde.plot.scatterplot(wcov, which.x="cov", which.y="npd", which.cov="wt")
+
+npdeObject<-wcov
+plot.opt<-wcov@prefs
+which.x<-"cov"
+which.y<-"npd"
+plot.opt$which.cov<-"wt"
+ref.prof<-NULL
+
+```
+
 #### distribution plots
 
 ```{r debugSetup, echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}

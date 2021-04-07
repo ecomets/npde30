@@ -164,7 +164,8 @@ set.plotoptions.default <- function(object) {
     covsplit=FALSE, # covsplit if covariate
     which.cov="all",			# which covariates to plot
     ncat=3,				# number of categories to bin continuous covariates (generates 3 categories, <Q1, Q1-Q3, >Q3)
-    
+    cov.scatter=TRUE,   # if TRUE, for numerical covariates cov.scatter plots produce plots of the variable which.y (npd, npde) versus the covariate; if FALSE, the numerical covariates are regrouped in ncat categories (if ncat=3, the categories are <Q1, Q1-Q3, >Q3, if ncat is different from 3 the values are split into as many bins of equal size)
+     
     # parameters for boxplots
     plot.box = FALSE,   # if TRUE, a boxplot is used to plot the observations instead of a scatterplot
     boxwidth=0.5,				# factor to scale width in boxplots (width parameter in geom_boxplot)

@@ -21,7 +21,7 @@ npde.plot.scatterplot(npdeObject, which.x="x", which.y="npd", ref.prof=NULL, ...
 
 \item{which.y}{a string specifying the variable on the Y-axis (one of "yobs", "npde", "pd", "npd"), defaults to "npd"}
 
-\item{ref.prof}{either the character string "covariate" or a named list}
+\item{ref.prof}{either a character string (one of "covariate" or "all"), or a named list specifying the characteristics of the reference profile (see details)}
 
 \item{\dots}{additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}} and \code{\link{npdeControl}})}
 }
@@ -39,6 +39,8 @@ Scatterplots of npde/pd/npd can be obtained versus "x" (independent variable) or
 Scatterplots of npde/pd/npd/observations can be obtained versus covariates by setting the which.x argument to "cov" and selecting the appropriate which.y. The function will use the covariates in the which.cov element of the prefs slot. This can be overriden to cycle over all the covariates in the dataset by supplying the argument which.cov="all" in the call to the function.
 
 Reference profile: a reference profile can be added to scatterplots of npd and npde versus the independent variable (see Comets et al. 2013)
+
+If ref.prof="all" (and covsplit is FALSE), the reference plot will be computed over all subjects using the mean and SD of all simulated data in each bin (see documentation).
 
 If ref.prof="covariate" and an additional argument covsplit is given (covsplit=TRUE), the reference plot will be adjusted for each covariate category over all the covariates in the which.cov element of the prefs slot (see  \code{\link{npdeControl}} for details on the prefs slot of the npdeObject).
 

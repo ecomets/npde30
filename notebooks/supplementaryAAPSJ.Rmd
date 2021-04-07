@@ -1,7 +1,7 @@
 ---
 title: "Supplementary material AAPS J"
 author: "Emmanuelle Comets"
-date: "19/02/2021"
+date: "07/04/2021"
 output:
   pdf_document: default
   html_document: default
@@ -22,11 +22,11 @@ library(mclust)
 
 ### Install package in development mode
 
-This is a snapshot of the version of npde released at the time of the revision of the paper submitted to AAPS Journal. We use development mode to avoid messing up any existing installation of npde.
+This is a snapshot of the version of npde released at the time of the revision of the paper submitted to AAPS Journal (version 3.1, April 2021). We use development mode to avoid messing up any existing installation of npde.
 
 ```{r devModeInstall}
 dev_mode() # development mode
-install.packages(pkgs="/home/eco/work/npde/npde30/npde_3.0.tar.gz",repos=NULL)
+install.packages(pkgs="/home/eco/work/npde/npde30/npde_3.1.tar.gz",repos=NULL)
 library(npde)
 ```
 
@@ -44,7 +44,7 @@ par(mfrow=c(1,2))
 plot(Log_VL~Time,data=virload,xlab="Time (d)",ylab="Viral loads, base 10 log-scale (cp/mL)")
 
 # Calling autonpde with dataframes
-yvir<-autonpde(virload,simvirload,iid=1,ix=2,iy=3,boolsave=FALSE, units=list("hr","cp/mL, log 10 base"))
+yvir<-autonpde(virload,simvirload,iid=1,ix=2,iy=3,boolsave=FALSE, units=list(x="h",y="cp/mL, log 10 base"))
 
 plot(yvir)
 
@@ -67,7 +67,7 @@ Running the example:
 # Warfarin with covariate model
 data(warfarin)
 data(simwarfarinCov)
-wcov<-autonpde(namobs=warfarin,namsim=simwarfarinCov, iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfCov", units=list(x="hr",y="mg/L", covariates=c("mg","kg","-","yr")))
+wcov<-autonpde(namobs=warfarin,namsim=simwarfarinCov, iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfCov", units=list(x="h",y="mg/L", covariates=c("mg","kg","-","yr")))
 ```
 
 Reference plot using all subjects (commented out: reference plot for subject 2)
@@ -91,24 +91,35 @@ if(FALSE) {
 
 The code below shows several diagnostic plots for covariates:
 
+- plots of npd versus covariates
+  - we can also plot the distribution of eg npd versus the categories as boxplots
 - plots like scatterplots or distribution plots can be split over categories of covariates
-- we can also plot the distribution of eg npd versus the categories as boxplots
+  - we show this for weight (wt) and for sex
 
 ```{r warfarinCovPlot, echo=FALSE}
-xwt.scatt<-plot(wcov, plot.type="x.scatter", covsplit=TRUE, which.cov="wt")
-xwt.qqplot<-plot(wcov, plot.type="qqplot", covsplit=TRUE, which.cov="wt")
-xwt.box<-plot(wcov, plot.type="covariates", which.cov="wt")
+xwt.covscatt<-plot(wcov, plot.type="cov.scatter", which.cov="wt", bin.method="optimal")
 xsex.scatt<-plot(wcov, plot.type="x.scatter", covsplit=TRUE, which.cov="sex")
-xsex.qqplot<-plot(wcov, plot.type="qqplot", covsplit=TRUE, which.cov="sex")
-xsex.box<-plot(wcov, plot.type="covariates", which.cov="sex")
 
-# Sometimes object is returned as a list, if the message "only 'grobs' allowed in "gList"" appears then try using [[1]] after the object
-grid.arrange(grobs=list(xwt.scatt, xsex.scatt, xwt.qqplot, xsex.qqplot, xwt.box[[1]],  xsex.box[[1]]), nrow=3, ncol=2)
+xsex.box<-plot(wcov, plot.type="covariates", which.cov="sex")
+xsex.ecdf<-plot(wcov, plot.type="ecdf", covsplit=TRUE, which.cov="sex")
+
+grid.arrange(grobs=list(xwt.covscatt,  xsex.box[[1]], xsex.scatt, xsex.ecdf), nrow=2, ncol=2)
+
+# xwt.scatt<-plot(wcov, plot.type="x.scatter", covsplit=TRUE, which.cov="wt")
+# xwt.qqplot<-plot(wcov, plot.type="qqplot", covsplit=TRUE, which.cov="wt")
+# xwt.box<-plot(wcov, plot.type="covariates", which.cov="wt")
+# xwt.npdvscov<-plot(wcov, plot.type="cov.scatter", which.cov="wt")
+# # xsex.covscat<-npde.plot.scatterplot(wcov, which.x="cov", which.y="npd", which.cov="sex")
+# xsex.qqplot<-plot(wcov, plot.type="qqplot", covsplit=TRUE, which.cov="sex")
+# 
+# # Sometimes object is returned as a list, if the message "only 'grobs' allowed in "gList"" appears then try using [[1]] after the object
+# grid.arrange(grobs=list(xwt.scatt, xsex.scatt, xwt.qqplot, xsex.qqplot, xwt.box[[1]],  xsex.box[[1]]), nrow=3, ncol=2)
 
 if(FALSE) {
   namfile<-file.path(figsDir,paste("covariateplots.","eps",sep=""))
   cairo_ps(file = namfile, width = 11, height = 8, pointsize=20)
-  grid.arrange(grobs=list(xwt.scatt, xsex.scatt, xwt.qqplot, xsex.qqplot, xwt.box[[1]],  xsex.box[[1]]), nrow=3, ncol=2)
+#  grid.arrange(grobs=list(xwt.scatt, xsex.scatt, xwt.qqplot, xsex.qqplot, xwt.box[[1]],  xsex.box[[1]]), nrow=3, ncol=2)
+  grid.arrange(grobs=list(xwt.covscatt,  xsex.box[[1]], xsex.scatt, xsex.ecdf), nrow=2, ncol=2)
   dev.off()
 }
 

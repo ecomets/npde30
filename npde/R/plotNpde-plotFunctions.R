@@ -4,9 +4,9 @@
 #' Select plot for a NpdeObject object
 #'
 #' @usage npde.plot.select(npdeObject,data=FALSE,ecdf=FALSE,qqplot=FALSE, histogram=FALSE,
-#' x.scatter=FALSE,pred.scatter=FALSE,x.box=FALSE,pred.box=FALSE, cov.x.scatter=FALSE,
-#' cov.pred.scatter=FALSE,cov.x.box=FALSE,cov.pred.box=FALSE, cov.ecdf=FALSE, 
-#' cov.hist=FALSE, cov.qqplot=FALSE, vpc=FALSE,...)
+#' x.scatter=FALSE,pred.scatter=FALSE,x.box=FALSE,pred.box=FALSE, cov.scatter=FALSE, 
+#' cov.x.scatter=FALSE, cov.pred.scatter=FALSE,cov.x.box=FALSE,cov.pred.box=FALSE, 
+#' cov.ecdf=FALSE, cov.hist=FALSE, cov.qqplot=FALSE, vpc=FALSE,...)
 #' @param npdeObject an object returned by a call to \code{\link{npde}} or \code{\link{autonpde}}
 #' @param data boolean, whether to produce a plot of the data
 #' @param ecdf boolean, whether to produce a distribution plot of the empirical distribution function
@@ -16,6 +16,7 @@
 #' @param pred.scatter boolean, whether to produce a scatterplot of the metric as a function of predictions
 #' @param x.box boolean, whether to produce whisker plots of the metric as a function of X
 #' @param pred.box boolean, whether to produce whisker plots of the metric as a function of predictions
+#' @param cov.scatter boolean, whether to produce a scatterplot of the metric as a function of covariate(s)
 #' @param cov.x.scatter boolean, whether to produce a scatterplot of the metric as a function of X, split by covariate(s)
 #' @param cov.pred.scatter boolean, whether to produce a scatterplot of the metric as a function of predictions, split by covariate(s)
 #' @param cov.x.box boolean, whether to produce whisker plots of the metric as a function of X, split by covariate(s)
@@ -40,7 +41,7 @@
 #' @importFrom gridExtra grid.arrange
 
 npde.plot.select<-function(npdeObject,data=FALSE,ecdf=FALSE,qqplot=FALSE, histogram=FALSE,x.scatter=FALSE,
-                           pred.scatter=FALSE,x.box=FALSE,pred.box=FALSE, cov.x.scatter=FALSE,
+                           pred.scatter=FALSE,x.box=FALSE,pred.box=FALSE, cov.scatter=FALSE, cov.x.scatter=FALSE,
                            cov.pred.scatter=FALSE,cov.x.box=FALSE,
                            cov.pred.box=FALSE, cov.ecdf=FALSE, cov.hist=FALSE, cov.qqplot=FALSE, vpc=FALSE,...) {
   # Function selecting which plots are to be drawn
@@ -55,6 +56,7 @@ npde.plot.select<-function(npdeObject,data=FALSE,ecdf=FALSE,qqplot=FALSE, histog
   if(pred.box) plot(npdeObject,plot.type="pred.scatter",box=TRUE,...)
   if(x.box) plot(npdeObject,plot.type="x.scatter",box=TRUE,...)
   if(pred.scatter) plot(npdeObject,plot.type="pred.scatter",...)
+  if(cov.scatter) plot(npdeObject,plot.type="cov.scatter",...)
   if(cov.x.scatter) plot(npdeObject,plot.type="cov.x.scatter",...)
   if(cov.pred.scatter) plot(npdeObject,plot.type="cov.pred.scatter",...)
   if(cov.ecdf) plot(npdeObject,plot.type="cov.ecdf",...)

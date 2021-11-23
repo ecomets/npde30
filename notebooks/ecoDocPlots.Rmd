@@ -308,6 +308,9 @@ if(saveDocPlots) cairo_ps(file = namfile, onefile = TRUE, fallback_resolution = 
 grid.arrange(grobs=list(plot.tnpde, plot.vpc), nrow=1, ncol=2)
 if(saveDocPlots) dev.off()
 
+# yobs versus covariate
+# npde.plot.scatterplot(wcov, which.x="cov", which.y="yobs", which.cov="age")
+
 ```
 
 ## Remifentanil (data will be on website)

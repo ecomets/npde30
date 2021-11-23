@@ -91,8 +91,11 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
     x.limits = c(plot.opt$xlim[1],plot.opt$xlim[2])  else
       x.limits = c(min(obsmat$x,na.rm=TRUE),max(obsmat$x,na.rm=TRUE))
   if ("ylim" %in% names(plot.opt) & length(plot.opt$ylim)==2)
-    y.limits = c(plot.opt$ylim[1],plot.opt$ylim[2])  else
-      y.limits = c(min(pimat$pinf.lower),max(pimat$psup.upper))
+    y.limits = c(plot.opt$ylim[1],plot.opt$ylim[2])  else {
+      if(plot.opt$bands) yvec<-c(pimat$pinf.lower,pimat$psup.upper) else yvec<-c()
+      if(plot.opt$plot.obs) yvec<-c(yvec, plotdatapoint$y1,plotdatapoint2$y1)
+      if(length(yvec)>0) y.limits = c(min(yvec),max(yvec)) else y.limits<-NULL # the plot will automatically adjust
+    }
   if(plot.opt$scales %in% c("free_x", "free")) x.limits<-NULL
   if(plot.opt$scales %in% c("free_y", "free")) y.limits<-NULL
 

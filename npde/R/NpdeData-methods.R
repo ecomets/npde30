@@ -430,8 +430,8 @@ npdeData<-function(name.data,header=TRUE,sep="",na.strings=c(".","NA"),name.grou
   #  showall(x)
   if(detect & verbose) cat("Automatic detection of variables is ON. The program will attempt to detect both mandatory variables (ID, X, Y) and optional variables (IPRED, MDV, CENS) when they are not specifically given or when the user-specified names are not found in the dataset, by looking in the names of the columns (to override this behaviour, please use argument detect=FALSE in the call to npdeData().\n")
   x1<-read(x,name.data,header=header,sep=sep,na.strings=na.strings,detect=detect, verbose=verbose)
-  if(class(x1)!="character") {
-    if(length(x1["name.cens"])==0) loq<-NA else {
+  if( is(x1, "NpdeData")) {
+    if(length(x1["name.cens"])==0) loq<-as.numeric(NA) else {
       if(sum(x1["data"][x1["data"][,x1["name.miss"]]==0,x1["name.cens"]])>0) {
         yloq<-x1["data"][x1["data"][,x1["name.cens"]]==1 & x1["data"][,x1["name.miss"]]==0,x1["name.response"]]
         if(length(unique(yloq))==1) {
@@ -442,8 +442,8 @@ npdeData<-function(name.data,header=TRUE,sep="",na.strings=c(".","NA"),name.grou
           if(verbose) cat("There are different LOQ for different observations, setting loq to the lowest value of",loq,"\n")
         }
       }
-      x1["loq"]<-loq
     }
+    x1["loq"]<-loq
     if(verbose) {
       cat("\n\nThe following NpdeData object was successfully created:\n\n")
       print(x1,nlines=0)
@@ -501,7 +501,7 @@ npdeSimData<-function(npde.data,name.simdata,header=TRUE,verbose=FALSE) {
   nrep<-dim(x@datsim)[1]/dim(npde.data@data)[1]
   x@nrep<-as.integer(nrep)
   if(nrep<1000 & verbose) {
-    message("Warning: the number of simulations is",nrep,"which may be too small.\n")
+    message("Warning: the number of simulations is ",nrep," which may be too small.\n")
     message("We advise performing at least 1000 simulations to compute npde.\n")
   }
   irsim<-rep(1:nrep,each=dim(npde.data@data)[1])

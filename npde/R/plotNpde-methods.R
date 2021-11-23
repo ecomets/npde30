@@ -254,7 +254,7 @@ plot.NpdeObject <- function(x, y, ...) {
               return( suppressWarnings(plot.data))
             },
             "default"={
-              plot.default<-plot.default<-npde.plot.default(x, ...)
+              plot.default<-npde.plot.default(x, ...)
               invisible( suppressWarnings( plot.default)) # doesn't work to return the plot, but if return, plots the 4 plots
             },
 

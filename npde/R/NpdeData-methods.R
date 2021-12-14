@@ -25,7 +25,7 @@ setMethod("show","NpdeData",
               st1<-paste(object@name.response," ~ ",paste(object@name.predictor,collapse=" + ")," | ", object@name.group,sep="")
               cat("    Structured data:",st1,"\n")
               if(length(object@name.covariates)>0) cat("    Covariates:",object@name.covariates,"\n")
-
+              
               cat("This object has the following components:\n")
               cat("     data: data\n")
               cat("     with",object@N,"subjects\n")
@@ -62,27 +62,7 @@ setMethod("show","NpdeSimData",
 
 setMethod("read",
           signature="NpdeData",
-          function(object,name.data,header=TRUE,sep="",na.strings=c("NA","."),detect=TRUE,verbose=FALSE) {
-            if(class(name.data)!="character") {
-              if(verbose) cat("Please provide the name of the data (data.frame or path to file on disk) as a character string.\n")
-              return("Creation of npdeData failed")
-            }
-            if(exists(name.data)) {
-              if(verbose) cat("Using the object called",name.data,"in this R session as the data.\n")
-              dat<-get(name.data)
-            } else {
-              if(verbose) cat("Reading data from file",name.data,"\n")
-              dat<-try(read.table(name.data,header=header,sep=sep,na.strings=na.strings))
-              if(class(dat)=="try-error") stop("The file ",name.data," does not exist. Please check the name and path.\n")
-              if(verbose) {
-                cat("These are the first lines of the dataset as read into R. Please check the format of the data is appropriate, if not, modify the na and/or sep items and retry:\n")
-                print(head(dat))
-              }
-            }
-            if(dim(dat)[2]<2) {
-              if(verbose) cat("The dataset contains only one column. To compute npde, we need at least 3 columns, with subject ID, predictor (at least one) and response. \nPlease check the field separator, currently given as:", paste("sep=\"",sep,"\"",sep=""), "\n")
-              return("Creation of npdeData failed")
-            }
+          function(object, dat, detect=TRUE,verbose=FALSE, ...) {
             # Automatic recognition of columns
             #    ID (one of id, subject or sujet regardless of case)
             #    response (one of Y, conc, concentration, resp, response regardless of case)
@@ -170,7 +150,7 @@ setMethod("read",
               return("Creation of npdeData failed: no response name")
             }
             # ECO TODO: verifier que les colonnes existent et sinon corriger
-
+            
             # IPRED : column with individual predictions
             detect.ipred<-FALSE
             if(length(object@name.ipred)>0 && !is.na(as.integer(object@name.ipred))) # ipred given as a column number
@@ -241,7 +221,7 @@ setMethod("read",
               object@units$covariates<-object@units$covariates[!duplicated(object@name.covariates)]
               object@name.covariates<-object@name.covariates[!duplicated(object@name.covariates)]
             }
-
+            
             if(nchar(object@name.group)*length(object@name.predictor)* nchar(object@name.response)<=0) {
               stop("Please check the structure of the data file and provide information concerning which columns specify the group structure (ID), the predictors (eg dose, time) and the response (eg Y, conc). See documentation for automatic recognition of column names for these elements.\n")
             }
@@ -288,7 +268,7 @@ setMethod("read",
             nind.obs<-tapply(id1,id1,length) # individual numbers of observations (1xN)
             nind.obs<-nind.obs[match(unique(id1),names(nind.obs))]
             object@nind.obs<-c(nind.obs)
-
+            
             #    object@names<-list(group=object@name.group,predictors=object@name.predictor, response=object@name.response, covariates=object@name.covariates)
             validObject(object)
             return(object)
@@ -299,49 +279,21 @@ setMethod("read",
 #' @rdname read
 #' @exportMethod read
 
+
 setMethod("read",
           signature="NpdeSimData",
-          function(object, name.data, header=TRUE, sep="", na.strings=c("NA","."), verbose=FALSE) {
-            if(exists(name.data)) {
-              if(verbose) cat("Using the object called",name.data,"in this R session as the data.\n")
-              dat<-get(name.data)
+          function(object, dat, detect=FALSE,verbose=FALSE, ...) {
+            if(detect) {
+              dat1<-dat[,c("idsim","xsim","ysim")]
+              if(dim(dat1)[2] != 3) {
+                return("Creation of NpdeSimData object failed: could not find columns idsim, xsim, ysim\n")
+              } else dat<-dat1
             } else {
-              if(verbose) cat("Reading data from file",name.data,"\n")
-              if(missing(header)) {
-                x1<-try(read.table(name.data,nrows=1))
-                if(is.numeric(x1[1,2])) header<-FALSE else header<-TRUE
-              }
-              if(missing(sep)) sep<-""
-              if(missing(na.strings)) na.strings<-c(".","NA")
-              dat<-try(read.table(name.data,header=header,sep=sep,na.strings=na.strings))
-              if(class(dat)=="try-error") stop("The file ",name.data," does not exist. Please check the name and path.\n")
-
-              x1<-unlist(strsplit(as.character(dat[1,1]),",",fixed=TRUE))
-              mysep<-""
-              if(length(x1)>1) mysep<-","
-              x1<-unlist(strsplit(as.character(dat[1,1]),";",fixed=TRUE))
-              if(length(x1)>1) mysep<-";"
-              if(mysep!="") dat<-read.table(name.data,na.strings=c(".","NA"),sep=mysep)
-              if(!is.numeric(dat[1,1]))
-                dat<-read.table(name.data,na.strings=c(".","NA"),header=TRUE,sep=mysep)
-              if(!is.numeric(dat[1,1])) {
-                if(verbose) {
-                cat("The format of the file containing the simulated data is unknown.\n")
-                cat("Please use a standard R table format, with or without header,\n")
-                cat("and with one of the following separators: \n")
-                cat("         TAB or space(s), commas (',') or semicolons (';')\n")
-                cat("Also note that a dot should be used to indicate digits in numbers.\n")
-                }
-                stop("Can't read data, please check format\n")
-              }
-              if(verbose) {
-                cat("These are the first lines of the dataset as read into R. Please check the format of the data is appropriate, if not, modify the na and/or sep items and retry:\n")
-                print(head(dat))
-              }
+              if(verbose) message("Using the first 3 columns of the dataset as idsim, xsim, ysim\n")
+              dat<-dat[,1:3]
+              colnames(dat)<-c("idsim","xsim","ysim")
             }
-            colnames(dat)<-c("idsim","xsim","ysim")
             object@datsim<-dat
-
             validObject(object)
             return(object)
           }
@@ -361,8 +313,8 @@ setMethod("read",
 #' containing the observed data
 #' @param sep field separator (for files on disk)
 #' @param na.strings strings to be considered as indicating NA
-#' @param header boolean indicating whether the file has a header (mandatory if
-#' detect is TRUE)
+#' @param header boolean indicating whether the file has a header (a header is 
+#' mandatory if detect is TRUE)
 #' @param name.group name/number of the column in the observed data containing the
 #' patient ID (if missing and detect is TRUE, columns named id, subject or sujet
 #' (regardless of case) will be assumed to contain this information)
@@ -408,16 +360,32 @@ setMethod("read",
 #' x<-npdeData(theopp,name.group="ID",name.predictor="Time",name.response="Conc",
 #' name.covariates=c("Wt"),units=list(x="hr",y="mg/L",covariates="kg")) # Explicit
 #' print(x)
+#' 
+#' @importFrom methods is
 
 npdeData<-function(name.data,header=TRUE,sep="",na.strings=c(".","NA"),name.group, name.predictor,
                    name.response, name.covariates,name.cens,name.miss,name.ipred, 
                    units=list(x="",y="",covariates=c()),detect=TRUE,verbose=FALSE) {
+  # name.data can be a character string (disk on file) or a dataframe
   # setting proper types for the NpdeData class
-  if(missing(name.data) ||length(name.data)==0) {
+  #  if(missing(name.data) || length(name.data)==0 || !(is(name.data,c("character","data.frame")))) {
+  if(missing(name.data) || length(name.data)==0 || sum(is.na(match(c("character","data.frame"), class(name.data))))==2) {
     if(verbose) cat("Error in npdeData: please provide the name of the datafile or dataframe (between quotes)\n")
     return("Creation of NpdeData failed: no data given")
   }
-  if(is.data.frame(name.data)) name.data<-deparse(substitute(name.data))
+  if(is(name.data, "character")) {
+    if(verbose) cat("Reading data from file",name.data,"\n")
+    dat<-try(read.table(name.data, header=header, sep=sep, na.strings=na.strings))
+    if(class(dat)=="try-error") stop("The file ",name.data," does not exist. Please check the name and path.\n")
+    if(dim(dat)[2]<2) {
+      if(verbose) cat("The dataset contains only one column. To compute npde, we need at least 3 columns, with subject ID, predictor (at least one) and response. \nPlease check the field separator, currently given as:", paste("sep=\"",sep,"\"",sep=""), "\n")
+      return("Creation of npdeData failed")
+    }
+    if(verbose) {
+      cat("These are the first lines of the dataset as read into R. Please check the format of the data is appropriate, if not, modify the na and/or sep items and retry:\n")
+      print(head(dat))
+    }
+  } else dat<-name.data
   if(missing(name.group)) name.group<-"" else name.group<-as.character(name.group)
   if(missing(name.predictor)) name.predictor<-"" else name.predictor<-as.character(name.predictor)
   if(missing(name.response)) name.response<-"" else  name.response<-as.character(name.response)
@@ -429,7 +397,7 @@ npdeData<-function(name.data,header=TRUE,sep="",na.strings=c(".","NA"),name.grou
   x<-new(Class="NpdeData",name.group=name.group, name.predictor=name.predictor,name.response=name.response, name.covariates=name.covariates,name.cens=name.cens,name.miss=name.miss, name.ipred=name.ipred,units=units)
   #  showall(x)
   if(detect & verbose) cat("Automatic detection of variables is ON. The program will attempt to detect both mandatory variables (ID, X, Y) and optional variables (IPRED, MDV, CENS) when they are not specifically given or when the user-specified names are not found in the dataset, by looking in the names of the columns (to override this behaviour, please use argument detect=FALSE in the call to npdeData().\n")
-  x1<-read(x,name.data,header=header,sep=sep,na.strings=na.strings,detect=detect, verbose=verbose)
+  x1<-read(x, dat, detect=detect, verbose=verbose)
   if( is(x1, "NpdeData")) {
     if(length(x1["name.cens"])==0) loq<-as.numeric(NA) else {
       if(sum(x1["data"][x1["data"][,x1["name.miss"]]==0,x1["name.cens"]])>0) {
@@ -458,12 +426,19 @@ npdeData<-function(name.data,header=TRUE,sep="",na.strings=c(".","NA"),name.grou
 #'
 #' This function is used to create a NpdeSimData object containing the simulated data corresponding to an NpdeData object
 #'
-#' @usage npdeSimData(npde.data, name.simdata, header=TRUE, verbose=FALSE)
+#' @usage npdeSimData(npde.data, name.simdata, header=TRUE, sep="", na.strings=c("NA","."), 
+#' detect=FALSE, verbose=FALSE)
 #'
 #' @param npde.data a NpdeData object
 #' @param name.simdata name of the file containing the simulated data, or a dataframe containing it
-#' @param header boolean indicating whether the file has a header (mandatory if
-#' detect is TRUE)
+#' @param header boolean indicating whether the file has a header (a header is 
+#' mandatory if detect is TRUE)
+#' @param sep field separator (for files on disk)
+#' @param na.strings strings to be considered as indicating NA
+#' @param detect a boolean controlling whether automatic recognition of columns in the dataset is on, defaults to FALSE
+#' if FALSE, the first 3 columns of the simulated data file will will be used as simulated id, predictor and response respectively
+#' if TRUE, the function will look for columns named respectively idsim, xsim and ysim (it will fail with an error message if these columns
+#' are not present in the simulated data)
 #' @param verbose whether to print warning messages, defaults to FALSE (set to TRUE to check how data is being handled)
 #'
 #' @return an object of class NpdeSimData
@@ -471,30 +446,28 @@ npdeData<-function(name.data,header=TRUE,sep="",na.strings=c(".","NA"),name.grou
 #' @seealso \code{\link{NpdeData}}, \code{\link{npde}}, \code{\link{autonpde}}
 #' @export
 
-npdeSimData<-function(npde.data,name.simdata,header=TRUE,verbose=FALSE) {
-  if(is.data.frame(name.simdata)) name.simdata<-deparse(substitute(name.simdata))
-  ierror<-FALSE
-  if(missing(npde.data)) {
-    ierror<-TRUE
+
+npdeSimData<-function(npde.data, name.simdata, header=TRUE, sep="", na.strings=c("NA","."), detect=FALSE, verbose=FALSE) {
+  if(missing(npde.data) || !is(npde.data,"NpdeData")) {
     if(verbose) message("   Error: Missing first argument.\n")
+    return("Creation of NpdeSimData failed: please provide a valid npde.data object")
   }
-  if(!ierror) {
-    x1<-try(class(npde.data))
-    if(class(x1)=="try-error") {
-      ierror<-TRUE
-      if(verbose) message("   Error:", deparse(substitute(npde.data)),"does not exist.\n")
+  if(missing(name.simdata) || length(name.simdata)==0 || sum(is.na(match(c("character","data.frame"), class(name.simdata))))==2) {
+    if(verbose) cat("Error in npdeSimData: please provide the name of the datafile or dataframe (between quotes)\n")
+    return("Creation of NpdeSimData failed: no simulated data given")
+  }
+  if(is(name.simdata, "character")) {
+    if(verbose) cat("Reading data from file",name.simdata,"\n")
+    dat<-try(read.table(name.simdata, header=header, sep=sep, na.strings=na.strings))
+    if(class(dat)=="try-error") stop("The file ",name.simdata," does not exist. Please check the name and path.\n")
+    if(verbose) {
+      cat("These are the first lines of the dataset as read into R. Please check the format of the data is appropriate, if not, modify the na and/or sep items and retry:\n")
+      print(head(dat))
     }
-    if(!ierror && x1!="NpdeData") {
-      ierror<-TRUE
-      if(verbose) message("   Error:", deparse(substitute(npde.data)),"is not a NpdeData object.\n")
-    }
-  }
-  if(ierror) {
-    if(verbose) message("Function npdeSimData requires two mandatory arguments: first, a NpdeData object created by a call to npdeData() (see help page for the syntax of that function), and the name of a matching dataset containing the simulated data (either a file on disk or a data.frame. Please refer to the documentation for details and examples.\n")
-    return("Creation of NpdeSimData failed: need two arguments npde.data and name.simData")
-  }
+  } else dat<-name.simdata
+  
   x1<-new(Class="NpdeSimData")
-  x<-read(x1,name.data=name.simdata,header=header,verbose=verbose)
+  x<-read(x1, dat, detect=detect, verbose=verbose)
   if(sum(npde.data["data"][,npde.data["name.miss"]])>0) {
     if(verbose) message("There are rows with MDV=1 in the original dataset, the corresponding rows will be removed from the simulated dataset.\n")
   }
@@ -506,10 +479,10 @@ npdeSimData<-function(npde.data,name.simdata,header=TRUE,verbose=FALSE) {
   }
   irsim<-rep(1:nrep,each=dim(npde.data@data)[1])
   x@datsim$irsim<-irsim
-
-
+  
   return(x)
 }
+
 ##################################################################################
 ################### S3 methods
 

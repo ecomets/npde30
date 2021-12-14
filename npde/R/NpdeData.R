@@ -58,7 +58,7 @@ setClass(
     ntot.obs="numeric",		# total number of observations
     nind.obs="numeric",		# number of observations for each subject
     loq="numeric"		# LOQ
-))
+  ))
 
 ###############################
 # ECO validity ne semble pas etre appele automatiquement quand on cree un objet => il faut l'appeler dans initialize
@@ -69,7 +69,7 @@ setMethod(
   f="initialize",
   signature="NpdeData",
   definition= function (.Object,name.group,name.predictor, name.response,name.covariates,name.cens,name.miss,name.ipred,units,data){
-
+    
     if(missing(name.group)) name.group<-character()
     # ECO TODO: reconnaissance automatique (avant affectation a la valeur 2) ?
     if(missing(name.predictor)) name.predictor<-character()
@@ -97,31 +97,31 @@ setMethod(
     if (missing(name.response)) 
       .Object@name.response <- character() else
         .Object@name.response <- name.response
-
+    
     # name.covariates
     if (missing(name.covariates)) 
       .Object@name.covariates <- character() else
         .Object@name.covariates <- name.covariates
-
+    
     # name.cens
     if (missing(name.cens)) 
       .Object@name.cens <- character() else 
         .Object@name.cens <- name.cens
-
+    
     # name.miss
     if (missing(name.miss)) 
       .Object@name.miss <- character() else 
         .Object@name.miss <- name.miss
-
+    
     # name.ipred
     if (missing(name.ipred)) 
       .Object@name.ipred <- character() else 
         .Object@name.ipred <- name.ipred
-
+    
     if(missing(units)) units<-list(x="-",y="-")
     if(is.null(units$x)) units$x<-"-"
     if(is.null(units$y)) units$y<-"-"
-
+    
     ncov<-length(name.covariates)
     if(ncov>0) {
       nunit<-length(units$covariates)
@@ -132,14 +132,14 @@ setMethod(
         units$covariates[(nunit+1):ncov]<-""
       }
     }
-
+    
     .Object@units<-units
     .Object@N<-0
-
+    
     # Object validation
     validObject(.Object,test = TRUE)
     return (.Object )
-
+    
   }
 )
 
@@ -170,9 +170,6 @@ setMethod(
   signature = "NpdeData" ,
   definition = function (x,i,j,drop ){
     switch (EXPR=i,
-            "header"={return(x@header)},
-            "sep"={return(x@sep)},
-            "na"={return(x@na)},
             "name.group"={return(x@name.group)},
             "name.predictor"={return(x@name.predictor)},
             "name.response"={return(x@name.response)},

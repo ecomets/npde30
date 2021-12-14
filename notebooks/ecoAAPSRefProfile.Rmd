@@ -25,7 +25,7 @@ ${\rm tnpde}_{ij} \sim \mathcal{N}(E(ysim^{ref}_{bin(t_{ij})}),SD(ysim^{ref}_{bi
 knitr::opts_chunk$set(echo = TRUE)
 workDir<-"/home/eco/work/npde/npde30"
 notesDir<-file.path(workDir,"notebooks")
-testsDir<-file.path(workDir,"npde","tests","testthat")
+testsDir<-file.path(workDir,"tests","testthat")
 provDir<-file.path(workDir,"kompareCode") # Code change, temporary folder and files (Eco)
 setwd(workDir)
 createDat<-FALSE

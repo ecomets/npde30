@@ -1,4 +1,6 @@
-##################    Scatterplots - VPC, scatterplots versus independent variable, predictions, covariates  ###################
+########################################################################################
+# Scatterplots - VPC, scatterplots versus independent variable, predictions, covariates 
+########################################################################################
 
 #' Scatterplots and VPC
 #'

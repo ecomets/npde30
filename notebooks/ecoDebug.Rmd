@@ -27,9 +27,9 @@ library(testthat)
 workDir<-"/home/eco/work/npde/npde30"
 knitr::opts_chunk$set(root.dir = workDir)
 notesDir<-file.path(workDir,"notebooks")
-datDir<-file.path(workDir,"npde","data")
+datDir<-file.path(workDir,"data")
 fulldatDir<-file.path(workDir,"keep","data")
-testsDir<-file.path(workDir,"npde","tests","testthat")
+testsDir<-file.path(workDir,"tests","testthat")
 setwd(workDir)
 ```
 

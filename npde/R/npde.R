@@ -292,6 +292,8 @@ NULL
 #' @keywords methods
 #' @examples
 #' \donttest{
+#' # You need to have gridExtra installed to successfully run this example
+#' if(requireNamespace("gridExtra", quietly=TRUE)) {
 #'   data(warfarin)
 #'   data(simwarfarinCov)
 #'   wcov<-autonpde(namobs=warfarin,namsim=simwarfarinCov, iid=1,ix=2,iy=4,icov=c(3,6:8),
@@ -312,9 +314,10 @@ NULL
 #'   plot.tnpd<-plot(wcov, plot.type="x.scatter", ref.prof=list(id=2), 
 #'   main="tnpd with reference profile ID=2")
 #'   plot.vpc<-plot(wcov, plot.type="vpc", main="VPC")
-#'   grid.arrange(grobs=list(plot.tnpd, plot.vpc), nrow=1, ncol=2)
-#'}
-
+#'   gridExtra::grid.arrange(grobs=list(plot.tnpd, plot.vpc), nrow=1, ncol=2)
+#'   }
+#' }
+#' @importFrom gridExtra grid.arrange
 #'
 NULL
 

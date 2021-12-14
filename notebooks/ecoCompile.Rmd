@@ -12,7 +12,12 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 library(devtools)
 library(roxygen2)
+# Where to find the development files of npde (folders npde/R, keep, data)
 workDir<-"/home/eco/work/npde/npde30"
+
+# Compilation directory
+compilDir<-"/home/eco/work/npde/compileNpde"
+
 knitr::opts_chunk$set(root.dir = workDir)
 ```
 
@@ -57,16 +62,42 @@ if(FALSE) {
   write.table(tab1, file.path(workDir,"npde","data","simvirload.tab"), quote=FALSE, row.names=FALSE, col.names=TRUE)
 }
 
-setwd(file.path(workDir,"npde"))
-system("rm man/*")
-cmd<-paste("cp ", file.path(workDir,"latexDoc","userguide_3_1.pdf")," ", file.path(workDir,"userguide_npde_3.1.pdf"),sep="")
+cmd<-paste("rm -r ",file.path(compilDir,"*"),sep="")
 system(cmd)
+dir.create(compilDir)
+dir.create(file.path(compilDir,"npde"))
+dir.create(file.path(compilDir,"npde","inst"))
+# File too large
+if(FALSE) {
+  cmd<-paste("cp ", file.path(workDir,"latexDoc","userguide_3_1.pdf")," ", file.path(compilDir,"inst","userguide_npde_3.1.pdf"),sep="")
+  system(cmd)
+}
+
+cmd<-paste("cp -rp ",file.path(workDir,"npde","R")," ", file.path(compilDir,"npde"),sep="")
+system(cmd)
+cmd<-paste("cp -rp ",file.path(workDir,"data")," ", file.path(compilDir,"npde"),sep="")
+system(cmd)
+for(ifile in c("CHANGES","DESCRIPTION")) {
+  cmd<-paste("cp ",file.path(workDir,"keep",ifile)," ", file.path(compilDir,"npde"),sep="")
+  system(cmd)
+}
+for(ifile in c("CITATION")) {
+  cmd<-paste("cp ",file.path(workDir,"keep",ifile)," ", file.path(compilDir,"npde","inst"),sep="")
+  system(cmd)
+}
+# cmd<-paste("cp ",file.path(workDir,"LICENSE")," ", file.path(compilDir,"inst"),sep="")
+# system(cmd)
+
+# Compile
+setwd(file.path(compilDir,"npde"))
 devtools::document()
 roxygenise()
-setwd(workDir)
+setwd(compilDir)
 system("R CMD build npde")
-system("R CMD check --as-cran --run-donttest npde_3.1.tar.gz")
+system("R CMD check --as-cran --run-donttest npde_3.2.tar.gz")
 ```
+
+#### npde 3.1
 
 Apres correction, la compilation du package passe sans erreurs et avec 2 notes restantes.
 
@@ -77,6 +108,14 @@ Apres correction, la compilation du package passe sans erreurs et avec 2 notes r
 - **warnings** corriges
   - jeux de donnees non documentes: removed remifentanil, added virload documentation (used to be a specific man page, reintegrated them into roxygen format in npde.R like warfarin)
   - duplicated alias: fixed !
+
+#### npde 3.2
+
+- **notes**
+  - time to run examples
+Examples with CPU or elapsed time > 5s
+                 user system elapsed
+npde.cens.method 7.51  0.019   7.605
 
 ### Warnings
 

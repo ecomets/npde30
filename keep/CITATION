@@ -1,0 +1,45 @@
+bibentry(bibtype = "Article",
+  title        = "Computing normalised prediction distribution errors to evaluate nonlinear mixed-effect models: the npde add-on package for R",
+  author       = c(person(given = "Emmanuelle",
+                          family = "Comets",
+                          email = "emmanuelle.comets@inserm.fr"),
+                   person(given = "Karl",
+                          family = "Brendel"),
+                   person(given = "France",
+                          family = "Mentre")),
+  journal      = "Computer Methods and Programs in Biomedicine",
+  year         = "2008",
+  volume       = "90",
+  pages        = "154--66",
+
+  header       = "To cite npde in publications use:",
+  textVersion  =
+  paste("Emmanuelle Comets, Karl Brendel, France Mentre (2008).",
+        "Computing normalised prediction distribution errors to evaluate nonlinear mixed-effect models: the npde add-on package for R.",
+        "Computer Methods and Programs in Biomedicine, 90, 154--66.")
+)
+
+bibentry(bibtype = "Article",
+  title        = "Metrics for external model evaluation with an application to the population pharmacokinetics of gliclazide",
+  author       = c(person(given = "Emmanuelle",
+                          family = "Comets",
+                          email = "emmanuelle.comets@inserm.fr"),
+                   person(given = "Karl",
+                          family = "Brendel"),
+                   person(given = "Celine",
+                          family = "Laffont"),
+                   person(given = "Christian",
+                          family = "Laveille"),
+                   person(given = "France",
+                          family = "Mentre")),
+  journal      = "Pharmaceutical Research",
+  year         = "2006",
+  volume       = "23",
+  pages        = "2036--49",
+
+  header       = "To cite npde in publications use:",
+  textVersion  =
+  paste("Emmanuelle Comets, Karl Brendel, Céline Laffont, Christian Laveille, France Mentre (2006).",
+        "Metrics for external model evaluation with an application to the population pharmacokinetics of gliclazide.",
+        "Pharmaceutical Research, 23, 2036--49.")
+)

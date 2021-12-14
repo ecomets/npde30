@@ -1,6 +1,12 @@
+Version 3.2 - November 2021
+
+o Bugfixes
+   * y-limits are now automatically adjusted to the range of observations (npde, npde, ...) unless they are explicitly set by the users using ylim in the call to plot()
+   * modified autonpde to remove the deparse
+
 Version 3.1 - March 2021
 
- o Bugfixes
+o Bugfixes
    * added the lines to save the output in the main function, which had been removed from the code
 
 o Note: to avoid adding a dependency on Cairo the plots are saved using ggsave() from ggplot2

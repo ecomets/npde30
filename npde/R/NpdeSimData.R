@@ -27,7 +27,7 @@ setClass(
   Class="NpdeSimData",
   representation=representation(
     nrep="numeric",		# number of replications
-    datsim="data.frame"	# data (a dataframe with columns: idsim (subject id), irsim (replication index), xsim (simulated x), ysim (simulated response), ydsim (decorrelated replicated data))
+    datsim="data.frame"	# data (a dataframe with columns: idsim (subject id), irsim (replication index), xsim (simulated x), ysim (simulated response), ydsim (decorrelated replicated data, will be created during the call to npde()))
   ),
   validity=function(object){
     #    cat ("--- Checking NpdeData object ---\n")

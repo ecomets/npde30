@@ -11,17 +11,16 @@
 #' @aliases read-methods read,NpdeData read,NpdeData-methods
 #' @aliases read,NpdeSimData-methods
 #'
-#' @usage read(object, name.data, header=TRUE, sep="", na.strings=c("NA","."), detect=TRUE,
-#' verbose=FALSE)
+#' @usage read(object, dat, detect=TRUE, verbose=FALSE, ...)
 #'
 #' @param object an object
-#' @param name.data character string giving the name of the dataset (can be a file on disk or an R dataframe)
-#' @param header boolean indicating whether the file has a header (mandatory if
-#' detect is TRUE)
-#' @param sep field separator (for files on disk)
-#' @param na.strings strings to be considered as indicating NA
-#' @param detect a boolean; if TRUE, automatic recognition of names will be attempted to detect necessary items (longitudinal data structure, missing data and censoring information)
+#' @param dat a dataframe containing the data to be analysed
+#' @param detect a boolean; if TRUE, automatic recognition of names will be attempted to detect necessary items 
+#' for a NpdeData, these include longitudinal data structure, missing data and censoring information
+#' for a NpdeSimData, the required columns should be called idsim, xsim, ysim, representing respectively simulated id, simulated 
+#' predictor and simulated response
 #' @param verbose a boolean; messages are printed if verbose is TRUE (defaults to FALSE)
+#' @param dots additional arguments for compatibility with generic
 #'
 #' @return an object of class \code{"\linkS4class{NpdeData}"} or \code{"\linkS4class{NpdeSimData}"}
 #' @docType methods
@@ -38,4 +37,4 @@
 ## #' @import testthat
 
 setGeneric(name="read",
-           def=function(object,name.data,header=TRUE,sep="",na.strings=c("NA","."),detect=TRUE,verbose=FALSE){standardGeneric("read")})
+           def=function(object, dat, detect=TRUE,verbose=FALSE, ...) standardGeneric("read"))

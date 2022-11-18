@@ -184,25 +184,24 @@ npde.plot.data<-function(npdeObject,...) {
 
   # but plot plot(yvir50@data) = plot(yvir50,plot.type=“data”)
 
-
+  if(!is(npdeObject,"NpdeObject")) return()
   # data censored / no censored
   if(length(npdeObject["data"]["icens"])>0) {
     has.cens<-TRUE
-    icens<-npdeObject["data"]["icens"]
+#    icens<-npdeObject["data"]["icens"]
     is.cens<-npdeObject["data"]["data"]$cens==1
   } else { has.cens<-FALSE}
 
   # data plot x,y and id
   x<-npdeObject["data"]["data"][,npdeObject["data"]["name.predictor"]]
-  plot.opt<-npdeObject["prefs"]
-  id<-(npdeObject["data"]["data"]$index %in% plot.opt$ilist)
 
   # plot options and user options
   userPlotOptions = list(...)
-  plot.opt<-set.plotoptions.default(npdeObject)
+  plot.opt<-npdeObject["prefs"]
   plot.opt <- modifyList(plot.opt, userPlotOptions[intersect(names(userPlotOptions), names(plot.opt))])
   if(plot.opt$impute.loq)  y<-npdeObject["results"]["res"]$ycomp else y<-npdeObject["data"]["data"][,npdeObject["data"]["name.response"]]
-
+  id<-(npdeObject["data"]["data"]$index %in% plot.opt$ilist)
+  
   # meta arguments to change col,lwd,lty,pch for lines and symbols
   if ( plot.opt$size %in% userPlotOptions)    plot.opt$size.pobs = plot.opt$size
 
@@ -402,6 +401,9 @@ npde.plot.data<-function(npdeObject,...) {
 #' @param npdeObject an object returned by a call to \code{\link{npde}} or \code{\link{autonpde}}
 #' @param \dots additional arguments to be passed on to the function, to control which metric (npde, pd, npd) is used or to override graphical parameters (see the PDF document for details, as well as \code{\link{set.plotoptions}})
 #' 
+#' @details By default, npd are used for the diagnostic plots. If an unknown argument to which (eg which="XXX") is given, 
+#' this is changed to npd (with a warning message if verbose=TRUE or the verbose option in the option slot of the npdeObject is TRUE).
+#' 
 #' @return a ggplot object or a list of ggplot objects (grobs)
 #' 
 #' @export
@@ -410,7 +412,7 @@ npde.plot.data<-function(npdeObject,...) {
 
 npde.plot.default<-function(npdeObject,  ...) {
   
-  # modify the plot options with the user ones (... can supersede some argumetns in plot.opt, eg covsplit to force a plot by covariates)
+  # modify the plot options with the user ones (... can supersede some arguments in plot.opt, eg covsplit to force a plot by covariates)
   userPlotOptions = list(...)
   plot.opt <- set.plotoptions.default(npdeObject)
   plot.opt <- modifyList(plot.opt, userPlotOptions[intersect(names(userPlotOptions), names(plot.opt))])
@@ -418,11 +420,14 @@ npde.plot.default<-function(npdeObject,  ...) {
   list.args<-list.args[!(names(list.args) %in% c("dist.type", "which.x", "which.y", "which"))]
   list.args$npdeObject <- npdeObject
   typmet<-intersect(plot.opt$which, c("npd","npde","pd","pde")) # check if which is one of the allowed metrics, if not set to npd
-  if(length(typmet)==0) plot.opt$which<-"npd"
+  if(length(typmet)==0) {
+    if(npdeObject@options$verbose) message(paste(plot.opt$which,"not recognised, plotting npd\n"))
+      plot.opt$which<-"npd"
+  }
 
   # Check covariate input
   if(plot.opt$covsplit) {
-    if(plot.opt$which.cov=="all") plot.opt$which.cov<-npdeObject@data@name.covariates
+    if(plot.opt$which.cov[1]=="all") plot.opt$which.cov<-npdeObject@data@name.covariates
     found.cov <- intersect(plot.opt$which.cov, npdeObject@data@name.covariates)
     if(length(found.cov)!=length(plot.opt$which.cov)) {
       if(npdeObject@options$verbose) cat("Some covariates not found, check inputs \n")

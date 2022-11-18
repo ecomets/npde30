@@ -47,7 +47,8 @@ compute.ploq<-function(npdeObject) {
     }
     npdeObject["data"]["loq"]<-loq
   }
-  for(isuj in unique(npdeObject["data"]["data"][,"index"])) {
+#  for(isuj in unique(npdeObject["data"]["data"][,"index"])) {
+  for(isuj in unique(npdeObject["data"]["data"][,npdeObject["data"]["name.group"]])) {
     matsim<-matrix(ysim[idsim==isuj],ncol=nrep)
     tcomp<-apply(matsim,2,"<",loq)
     if(!is.matrix(tcomp)) tcomp<-t(as.matrix(tcomp))

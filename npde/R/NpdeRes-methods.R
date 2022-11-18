@@ -220,7 +220,6 @@ skewness<-function (x)
 #' @param object an object (currently has methods for types numeric, NpdeRes and NpdeObject)
 #' @param parametric a boolean. If TRUE (default), parametric tests are performed
 #' @param \dots additional arguments passed on to the function; special arguments are \code{na.action}, which controls how to handle NAs in the results (\code{\link{na.action}}), \code{verbose} (if FALSE, suppresses printing of the results) and \code{covsplit} which requests the tests to be performed split by categories or quantiles of the data. If \code{covsplit} is TRUE, continuous covariates will be split in 3 categories (<Q1, Q1-Q3, >Q3) (see details in the PDF documentation), but this behaviour can be overriden by passing the argument \code{ncat=XXX} where XXX is the number of categories to divide the continuous covariates in.
-#' @param which character string giving (used by printgoftest)
 #'
 #' @return A list with the following elements:
 #' \describe{
@@ -278,12 +277,13 @@ gof.test.numeric<-function(object, parametric=TRUE, ...) {
   ### if na.omit (default), missing values are removed before testing
   # ECO TODO: non-parametric equivalent of variance test for one-sample ?
   ### ECO TODO: test for pd pd~U(0,1) using test from Magalie
-  args1<-match.call(expand.dots=TRUE)
+#  args1<-match.call(expand.dots=TRUE)
+  args1 <- list(...)
   verbose<-TRUE
   i1<-match("verbose",names(args1))
   if(!is.na(i1) && !is.na(as.logical(as.character(args1[[i1]])))) verbose<-as.logical(as.character(args1[[i1]]))
   i1<-match("which",names(args1))
-  if(!is.na(i1) && !is.na(as.logical(as.character(args1[[i1]])))) which<-as.character(args1[[i1]]) else which<-"npde"
+  if(!is.na(i1) && !is.na(as.character(args1[[i1]]))) which<-as.character(args1[[i1]]) else which<-"npde"
   object<-object[!is.na(object)]
   sev<-var(object)*sqrt(2/(length(object)-1))
   semp<-sd(object)
@@ -338,7 +338,8 @@ gof.test.NpdeRes<-function(object, parametric=TRUE, ...) {
   ### mean=0.5
   ### variance=1/12
   ### uniformity (Kolmogorov-Smirnov)
-  args1<-match.call(expand.dots=TRUE)
+#  args1<-match.call(expand.dots=TRUE)
+  args1 <- list(...)
   if(length(object@res)==0) {
     message("No results in the object\n")
     return("Please run npde first")
@@ -347,7 +348,8 @@ gof.test.NpdeRes<-function(object, parametric=TRUE, ...) {
   i1<-match("verbose",names(args1))
   if(!is.na(i1) && !is.na(as.logical(args1[[i1]]))) verbose<-as.logical(args1[[i1]])
   i1<-match("which",names(args1))
-  if(!is.na(i1) && !is.na(as.logical(as.character(args1[[i1]])))) which<-as.character(args1[[i1]]) else which<-"npde"
+  if(!is.na(i1) && is.character(args1[[i1]])) which<-as.character(args1[[i1]]) else which<-"npde"
+  cat("in npdeRed, which=",which,"\n")
   if(!which%in%c("pd","npde","npd")) {
     if(verbose) message("Tests can be performed on one of: npde (default), pd, npd. Please choose one using the which argument.\n")
     return()
@@ -360,6 +362,7 @@ gof.test.NpdeRes<-function(object, parametric=TRUE, ...) {
     if(verbose) message("    Missing pd object.\n")
     return("Missing pd object")
   }
+  cat("ici, which=",which,"\n")
   npde<-switch(which,npde=object@res$npde,pd=object@res$pd, npd=qnorm(object@res$pd))
   npde<-npde[object@not.miss] # Removing values for MDV=1 (pd, npde not computed)
   i1<-match("verbose",names(args1))
@@ -377,6 +380,7 @@ gof.test.NpdeRes<-function(object, parametric=TRUE, ...) {
   }
   npde<-eval(call(na.action,npde))
   res<-gof.test(npde,which=which,parametric=parametric)
+  cat("la, which=",which,"\n")
   if(verbose)
     printgoftest(res, which=which)
   invisible(res)
@@ -387,7 +391,11 @@ gof.test.NpdeRes<-function(object, parametric=TRUE, ...) {
 #' @rdname gof.test
 #' @export
 
-printgoftest<-function(object, which="npde", ...) {
+printgoftest<-function(object, ...) {
+  args1 <- list(...)
+#  args1<-match.call(expand.dots=TRUE)
+  i1<-match("which",names(args1))
+  if(!is.na(i1) && args1[[i1]] %in% c("pd","npd")) which<-as.character(args1[[i1]]) else which<-"npde"
   cat("---------------------------------------------\n")
   cat("Distribution of",which,":\n")
   cat("      nb of obs:",object$nobs,"\n")

@@ -34,7 +34,6 @@
 #' @importFrom utils head read.table modifyList
 #' @importFrom graphics abline
 #' @importFrom stats complete.cases
-## #' @import testthat
 
 setGeneric(name="read",
            def=function(object, dat, detect=TRUE,verbose=FALSE, ...) standardGeneric("read"))

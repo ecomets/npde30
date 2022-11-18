@@ -1,3 +1,16 @@
+Version 3.3 - November 2022
+
+o Bugfixes
+   * fixed bug in plots when cens or mdv were named something else in the original dataset
+   * fixed bug when the subject's ID was not consecutively numbered
+   * fixed bug in gof.test() which ignored the parametric or which arguments
+   * Removed a residual testthat import giving a NOTE on CRAN
+
+o Note: if cens and/or mdv are named something else in the original dataset, they will be renamed to cens and mdv in the data slot
+
+o Compatibility fix
+   * with ggplot2>3.4.0 in R>4.0, an additional test in facet_wrap was causing the ecdf and QQ-plots to fail (ggplot2 now apparently checks for a difference between ordered and non-ordered factors).
+
 Version 3.2 - November 2021
 
 o Bugfixes

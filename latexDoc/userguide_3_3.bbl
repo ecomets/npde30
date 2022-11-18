@@ -1,0 +1,148 @@
+\begin{thebibliography}{10}
+
+\bibitem{Brendel06}
+{\sc Brendel, K., Comets, E., Laffont, C., Laveille, C., and Mentr{\'e}, F.}
+\newblock Metrics for external model evaluation with an application to the
+  population pharmacokinetics of gliclazide.
+\newblock {\em Pharmaceutical Research 23\/} (2006), 2036--49.
+
+\bibitem{Brendel10}
+{\sc Brendel, K., Comets, E., Laffont, C., and Mentr{\'e}, F.}
+\newblock Evaluation of different tests based on observations for external
+  model evaluation of population analyses.
+\newblock {\em Journal of Pharmacokinetics and Pharmacodynamics 37\/} (2010),
+  49--65.
+
+\bibitem{CometsCMPB08}
+{\sc Comets, E., Brendel, K., and Mentr{\'e}, F.}
+\newblock Computing normalised prediction distribution errors to evaluate
+  nonlinear mixed-effect models: the npde add-on package for {R}.
+\newblock {\em Computer Methods and Programs in Biomedicine 90\/} (2008),
+  154--66.
+
+\bibitem{Comets10}
+{\sc Comets, E., Brendel, K., and Mentr{\'e}, F.}
+\newblock Model evaluation in nonlinear mixed effect models, with applications
+  to pharmacokinetics.
+\newblock {\em Journal de la Soci{\'e}t{\'e} Fran{\'c}aise de Statistique
+  151\/} (2010), 106--28.
+
+\bibitem{CometsPAGE13}
+{\sc Comets, E., Nguyen, T., and Mentr{\'e}, F.}
+\newblock Additional features and graphs in the new npde library for r.
+\newblock {\em 16$^{th}$ meeting of the {P}opulation {A}pproach {G}roup in
+  {E}urope, Glasgow, United Kingdom\/} (2013), Abstr 2775.
+
+\bibitem{Ding1999}
+{\sc Ding, A.~A., and Wu, H.}
+\newblock {Relationships between antiviral treatment effects and biphasic viral
+  decay rates in modeling HIV dynamics}.
+\newblock {\em Mathematical Biosciences 160\/} (1999), 63--82.
+
+\bibitem{Fraley02}
+{\sc Fraley, C., and Raftery, A.~E.}
+\newblock Model-based clustering, discriminant analysis, and density
+  estimation.
+\newblock {\em Journal of the American Statistical Association 97\/} (2002),
+  611--31.
+
+\bibitem{Fraley06}
+{\sc Fraley, C., and Raftery, A.~E.}
+\newblock {MCLUST} version 3 for {R}: normal mixture modeling and model-based
+  clustering.
+\newblock {\em Technical Report No. 504, Department of Statistics, University
+  of Washington (revised 2009)\/} (2006).
+
+\bibitem{Genolini}
+{\sc Genolini, C.}
+\newblock {\em Construire un Package - Classic et S4}.
+\newblock INSERM U669, Paris, France, 2010.
+
+\bibitem{GoujardISA2010}
+{\sc Goujard, C., Barrail-Tran, A., Duval, X., Nembot, G., Panhard, X., Savic,
+  R., Descamps, D., Vrijens, B., Taburet, A., Mentr{\'e}, F., and {the ANRS 134
+  study group}}.
+\newblock {Virological response to atazanavir, ritonavir and
+  tenofovir/emtricitabine: relation to individual pharmacokinetic parameters
+  and adherence measured by medication events monitoring system (MEMS) in naive
+  HIV-infected patients (ANRS134 trial)}.
+\newblock {\em International AIDS Society 2010\/} (2010), Abstr WEPE0094.
+
+\bibitem{Higham86}
+{\sc Higham, N.~J.}
+\newblock Computing the polar decomposition -- with applications.
+\newblock {\em SIAM Journal on Scientific and Statistical Computing 7\/}
+  (1986), 1160--74.
+
+\bibitem{Monolix}
+{\sc Lavielle, M.}
+\newblock {\em MONOLIX (MOd\`eles NOn LIn\'eaires \`a effets miXtes)}.
+\newblock {MONOLIX} group, Orsay, France, 2005.
+
+\bibitem{Lavielle11}
+{\sc Lavielle, M., and Bleakley, K.}
+\newblock Automatic data binning for improved visual diagnosis of
+  pharmacometric models.
+\newblock {\em Journal of Pharmacokinetics and Pharmacodynamics 38\/} (2011),
+  861--71.
+
+\bibitem{MentrePDE}
+{\sc Mentr{\'e}, F., and Escolano, S.}
+\newblock Prediction discrepancies for the evaluation of nonlinear
+  mixed-effects models.
+\newblock {\em Journal of Pharmacokinetics and Pharmacodynamics 33\/} (2006),
+  345--67.
+
+\bibitem{Mesnil}
+{\sc Mesnil, F., Mentr{\'e}, F., Dubruc, C., Th{\'e}not, J., and Mallet, A.}
+\newblock Population pharmacokinetics analysis of mizolastine and validation
+  from sparse data on patients using the nonparametric maximum likelihood
+  method.
+\newblock {\em Journal of Pharmacokinetics and Biopharmaceutics 26\/} (1998),
+  133--161.
+
+\bibitem{Nguyen17}
+{\sc Nguyen, T., Mouksassi, M.-S., Holford, N., Al-Huniti, N., Freedman, I.,
+  Hooker, A., John, J., Karlsson, M., Mould, D., P{\'e}rez~Ruixo, J., Plan, E.,
+  Savic, R., van Hasselt, J., Weber, B., Zhou, C., Comets, E., Mentr{\'e}, F.,
+  and for the Model Evaluation Group of the International Society~of
+  Pharmacometrics (ISoP) Best Practice~Committee}.
+\newblock Model evaluation of continuous data pharmacometric models: metrics
+  and graphics.
+\newblock {\em CPT Pharmacometrics Syst Pharmacol 6}, 2 (2017), 87--109.
+
+\bibitem{Nguyen2012}
+{\sc Nguyen, T. H.~T., Comets, E., and Mentr{\'e}, F.}
+\newblock {Prediction discrepancies (pd) for evaluation of models with data
+  under limit of quantification}.
+\newblock {\em Journal of Pharmacokinetics and Pharmacodynamics 39\/} (2012),
+  499--518.
+
+\bibitem{OReilly68}
+{\sc {O?R}eilly, R.}
+\newblock Studies on coumarin anticoagulant drugs. initiation of warfarin
+  therapy without a loading dose.
+\newblock {\em Circulation 38\/} (1968), 169--77.
+
+\bibitem{R}
+{\sc {R Development Core Team}}.
+\newblock {\em R: A Language and Environment for Statistical Computing}.
+\newblock R Foundation for Statistical Computing, Vienna, Austria, 2006.
+\newblock {ISBN} 3-900051-07-0.
+
+\bibitem{NONMEM}
+{\sc Sheiner, L., and S}.
+\newblock {\em NONMEM Version 5.1}.
+\newblock University of California, NONMEM Project Group, San Francisco, 1998.
+
+\bibitem{ggplot2}
+{\sc Wickham, H.}
+\newblock {\em ggplot2: Elegant Graphics for Data Analysis}.
+\newblock Springer-Verlag New York, 2016.
+
+\bibitem{Wright}
+{\sc Wright, S.}
+\newblock Adjusted p-values for simultaneous inference.
+\newblock {\em Biometrics 48\/} (1992), 1005--13.
+
+\end{thebibliography}

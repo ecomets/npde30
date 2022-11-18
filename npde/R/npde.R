@@ -291,7 +291,7 @@ NULL
 #' 23:2036--49, 2006.
 #' @keywords methods
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # You need to have gridExtra installed to successfully run this example
 #' if(requireNamespace("gridExtra", quietly=TRUE)) {
 #'   data(warfarin)

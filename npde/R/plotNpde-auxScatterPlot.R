@@ -21,7 +21,7 @@ aux.npdeplot.boxcov <- function(obsmat, pimat, plot.opt) {
           panel.grid.minor.x = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid),
           panel.grid.major.y = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid),
           panel.grid.minor.y = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid))+
-    expand_limits(y = 0) +  guides( fill = FALSE ) +
+    expand_limits(y = 0) +  guides( fill = "none" ) +
     { if(plot.opt$bands) 
       geom_point(data = pimat, aes(x = grp, y = pmid.median), color=plot.opt$col.ther, alpha = plot.opt$alpha, size=plot.opt$size.pobs)  }+
     scale_y_continuous( plot.opt$ylab, limits = y.limits, scales::pretty_breaks(n = plot.opt$breaks.y) ) +
@@ -162,7 +162,7 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
               panel.grid.major.y = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid),
               panel.grid.minor.y = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid))+
         expand_limits(y = 0) +  # Eco=>Romain: not sure we want this !!! we need some kind of test (some responses may be very far from 0!!!)
-        guides( fill = FALSE ) +
+        guides( fill = "none" ) +
         
         # Model predicted and observed percentiles
         geom_line(data = pimat, mapping = aes(x = xcent, y = obs.median), inherit.aes = FALSE,
@@ -218,10 +218,10 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
 
         scale_y_continuous( plot.opt$ylab, limits = y.limits, scales::pretty_breaks(n = plot.opt$breaks.y) ) +
 
-        scale_x_continuous( plot.opt$xlab, limits = x.limits,scales::pretty_breaks(n = plot.opt$breaks.y ) ) +
+        scale_x_continuous( plot.opt$xlab, limits = x.limits,scales::pretty_breaks(n = plot.opt$breaks.x ) ) +
 
         # facet wrap over covariate categories
-        facet_wrap(.~factor(category), nrow=1, scales = plot.opt$scales) +
+        facet_wrap(.~factor(category, levels=namesCategories), nrow=1, scales = plot.opt$scales) +
 
         {if(numberCategories==1)
           theme(strip.background = element_blank(), strip.text.x = element_blank())
@@ -350,7 +350,7 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
         {if (plot.opt$main!="") ggtitle(plot.opt$main)} +
 
         # facet wrap over covariate categories
-        facet_wrap(.~factor(category), nrow=1, scales=plot.opt$scales) +
+        facet_wrap(.~factor(category, levels=namesCategories), nrow=1, scales=plot.opt$scales) +
 
         {if(numberCategories==1)
           theme(strip.background = element_blank(), strip.text.x = element_blank())

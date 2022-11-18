@@ -14,8 +14,8 @@
 #' \item{name.group}{character string giving the name of the grouping term (ID)}
 #' \item{name.predictor}{character string giving the name of the predictor (X)}
 #' \item{name.response}{character string giving the name of the response (Y)}
-#' \item{name.cens}{character string giving the name of the censoring indicator}
-#' \item{name.mdv}{character string giving the name of the missing data indicator}
+#' \item{name.cens}{character string giving the name of the censoring indicator in the original dataset (renamed to cens)}
+#' \item{name.mdv}{character string giving the name of the missing data indicator in the original dataset (renamed to mdv)}
 #' \item{name.covariates}{vector of character string giving the name(s) of the covariates}
 #' \item{name.ipred}{character string giving the name of the individual predictions}
 #' \item{units}{(optional) a list with the units for X, Y, and covariates}

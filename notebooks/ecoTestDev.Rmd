@@ -39,6 +39,12 @@ setwd(workDir)
 knitr::opts_chunk$set(root.dir = workDir)
 docFigs<-"/home/eco/work/npde/doclib/figs"
 fullDatDir<-file.path(workDir,"keep","data") # Full data files (some removed from package to decrease size on CRAN)
+datDir<-file.path(workDir,"data")
+
+# Where the package was compiled on my machine
+compileDir<-"/home/eco/work/npde/compileNpde"
+
+# Toggles saving plots for the documentation
 saveDocPlots<-FALSE
 savePaperPlots<-FALSE
 ```
@@ -47,7 +53,7 @@ savePaperPlots<-FALSE
   
 ```{r devModeInstall}
 dev_mode() # development mode
-install.packages(pkgs=file.path(workDir,"npde_3.2.tar.gz"),repos=NULL)
+install.packages(pkgs=file.path(compileDir,"npde_3.3.tar.gz"),repos=NULL)
 library(npde)
 
 if(FALSE) {
@@ -193,7 +199,7 @@ wcov devrait marcher (avec les covariables données en numéro de colonne et pas
 ```{r warfarinRun, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
 data(warfarin)
 simwarfarinBase<-read.table(file.path(fullDatDir, "simwarfarinBase.tab"), header=T)
-simwarfarinBase<-read.table(file.path(fullDatDir, "simwarfarinBase.tab"), header=T)
+simwarfarinCov<-read.table(file.path(fullDatDir, "simwarfarinCov.tab"), header=T)
 
 wbase<-autonpde(namobs=warfarin,namsim=simwarfarinBase, iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
 
@@ -204,7 +210,6 @@ wcov<-autonpde(namobs=warfarin,namsim=simwarfarinCov, iid=1,ix=2,iy=4,icov=c("am
 wcov2<-autonpde(namobs=warfarin,namsim=simwarfarinCov, iid=1,ix=2,iy=4,icov=c("amt" ,"wt" , "sex","age"),namsav="warfCov", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
 
 # Warfarin with MDV
-datDir<-file.path(workDir,"npde","data")
 warfmdv<-read.table(file.path(datDir, "warfarin.tab"), header=T)
 idx<-sample(1:dim(warfmdv)[1], 10)
 warfmdv$mdv<-0
@@ -248,7 +253,7 @@ plot(theofit1)
 plot(theofit1, main="Gof plots for theophylline")
 plot(theofit1, which="pd")
 plot(theofit1, which="npde")
-plot(theofit1, which="faux") # should throw an error => yes
+plot(theofit1, which="faux") # switches to npd automatically
 plot(theofit1,size=5)
 plot(theofit1,col="green",size=3)
 plot(theofit1,col.pobs="green",size.pobs=3)

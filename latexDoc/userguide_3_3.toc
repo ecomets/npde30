@@ -1,0 +1,81 @@
+\contentsline {paragraph}{Important changes with version 3.0:}{4}{section*.2}%
+\contentsline {section}{\numberline {1}Installation and Legalese}{5}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Download and installation}{5}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}License}{5}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Citing {\sf npde}}{6}{subsection.1.3}%
+\contentsline {section}{\numberline {2}Statistical methods}{8}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Models and notations}{8}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Computing pde and npde in the absence of BQL data}{9}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Prediction discrepancies ({\rm pd})}{9}{subsubsection.2.2.1}%
+\contentsline {paragraph}{Smoothing the distribution:}{10}{section*.3}%
+\contentsline {subsubsection}{\numberline {2.2.2}Prediction distribution errors ({\rm pde})}{10}{subsubsection.2.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.3}Decorrelating the data to obtain {\rm pde}}{11}{subsubsection.2.2.3}%
+\contentsline {paragraph}{Decorrelation methods:}{11}{section*.4}%
+\contentsline {paragraph}{Choosing a decorrelation method:}{12}{section*.5}%
+\contentsline {subsection}{\numberline {2.3}Handling BQL data}{13}{subsection.2.3}%
+\contentsline {paragraph}{Choosing the method to handle BQL data:}{13}{section*.6}%
+\contentsline {paragraph}{Imputation of BQL data using the cumulative distribution function)\nobreakspace {}\cite {Nguyen2012}:}{14}{section*.7}%
+\contentsline {subsection}{\numberline {2.4}Tests}{16}{subsection.2.4}%
+\contentsline {subsubsection}{\numberline {2.4.1}Tests on the distribution of npde}{16}{subsubsection.2.4.1}%
+\contentsline {subsubsection}{\numberline {2.4.2}Tests for covariate models}{16}{subsubsection.2.4.2}%
+\contentsline {subsection}{\numberline {2.5}Graphs}{17}{subsection.2.5}%
+\contentsline {subsubsection}{\numberline {2.5.1}Diagnostic graphs}{17}{subsubsection.2.5.1}%
+\contentsline {paragraph}{Assessing the distribution of npde:}{17}{section*.8}%
+\contentsline {paragraph}{Probability of being under the LOQ:}{17}{section*.9}%
+\contentsline {paragraph}{Prediction intervals:}{17}{section*.10}%
+\contentsline {subsubsection}{\numberline {2.5.2}Graphs for covariate models}{18}{subsubsection.2.5.2}%
+\contentsline {subsubsection}{\numberline {2.5.3}VPC}{19}{subsubsection.2.5.3}%
+\contentsline {paragraph}{Stratification:}{19}{section*.11}%
+\contentsline {subsubsection}{\numberline {2.5.4}Graphs with a reference profile}{19}{subsubsection.2.5.4}%
+\contentsline {paragraph}{Non-parametric construction of ${\rm tnpde}$:}{20}{section*.12}%
+\contentsline {section}{\numberline {3}The npde package}{21}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Preparation of the input}{21}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {3.1.1}Observed data}{21}{subsubsection.3.1.1}%
+\contentsline {subsubsection}{\numberline {3.1.2}Simulated data}{22}{subsubsection.3.1.2}%
+\contentsline {subsubsection}{\numberline {3.1.3}Number of simulations}{22}{subsubsection.3.1.3}%
+\contentsline {subsection}{\numberline {3.2}Execution}{22}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Interactive execution}{22}{subsubsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2}Non-interactive execution}{23}{subsubsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.3}Results}{25}{subsection.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.1}Value}{25}{subsubsection.3.3.1}%
+\contentsline {subsubsection}{\numberline {3.3.2}Graphs}{26}{subsubsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.4}Errors during execution}{26}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}Functions in the {\rm npde}\nobreakspace {}package}{28}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}Options for graphs}{30}{subsection.3.6}%
+\contentsline {paragraph}{Binning:}{30}{section*.13}%
+\contentsline {paragraph}{Further options:}{31}{section*.14}%
+\contentsline {section}{\numberline {4}Examples}{32}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Model evaluation for theophylline PK}{32}{subsection.4.1}%
+\contentsline {subsubsection}{\numberline {4.1.1}Data}{32}{subsubsection.4.1.1}%
+\contentsline {subsubsection}{\numberline {4.1.2}Model}{33}{subsubsection.4.1.2}%
+\contentsline {subsubsection}{\numberline {4.1.3}Simulations}{34}{subsubsection.4.1.3}%
+\contentsline {subsubsection}{\numberline {4.1.4}Computing ${\rm npde}$}{34}{subsubsection.4.1.4}%
+\contentsline {paragraph}{Note:}{38}{section*.15}%
+\contentsline {subsubsection}{\numberline {4.1.5}Graphs}{38}{subsubsection.4.1.5}%
+\contentsline {subsubsection}{\numberline {4.1.6}Tests}{40}{subsubsection.4.1.6}%
+\contentsline {subsection}{\numberline {4.2}Model evaluation for viral loads in HIV (with BQL data)}{41}{subsection.4.2}%
+\contentsline {subsubsection}{\numberline {4.2.1}Data}{41}{subsubsection.4.2.1}%
+\contentsline {subsubsection}{\numberline {4.2.2}Model and parameters for simulation}{41}{subsubsection.4.2.2}%
+\contentsline {subsubsection}{\numberline {4.2.3}Computing npde in the presence of BQL data}{42}{subsubsection.4.2.3}%
+\contentsline {subsubsection}{\numberline {4.2.4}Graphs}{43}{subsubsection.4.2.4}%
+\contentsline {paragraph}{Data:}{43}{section*.16}%
+\contentsline {paragraph}{Comparing the censoring methods:}{44}{section*.17}%
+\contentsline {paragraph}{VPC:}{46}{section*.18}%
+\contentsline {paragraph}{Scatterplots:}{49}{section*.19}%
+\contentsline {subsection}{\numberline {4.3}Model evaluation for warfarin PK}{50}{subsection.4.3}%
+\contentsline {subsubsection}{\numberline {4.3.1}Data}{50}{subsubsection.4.3.1}%
+\contentsline {subsubsection}{\numberline {4.3.2}Default plots}{51}{subsubsection.4.3.2}%
+\contentsline {subsubsection}{\numberline {4.3.3}Covariate model}{53}{subsubsection.4.3.3}%
+\contentsline {subsubsection}{\numberline {4.3.4}Reference profile}{54}{subsubsection.4.3.4}%
+\contentsline {section}{\numberline {5}Graph options}{56}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Types of graphs}{56}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Options for graphs}{57}{subsection.5.2}%
+\contentsline {section}{References}{63}{subsection.5.2}%
+\contentsline {section}{Appendix - Theophylline example}{66}{section*.20}%
+\contentsline {subsection}{R commands}{66}{section*.21}%
+\contentsline {subsection}{Data}{67}{section*.22}%
+\contentsline {subsection}{Control file used for the NONMEM analysis}{68}{section*.23}%
+\contentsline {subsection}{Results obtained with NONMEM}{69}{section*.24}%
+\contentsline {subsection}{NONMEM control file used for the simulations}{70}{section*.25}%
+\contentsline {subsection}{Simulated data}{71}{section*.26}%
+\contentsline {subsection}{Saved results}{72}{section*.27}%

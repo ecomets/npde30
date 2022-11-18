@@ -167,20 +167,25 @@ setMethod("read",
                 if(detect.ipred & verbose) cat("    assuming that individual predictions are given in column --",object@name.ipred,"-- in the dataset (to ignore this column, add the argument detect=FALSE in the call to npdeData()).\n")
               }
             }
-            # CENS : column indicating censoring
+            # CENS : column indicating censoring, renamed to cens in the dataframe data
             detect.cens<-FALSE
-            if(length(object@name.cens)>0 && !is.na(as.integer(object@name.cens))) # cens given as a column number
-              object@name.cens<-colnames(dat)[as.integer(object@name.cens)]
+            if(length(object@name.cens)>0 && !is.na(as.integer(object@name.cens))) { # cens given as a column number, changing to cens
+              object@name.cens<-colnames(dat)[as.integer(object@name.cens)]<-"cens"
+            }
+            if(length(object@name.cens)>0 && match(object@name.cens,colnames(dat),nomatch=0)>0) {
+              object@name.cens<-colnames(dat)[match(object@name.cens,colnames(dat),nomatch=0)]<-"cens"
+            }
             if(length(object@name.cens)>0 && match(object@name.cens,colnames(dat),nomatch=0)==0) {
               if(detect & verbose) cat("Can't find a column named",object@name.cens,"in the dataset containing censoring, will attempt automatic detection.\n")
               object@name.cens<-character()
-            }
+            } 
             if(length(object@name.cens)==0 || is.na(object@name.cens)) detect.cens<-TRUE
             if(detect.cens) {
               i1<-c(grep("cens",tolower(colnames(dat)),fixed=T))
               if(length(i1)>0) {
                 object@name.cens<-colnames(dat)[i1[1]]
-                if(detect.cens & verbose) cat("    assuming that censoring information is given in column --",object@name.cens,"-- in the dataset (to ignore this column, add the argument detect=FALSE in the call to npdeData()).\n")
+                if(detect.cens & verbose) cat("    assuming that censoring information is given in column --",object@name.cens,"-- in the dataset (to turn off all automatic detections, add the argument detect=FALSE in the call to npdeData()).\n")
+                object@name.cens<-colnames(dat)[i1[1]]<-"cens" # renaming
               }
             }
             if(length(object@name.cens)>0) { # checking validity of censoring column
@@ -191,7 +196,7 @@ setMethod("read",
             # MDV : column indicating missing data
             detect.miss<-FALSE
             if(length(object@name.miss)>0 && !is.na(as.integer(object@name.miss))) # miss given as a column number
-              object@name.miss<-colnames(dat)[as.integer(object@name.miss)]
+              object@name.miss<-colnames(dat)[as.integer(object@name.miss)]<-"mdv"
             if(length(object@name.miss)>0 && match(object@name.miss,colnames(dat),nomatch=0)==0) {
               if(detect & verbose) cat("Can't find a column named",object@name.miss,"in the dataset containing missing data status, will attempt automatic detection.\n")
               object@name.miss<-character()
@@ -202,6 +207,7 @@ setMethod("read",
               if(length(i1)>0) {
                 object@name.miss<-colnames(dat)[i1[1]]
                 if(detect.miss & verbose) cat("    assuming that column --",object@name.miss,"-- in the dataset contains missing data information (to ignore this column, add the argument detect=FALSE in the call to npdeData()).\n")
+                object@name.miss<-colnames(dat)[i1[1]]<-"mdv"  # renaming
               }
             }
             if(length(object@name.miss)>0) { # checking validity of MDV column
@@ -370,13 +376,13 @@ npdeData<-function(name.data,header=TRUE,sep="",na.strings=c(".","NA"),name.grou
   # setting proper types for the NpdeData class
   #  if(missing(name.data) || length(name.data)==0 || !(is(name.data,c("character","data.frame")))) {
   if(missing(name.data) || length(name.data)==0 || sum(is.na(match(c("character","data.frame"), class(name.data))))==2) {
-    if(verbose) cat("Error in npdeData: please provide the name of the datafile or dataframe (between quotes)\n")
+    if(verbose) cat("Error in npdeData: please provide the name of the datafile (between quotes) or dataframe\n")
     return("Creation of NpdeData failed: no data given")
   }
   if(is(name.data, "character")) {
     if(verbose) cat("Reading data from file",name.data,"\n")
     dat<-try(read.table(name.data, header=header, sep=sep, na.strings=na.strings))
-    if(class(dat)=="try-error") stop("The file ",name.data," does not exist. Please check the name and path.\n")
+    if(is(dat,"try-error")) stop("The file ",name.data," does not exist. Please check the name and path.\n")
     if(dim(dat)[2]<2) {
       if(verbose) cat("The dataset contains only one column. To compute npde, we need at least 3 columns, with subject ID, predictor (at least one) and response. \nPlease check the field separator, currently given as:", paste("sep=\"",sep,"\"",sep=""), "\n")
       return("Creation of npdeData failed")
@@ -385,7 +391,7 @@ npdeData<-function(name.data,header=TRUE,sep="",na.strings=c(".","NA"),name.grou
       cat("These are the first lines of the dataset as read into R. Please check the format of the data is appropriate, if not, modify the na and/or sep items and retry:\n")
       print(head(dat))
     }
-  } else dat<-name.data
+  } else dat<-as.data.frame(name.data) # in case users are trying to use exotic things like tibble...
   if(missing(name.group)) name.group<-"" else name.group<-as.character(name.group)
   if(missing(name.predictor)) name.predictor<-"" else name.predictor<-as.character(name.predictor)
   if(missing(name.response)) name.response<-"" else  name.response<-as.character(name.response)
@@ -459,12 +465,12 @@ npdeSimData<-function(npde.data, name.simdata, header=TRUE, sep="", na.strings=c
   if(is(name.simdata, "character")) {
     if(verbose) cat("Reading data from file",name.simdata,"\n")
     dat<-try(read.table(name.simdata, header=header, sep=sep, na.strings=na.strings))
-    if(class(dat)=="try-error") stop("The file ",name.simdata," does not exist. Please check the name and path.\n")
+    if(is(dat,"try-error")) stop("The file ",name.simdata," does not exist. Please check the name and path.\n")
     if(verbose) {
       cat("These are the first lines of the dataset as read into R. Please check the format of the data is appropriate, if not, modify the na and/or sep items and retry:\n")
       print(head(dat))
     }
-  } else dat<-name.simdata
+  } else dat<-as.data.frame(name.simdata)
   
   x1<-new(Class="NpdeSimData")
   x<-read(x1, dat, detect=detect, verbose=verbose)

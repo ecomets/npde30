@@ -78,9 +78,9 @@ source(file.path(workDir,"npde","R","plotNpde-covplot.R")) # covariate plots as 
 theofit1<-autonpde(file.path(datDir, "theopp.tab"),namsim=file.path(datDir, "simtheopp.tab"),1,3,4,boolsave=FALSE, units=list(x="hr",y="mg/L"))
 
 # Warfarin data, using files on disk
-wbase<-autonpde(namobs=file.path(datDir, "warfarin.tab"),namsim=file.path(fulldatDir, "simwarfarinBase.tab"), iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
+wbase<-autonpde(namobs=file.path(datDir, "warfarin.tab"),namsim=file.path(fulldatDir, "simwarfarinBase.tab"), iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")), boolsave=FALSE)
 
-wcov<-autonpde(namobs=file.path(datDir, "warfarin.tab"),namsim=file.path(fulldatDir, "simwarfarinCov.tab"), iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
+wcov<-autonpde(namobs=file.path(datDir, "warfarin.tab"),namsim=file.path(fulldatDir, "simwarfarinCov.tab"), iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")), boolsave=FALSE)
 
 # Warfarin with MDV
 warfmdv<-read.table(file.path(datDir, "warfarin.tab"), header=TRUE)
@@ -125,6 +125,7 @@ x50.ppred<-yvir50.ppred
 
 ### Debugging 
 
+#### Main plots
 
 ```{r yloq, echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
 plot(yvir20)
@@ -149,16 +150,126 @@ list_plot<-list(hist20, qqplot20, xscatter20, predscatter20)
 
 grid.arrange(grobs = list_plot,nrow=2, ncol=2,vjust = 1, gp = gpar(fontsize=yvir20@prefs$size.main))
 
+plot(yvir20, plot.type="ecdf", bands=TRUE, approx.pi=TRUE)
 ```
+
+#### Final plots
+
+```{r debugHist, echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+plot(wcov, plot.type="hist")
+plot(wcov, plot.type="ecdf")
+
+npdeObject <- wcov
+# Plot options
+userPlotOptions <- npdeObject@prefs
+plot.opt <- set.plotoptions.default( npdeObject )
+plot.opt <- modifyList( plot.opt, userPlotOptions[ intersect( names( userPlotOptions ), names( plot.opt ) ) ] )
+sim.ypl<-NULL
+
+# Creating obsmat for distribution plots (hist, qqplot, ecdf)
+if(length(npdeObject["data"]["icens"])>0) has.cens<-TRUE else has.cens<-FALSE
+covsplit<-plot.opt$covsplit
+if(covsplit) {
+    if(is.numeric(plot.opt$which.cov)) plot.opt$which.cov<-npdeObject["data"]["name.covariates"][plot.opt$which.cov] # convert to names of covariates
+    if(plot.opt$which.cov=="all" | plot.opt$which.cov=="") plot.opt$which.cov<-npdeObject["data"]["name.covariates"]
+}
+if (length(npdeObject["data"]["name.covariates"])>0) hasCovariates = TRUE else hasCovariates = FALSE
+
+ypl<-npdeObject["results"]["res"]$npde
+
+obsmat<-data.frame(x=ypl)
+obsmat$category<-"all"
+if(length(npdeObject["data"]["icens"])>0) obsmat$cens<-npdeObject["data"]["data"]$cens else obsmat$cens<-0
+not.miss = npdeObject["data"]["not.miss"] # not.miss : not missing data in the data TRUE/FALSE
+obsmat<-obsmat[not.miss,]
+if(sum(is.na(obsmat$x))>0) {# missing data because of omit method
+  not.miss2<-!(is.na(obsmat$x))
+  obsmat<-obsmat[not.miss2,]
+  if(!is.null(sim.ypl)) sim.ypl<-sim.ypl[rep(not.miss2, nsim)]
+}  else not.miss2<-NULL
+
+
+# histogram
+aux.npdeplot.hist(obsmat,  plot.opt, distrib="norm", nclass=10, sim.ypl=NULL)
+
+# QQplot and ecdf
+dist.type <- "qqplot"
+aux.npdeplot.dist(obsmat,  plot.opt, dist.type=dist.type, distrib="norm", sim.ypl=NULL)
+
+dist.type <- "ecdf"
+aux.npdeplot.dist(obsmat,  plot.opt, dist.type=dist.type, distrib="norm", sim.ypl=NULL)
+
+if(FALSE) {
+  which="npd"
+  npdeObject <- wcov
+  dist.type <- "ecdf"
+  }
+
+```
+
+#### Why do the bands on npd/npde appear at less than +/- 1.96 ?
+
+Because we have limited data in each bin (with N=12, we expect +/- 1.43, with N=20, +/- 1.63, and we converge to -1.96 by around 100 observations per bin)...
+
+```{r checkBands}
+theofit1@prefs$vpc.interval
+
+# bands
+bnds1<-compute.bands(200)
+bnds2<-compute.bands(1000)
+bnds1$bmed
+bnds2$bmed
+
+bnds12<-compute.bands(12)
+bnds12$bmed
+bnds20<-compute.bands(20)
+bnds20$bmed
+
+# Plot showing how we converge slowly to 1.96 :-)
+cbnds <- compute.bands(seq(0,200))
+plot(seq(0,200),cbnds$bmed[,3], type="l")
+abline(h=1.5)
+abline(h=1.96)
+
+# PI computed
+yfit <- theofit1
+which.x <- "x"
+which.y <- "npde"
+obsmat <- data.frame(x=switch(which.x, "x"=yfit@data@data[,yfit@data@name.predictor],
+                              "pred"=yfit@results@res$ypred,
+                              "cov"=yfit@data@data[,yfit@data@name.covariates[idx.cov[1]]] ))
+obsmat$y <- switch(which.y, "npde"=yfit@results@res$npde, "npd"=yfit@results@res$npd, "pd"=yfit@results@res$pd,
+                     "yobs"=yfit@results@res$ycomp, "pde"=yfit@results@res$npde)
+
+#if(length(yfit@data@icens)==0) obsmat$cens<-0 else obsmat$cens<-yfit@data@data$cens
+obsmat$cens<-0
+obsmat$category<-'none'
+# test if censored data
+not.miss = yfit["data"]["not.miss"] # not.miss : not missing data in the data TRUE/FALSE
+obsmat<-obsmat[not.miss,]
+
+xbin<-npde.binning(obsmat$x,plot.opt=yfit@prefs)
+obsmat$grp <- xbin$xgrp
+matbin<-data.frame(grp=1:length(xbin$xcent), xcent=xbin$xcent, binlabel = names(xbin$xcent)) # binning matrix
+
+bnds<-aux.npdeplot.computepi(obsmat)
+pimat<-aux.npdeplot.pimat(obsmat, xcent=matbin$xcent)
+# pinf.median, psup.median -/+ 1.44 au lieu de 1.96, why ?
+
+```
+
 
 #### dispatching function
 
+Not run, contains relative paths.
+
 ```{r troispetitspoints, echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
-
-test_file(file.path(testsDir,"test-arguments-ellipsis.R"))
-
-test_file(file.path(testsDir,"test-modifyOptions.R"))
-
+if(FALSE) {
+  test_file(file.path(testsDir,"test-arguments-ellipsis.R"))
+  
+  test_file(file.path(testsDir,"test-modifyOptions.R"))
+  
+}
 
 ```
 
@@ -177,6 +288,8 @@ ref.prof<-NULL
 ```
 
 #### distribution plots
+
+Plots omitting LOQ data - expect to see a lot of red
 
 ```{r debugSetup, echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
 npde.plot.dist(yvir50.omit)

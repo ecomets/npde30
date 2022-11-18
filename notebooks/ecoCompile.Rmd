@@ -6,6 +6,7 @@ output:
   pdf_document:
     latex_engine: xelatex
   html_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -69,7 +70,7 @@ dir.create(file.path(compilDir,"npde"))
 dir.create(file.path(compilDir,"npde","inst"))
 # File too large
 if(FALSE) {
-  cmd<-paste("cp ", file.path(workDir,"latexDoc","userguide_3_1.pdf")," ", file.path(compilDir,"inst","userguide_npde_3.1.pdf"),sep="")
+  cmd<-paste("cp ", file.path(workDir,"latexDoc","userguide_3_3.pdf")," ", file.path(compilDir,"inst","userguide_npde_3.3.pdf"),sep="")
   system(cmd)
 }
 
@@ -88,13 +89,20 @@ for(ifile in c("CITATION")) {
 # cmd<-paste("cp ",file.path(workDir,"LICENSE")," ", file.path(compilDir,"inst"),sep="")
 # system(cmd)
 
+```
+
+```{r document,echo=FALSE,message=FALSE,warnings=FALSE, results=FALSE}
 # Compile
 setwd(file.path(compilDir,"npde"))
 devtools::document()
+setwd(file.path(compilDir,"npde"))
 roxygenise()
+```
+
+```{r building}
 setwd(compilDir)
 system("R CMD build npde")
-system("R CMD check --as-cran --run-donttest npde_3.2.tar.gz")
+system("R CMD check --as-cran --run-donttest npde_3.3.tar.gz")
 ```
 
 #### npde 3.1
@@ -109,7 +117,7 @@ Apres correction, la compilation du package passe sans erreurs et avec 2 notes r
   - jeux de donnees non documentes: removed remifentanil, added virload documentation (used to be a specific man page, reintegrated them into roxygen format in npde.R like warfarin)
   - duplicated alias: fixed !
 
-#### npde 3.2
+#### npde 3.2, 3.3
 
 - **notes**
   - time to run examples
@@ -138,7 +146,7 @@ Undefined global functions or variables:
 - Warnings in first compilation (solved)
 
 ````
-W  checking Rd metadata ...
+  checking Rd metadata ...
    Rd files with duplicated alias 'aux.npdeplot.computepi':
      ‘npde.plot.default.Rd’ ‘npde.plot.scatterplot.Rd’
    Rd files with duplicated alias 'compute.bands':
@@ -147,8 +155,6 @@ W  checking Rd metadata ...
      ‘npde.plot.default.Rd’ ‘npde.plot.scatterplot.Rd’
    Rd files with duplicated alias 'npde':
      ‘npde-package.Rd’ ‘npde.Rd’
-✓  checking Rd line widths ...
-✓  checking Rd cross-references ...
 W  checking for missing documentation entries (346ms)
    Undocumented code objects:
      ‘remifent’ ‘simremifent’ ‘simremifent_base’ ‘simvirload’ ‘virload’
@@ -165,7 +171,7 @@ W  checking for missing documentation entries (346ms)
   
 ```{r devModeInstall}
 dev_mode() # development mode
-install.packages(pkgs=file.path(workDir,"npde_3.1.tar.gz"),repos=NULL)
+install.packages(pkgs=file.path(compilDir,"npde_3.3.tar.gz"),repos=NULL)
 library(npde)
 library(ggplot2)
 library(gridExtra)
@@ -176,6 +182,9 @@ library(grid)
 
 # Theophylline
 
+- computation of npde and npd
+- default plots
+
 ```{r theo, echo=FALSE}
 data(theopp)
 data(simtheopp)
@@ -184,9 +193,30 @@ data(simtheopp)
 x<-autonpde(theopp,simtheopp,1,3,4,boolsave=FALSE)
 plot(x)
 head(x["results"]["res"])
+
+plot(x, plot.type="hist")
 ```
 
+# Warfarin
 
+- covariate plots
+- reference profiles
+
+```{r runNpdeWarf, echo=FALSE}
+data(warfarin)
+data(simwarfarinCov)
+# Warfarin data, using files on disk
+wcov<-autonpde(namobs=warfarin,namsim=simwarfarinCov, iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfCov", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")), boolsave=FALSE)
+
+plot(wcov, plot.type="x.scatter", covsplit=TRUE, which.cov=c("wt", "sex"))
+plot(wcov, plot.type="ecdf", covsplit=TRUE, which.cov=c("wt", "sex"))
+
+
+plot.tnpde<-plot(wcov, plot.type="x.scatter", ref.prof=list(id=2), main="tnpd with reference profile ID=2")
+plot.vpc<-plot(wcov, plot.type="vpc", main="VPC")
+grid.arrange(grobs=list(plot.tnpde, plot.vpc), nrow=1, ncol=2)
+
+```
 # Viral load, base plots
 
 

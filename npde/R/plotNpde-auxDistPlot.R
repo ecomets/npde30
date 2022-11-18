@@ -131,7 +131,7 @@ aux.npdeplot.hist<-function(obsmat,  plot.opt, distrib="norm", nclass=10, sim.yp
     { if (plot.opt$ylog == TRUE) annotation_logticks(sides = "l")} +
 
     # facet wrap over covariate categories
-    facet_wrap(.~factor(category), nrow=1) +
+    facet_wrap(.~factor(category, levels=namesCategories, ordered=TRUE), nrow=1) +
     {if(numberCategories==1)
       theme(strip.background = element_blank(), strip.text.x = element_blank())
       } +
@@ -175,10 +175,9 @@ aux.npdeplot.dist<-function(obsmat,  plot.opt, dist.type="qqplot", distrib="norm
   if(dist.type=="qqplot" & distrib=="norm") xmat$y<-qnorm(xmat$y)
 
   # x-y axis labels for ecdf plot
-  if(dist.type=="ecdf")
-  {
-    plot.opt$xlab = plot.opt$which
-    plot.opt$ylab = "Empirical distribution function"
+  if(dist.type=="ecdf")  { # already done in function calling this one
+    if(plot.opt$xlab=="") plot.opt$ylab <- plot.opt$which
+    if(plot.opt$ylab=="") plot.opt$xlab <- "Empirical cumulative density function"
   }
 
   # -----------------------------------------------------------------------------------
@@ -275,7 +274,7 @@ aux.npdeplot.dist<-function(obsmat,  plot.opt, dist.type="qqplot", distrib="norm
     coord_flip(xlim=plot.opt$xlim, ylim=plot.opt$ylim) +
 
     # facet wrap over covariate categories
-    facet_wrap(.~factor(category), nrow=1) +
+    facet_wrap(.~factor(category, levels=namesCategories, ordered=TRUE), nrow=1) +
     {if(numberCategories==1)
       theme(strip.background = element_blank(), strip.text.x = element_blank())
     } +

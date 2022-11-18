@@ -84,7 +84,9 @@ npde.plot.dist<-function(npdeObject, which="npd", dist.type="qqplot", ...) {
   covsplit<-plot.opt$covsplit
   if(covsplit) {
     if(is.numeric(plot.opt$which.cov)) plot.opt$which.cov<-npdeObject["data"]["name.covariates"][plot.opt$which.cov] # convert to names of covariates
-    if(plot.opt$which.cov=="all" | plot.opt$which.cov=="") plot.opt$which.cov<-npdeObject["data"]["name.covariates"]
+    if(length(plot.opt$which.cov)==1) {
+      if(plot.opt$which.cov=="all" | plot.opt$which.cov=="") plot.opt$which.cov<-npdeObject["data"]["name.covariates"]
+    }
   }
 
   # covariates in the npdeObject => hasCovariates TRUE / FALSE

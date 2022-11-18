@@ -219,13 +219,14 @@ subset.NpdeObject<-function (x, subset, ...) {
 gof.test.NpdeObject<-function(object, parametric=TRUE, ...) {
   # Performs test on the selected variable (one of npde, pd or npd) of the results element of an NpdeObject
   # If covsplit is TRUE, performs the test split by covariate
-  args1<-match.call(expand.dots=TRUE)
+#  args1<-match.call(expand.dots=TRUE)
+  args1 <- list(...)
   if(length(object@results)==0) {
     if(object@options$verbose) message("No result element in object, please run npde first\n")
     return()
   }
   i1<-match("which",names(args1))
-  if(!is.na(i1) && !is.na(as.logical(as.character(args1[[i1]])))) which<-as.character(args1[[i1]]) else which<-"npde"
+  if(!is.na(i1) && !is.na(as.character(args1[[i1]]))) which<-as.character(args1[[i1]]) else which<-"npde"
   if(!which%in%c("pd","npde","npd")) {
     if(object@options$verbose) cat("Tests can be performed on one of: npde (default), pd, npd. Please choose one using the which argument.\n")
     return()
@@ -264,10 +265,10 @@ gof.test.NpdeObject<-function(object, parametric=TRUE, ...) {
     nind<-nind[match(unique(idobs),names(nind))]
     isamp<-cumsum(c(0,nind[-length(nind)]))+ceiling(runif(length(nind),0,nind))
     myres<-try(gof.test(x[isamp], parametric=parametric, which=which))
-    if(class(myres)!="try-error") printgoftest(myres,which=as.character(which),...)
+    if(!is(myres,"try-error")) printgoftest(myres,which=which,...)
   } else {
     myres<-try(gof.test(x, parametric=parametric, which=which))
-    if(class(myres)!="try-error") printgoftest(myres,which=as.character(which),...)
+    if(!is(myres,"try-error")) printgoftest(myres,which=which,...)
   }
   if(covsplit) {
     i1<-match("ncat",names(args1))
@@ -286,11 +287,11 @@ gof.test.NpdeObject<-function(object, parametric=TRUE, ...) {
         namcat<-paste(icov,sort(unique(zecov)),sep="=")
         if(parametric) {
           y<-try(anova(lm(x~zecov)))
-          xval<-ifelse(class(y)=="try-error",NA,y$Pr[1])
+          xval<-ifelse(is(y,"try-error"),NA,y$Pr[1])
           l1<-c(Covariate=icov,nb.categories=ncat,corr.pearson=xval)
         } else {
           y<-try(kruskal.test(x~zecov))
-          xval<-ifelse(class(y)=="try-error",NA,y$p.value)
+          xval<-ifelse(is(y,"try-error"),NA,y$p.value)
           l1<-c(Covariate=icov,nb.categories=ncat,corr.kruskal=xval)
         }
       } else {
@@ -301,11 +302,11 @@ gof.test.NpdeObject<-function(object, parametric=TRUE, ...) {
         # Correlation test: Pearson if parametric, Spearman otherwise
         if(parametric) {
           y<-try(cor.test(zecov,x,method="pearson"))
-          xval<-ifelse(class(y)=="try-error",NA,y$p.value)
+          xval<-ifelse(is(y,"try-error"),NA,y$p.value)
           l1<-c(Covariate=icov,nb.categories=ncat,corr.pearson=xval)
         } else {
           y<-try(cor.test(zecov,x,method="spearman"))
-          xval<-ifelse(class(y)=="try-error",NA,y$p.value)
+          xval<-ifelse(is(y,"try-error"),NA,y$p.value)
           l1<-c(Covariate=icov,nb.categories=ncat,corr.spearman=xval)
         }
         if(is.na(ncat.cont)) {
@@ -327,7 +328,7 @@ gof.test.NpdeObject<-function(object, parametric=TRUE, ...) {
           idx<-idx[isamp]
         }
         res1<-try(gof.test(x[idx], parametric=parametric, which=which))
-        if(class(res1)=="try-error") xval<-rep(NA,10) else xval<-unlist(res1)
+        if(is(res1,"try-error")) xval<-rep(NA,10) else xval<-unlist(res1)
         icovtest<-rbind(icovtest,c(ic.cov, namcat[which(sort(unique(zecov))==ic.cov)],xval))
       }
       for(i in 9:12) {

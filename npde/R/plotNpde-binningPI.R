@@ -84,13 +84,13 @@ compute.bands.true<-function(sim.ypl,quant=c(0.025,0.5,0.975), alpha=0.95) {
 #'
 #' Functions used by plot functions to define the boundaries of the bins on the X-axis
 #'
-#' These functions are normally not called by the end-user.
+#' These functions are normally not called by the end-user but are now exported for use in the saemix package.
 #'
 #' @param xvec a vector of values for the X-axis of the plot
 #' @param plot.opt graphical options
 #' @param verbose boolean (defaults to FALSE). If TRUE, a table showing how the binning was performed
 #'
-#' @return a list with 2 elements, xgrp (the number of the bin associated with each element of xvec) and xcent (a named vector containing the mean of the elements of xvec contained in each bin; the name of the bin is the interval).
+#' @return a list with 3 elements, xgrp (the number of the bin associated with each element of xvec), xcent (a named vector containing the mean of the elements of xvec contained in each bin; the name of the bin is the interval), and xgroup (a vector with the group associated to each element of xvec after binning)
 #' If verbose is TRUE, a table showing the bins is shown, giving the interval of xvec associated with each bin, the mean value
 #' of xvec in each bin, and the number of observations
 #'
@@ -102,9 +102,9 @@ compute.bands.true<-function(sim.ypl,quant=c(0.025,0.5,0.975), alpha=0.95) {
 #' Mentre. Metrics for external model evaluation with an application to the
 #' population pharmacokinetics of gliclazide. \emph{Pharmaceutical Research},
 #' 23:2036--49, 2006.
-#' @keywords internal
 #'
 #' @importFrom mclust Mclust
+#' @export
 
 # Binning the X data
 npde.binning<-function(xvec,plot.opt,verbose=FALSE) {

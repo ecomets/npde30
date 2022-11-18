@@ -190,7 +190,7 @@ pdemenu<-function() {
   while(ick==0) {
     namobs<-readline(prompt="Name of the file containing the observed data : ")
     datobs<-try(read.table(namobs,na.strings=c(".","NA"),nrows=10))
-    if(class(datobs)!="try-error") ick<-1 else
+    if(is(datobs,"try-error")) ick<-1 else
       cat("\n      File",namobs,"does not exist.\n")
   }
 
@@ -228,7 +228,7 @@ pdemenu<-function() {
   while(ick==0) {
     namsim<-readline(prompt="Name of the file containing the simulated data : ")
     datobs<-try(read.table(namsim,na.strings=c(".","NA"),nrows=10))
-    if(class(datobs)!="try-error") ick<-1 else
+    if(is(datobs,"try-error")) ick<-1 else
       cat("\n      File",namsim,"does not exist.\n")
   }
   cok<-readline(prompt="Do the input files have a header line (y/Y) [default=yes] ? ")
@@ -321,7 +321,7 @@ npde.main <- function(object) {
     #  	cat("Entering npde.main\n")
     if(object["options"]$calc.npd) object<-computepd(object)
     if(!object["options"]$calc.npde) {
-      if(object["options"]["verbose"]) cat("npde have not been computed, showing tests based on npd. Warning: these tests suffer from inflated type I error rates!! n")
+      if(object["options"]$verbose) cat("npde have not been computed, showing tests based on npd. Warning: these tests suffer from inflated type I error rates!! n")
       gof.test(object,which="npd")
     }
     #    cat("Computation of pd successful\n")

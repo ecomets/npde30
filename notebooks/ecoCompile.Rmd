@@ -3,9 +3,9 @@ title: "Package compilation and basic run - current version 3.4"
 author: "Emmanuelle Comets"
 date: "15/06/2023"
 output:
+  html_document: default
   pdf_document:
     latex_engine: xelatex
-  html_document: default
   word_document: default
 ---
 

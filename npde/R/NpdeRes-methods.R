@@ -349,7 +349,7 @@ gof.test.NpdeRes<-function(object, parametric=TRUE, ...) {
   if(!is.na(i1) && !is.na(as.logical(args1[[i1]]))) verbose<-as.logical(args1[[i1]])
   i1<-match("which",names(args1))
   if(!is.na(i1) && is.character(args1[[i1]])) which<-as.character(args1[[i1]]) else which<-"npde"
-  cat("in npdeRed, which=",which,"\n")
+#  cat("in npdeRes, which=",which,"\n")
   if(!which%in%c("pd","npde","npd")) {
     if(verbose) message("Tests can be performed on one of: npde (default), pd, npd. Please choose one using the which argument.\n")
     return()
@@ -362,7 +362,7 @@ gof.test.NpdeRes<-function(object, parametric=TRUE, ...) {
     if(verbose) message("    Missing pd object.\n")
     return("Missing pd object")
   }
-  cat("ici, which=",which,"\n")
+#  cat("ici, which=",which,"\n")
   npde<-switch(which,npde=object@res$npde,pd=object@res$pd, npd=qnorm(object@res$pd))
   npde<-npde[object@not.miss] # Removing values for MDV=1 (pd, npde not computed)
   i1<-match("verbose",names(args1))
@@ -380,7 +380,7 @@ gof.test.NpdeRes<-function(object, parametric=TRUE, ...) {
   }
   npde<-eval(call(na.action,npde))
   res<-gof.test(npde,which=which,parametric=parametric)
-  cat("la, which=",which,"\n")
+#  cat("la, which=",which,"\n")
   if(verbose)
     printgoftest(res, which=which)
   invisible(res)

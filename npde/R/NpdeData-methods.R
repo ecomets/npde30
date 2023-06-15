@@ -260,7 +260,7 @@ setMethod("read",
             if(length(object@name.covariates)>0 && sum(is.na(object@data[object@not.miss,object@name.covariates]))>0) {
               tab<-object@data
               for(icov in object@name.covariates) {
-                for(i in 2:dim(tab)) {
+                for(i in 2:dim(tab)[1]) {
                   if(is.na(tab[i,icov])) tab[i,icov]<-tab[(i-1),icov]
                 }
               }

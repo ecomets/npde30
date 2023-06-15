@@ -1,7 +1,7 @@
 Package: npde
 Title: Normalised Prediction Distribution Errors for Nonlinear Mixed-Effect Models
-Version: 3.3
-Date: 2022-11-14
+Version: 3.4
+Date: 2023-06-15
 Authors@R: c(person(given = "Emmanuelle",
            family = "Comets",
            role = c("aut", "cre"),

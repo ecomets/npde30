@@ -337,3 +337,45 @@ x<-plot.NpdeObject2(theofit1, dist.type="qqplot")
 
 
 ```
+
+# Only one value on X-axis
+
+```{r mehdi}
+mehDir <- "/home/eco/work/npde/hotline/mehdi23"
+obsdat <- read.table(file.path(mehDir, "eval_1_1.csv"), sep=",", na=".")
+simdat <- read.table(file.path(mehDir, "ALGHANEM_L2_12.tab"), na=".")
+head(obsdat)
+head(simdat)
+plot(obsdat[,2], obsdat[,5], pch=20)
+dim(obsdat)
+dim(simdat)
+
+yfit <- autonpde(obsdat, simdat, iid=1 , ix=2, iy=5, imdv=6, boolsave=F, units = list(x = "h", y = "mg/L"))
+plot(yfit)
+
+# Scatterplots
+plot(yfit, plot.type="x.scatter")
+npde.plot.scatterplot(yfit, which.x="x", which.y="npde")
+
+# one-dimensional plots - work
+plot(yfit, plot.type="hist")
+plot(yfit, plot.type="ecdf")
+plot(yfit, plot.type="data")
+
+# npde vs pred => works because different values for pred
+plot(yfit, plot.type="pred.scatter")
+
+# npde vs x => doesn't work because only one value for time...
+plot(yfit, plot.type="x.scatter")
+yfit@data@data[4,3] <- yfit@data@data[8,3] <- 40
+yfit@results@res[4,]
+plot(yfit, plot.type="x.scatter")
+
+# Removing MDV - not the problem
+idx<-(obsdat[,6]==0)
+obsdat2 <- obsdat[idx,]
+nsim<-dim(simdat)[1]/dim(obsdat)[1]
+simdat2<-simdat[rep(idx,nsim),]
+yfit2 <- autonpde(obsdat2, simdat2, iid=1 , ix=2, iy=5, boolsave=F, units = list(x = "h", y = "mg/L"))
+
+```

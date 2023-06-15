@@ -1,7 +1,7 @@
 ---
-title: "Package compilation and basic run"
+title: "Package compilation and basic run - current version 3.4"
 author: "Emmanuelle Comets"
-date: "02/02/2021"
+date: "15/06/2023"
 output:
   pdf_document:
     latex_engine: xelatex
@@ -23,6 +23,8 @@ knitr::opts_chunk$set(root.dir = workDir)
 ```
 
 ## Compilation
+
+First creation date: **02/02/2021**
 
 - structure
   - **tests** : removed all other folders and files except testthat from the package otherwise warnings about RDS files
@@ -52,6 +54,9 @@ knitr::opts_chunk$set(root.dir = workDir)
     - workaround by defining global variables so check won't complain about them, but we need to use the .data systematically in ggplot aes() => **Romain TODO**
 - **March 2021**
   - mail Fu (15/03): added again the option to save the output in autonpde (probably removed by Romain :-/ )
+- **June 2023**
+  - fixed scatterplot when only one X-value (removed interpolation in this case as was causing the plot to fail)
+  - note: the case when this happens within covsplit is **not fixed**
 
 ```{r compilation}
 # Reduce size of viral load simulation data (to 500 simulations) for CRAN
@@ -70,7 +75,7 @@ dir.create(file.path(compilDir,"npde"))
 dir.create(file.path(compilDir,"npde","inst"))
 # File too large
 if(FALSE) {
-  cmd<-paste("cp ", file.path(workDir,"latexDoc","userguide_3_3.pdf")," ", file.path(compilDir,"inst","userguide_npde_3.3.pdf"),sep="")
+  cmd<-paste("cp ", file.path(workDir,"latexDoc","userguide_3_3.pdf")," ", file.path(compilDir,"inst","userguide_npde_3.4.pdf"),sep="")
   system(cmd)
 }
 
@@ -102,7 +107,7 @@ roxygenise()
 ```{r building}
 setwd(compilDir)
 system("R CMD build npde")
-system("R CMD check --as-cran --run-donttest npde_3.3.tar.gz")
+system("R CMD check --as-cran --run-donttest npde_3.4.tar.gz")
 ```
 
 #### npde 3.1
@@ -128,6 +133,9 @@ npde.cens.method 7.51  0.019   7.605
 ### Warnings
 
 - ggplot warnings
+  - solved in npde 3.0 by adding global variables (horrible)
+    - in 3.3, tried to add .data$ to all the ggplot functions
+  - can't remove the .x because of scales
 
 ````
 Undefined global functions or variables:
@@ -171,7 +179,7 @@ W  checking for missing documentation entries (346ms)
   
 ```{r devModeInstall}
 dev_mode() # development mode
-install.packages(pkgs=file.path(compilDir,"npde_3.3.tar.gz"),repos=NULL)
+install.packages(pkgs=file.path(compilDir,"npde_3.4.tar.gz"),repos=NULL)
 library(npde)
 library(ggplot2)
 library(gridExtra)

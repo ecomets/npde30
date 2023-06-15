@@ -1,0 +1,158 @@
+---
+title: "Code merge - Scatter plots"
+author: "Emmanuelle Comets"
+date: "23/11/2022"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## Summary
+
+### Objective
+
+Recode auxiliary functions to simplify their structure. Test the results
+
+### Current issue
+
+Sorting the covariates in the facet plot
+
+### Requirements
+
+- main function  **npde.plot.scatterplot()**
+  - input: npdeObject, which.x, which.y (X and Y variables to plot), ref.prof (reference profile, defaults to NULL), "..."
+  - output: one plot
+- auxiliary functions **aux.npdeplot.boxcov()** and  **aux.npdeplot.scatter()**
+  - input: both functions should take as input
+    - a dataframe obsmat: matrix of Y observations to plot (Y= yobs, npde, npd, pd, tnpde, tnpd) versus X (X=independent variable (eg time), predictions (pred), covariates (cov)), with the following columns
+      - x,y:  X and Y variables to plot
+      - grp:  grouping factor - used to sort groups if plot.box=TRUE
+      - cens: 1 if censored, 0 otherwise
+      - loq: value of LOQ for the observation (used in VPC plot to optionally plot the line y=LOQ)
+      - category: covariate category (if "all", overall plot)
+    - a dataframe pimat: matrix of PI and empirical percentiles to plot for each bin, with columns
+      -  grp: grouping factor (same as obsmat) - not used (needed for ggplot)
+      - xcent: X-value used as center of each bin (one value of xcent per grp)
+      - category: covariate category (if "all", overall plot)
+      - 3 prediction intervals: pinf, pmid, psup (mid=middle, inf, sup= extreme PIs)
+        - for each PI, 3 quantiles: lower, median, upper (ie usually 0.025, 0.5, 0.975)
+        - for each PI, the empirical percentile for the observed data: obs.inf, obs.median, obs.sup
+    - graphical options: plot.opt
+      -  additional option plot.opt$which.cov (the name of the covariate when xaxis="cov", or the name of the covariate when the function is called over several categories of a covariate) must be added to a list created by **set.plotoptions.default()** before calling **aux.npdeplot.scatter()** 
+  - output
+    - scatter plots of Y versus X
+
+### Defining folders, loading libraries
+
+```{r setup, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(devtools)
+library(ggplot2)
+library(gridExtra)
+library(grid)
+library(mclust)
+library(testthat)
+#workDir<-"D:/RECHERCHES/_NPDE/Npde-2021/npde30-main"
+workDir<-"/home/eco/work/npde/npde30"
+notesDir<-file.path(workDir,"notebooks")
+datDir<-file.path(workDir,"data")
+fullDatDir<-file.path(workDir,"keep","data") # Full data files (some removed from package to decrease size on CRAN)
+testsDir<-file.path(workDir,"tests","testthat")
+setwd(workDir)
+```
+
+### Loading functions
+
+```{r setupOldPackage, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+# Classes from the package
+source(file.path(workDir,"npde","R","aaa_generics.R"))
+source(file.path(workDir,"npde","R","npdeControl.R"))
+source(file.path(workDir,"npde","R","NpdeData.R"))
+source(file.path(workDir,"npde","R","NpdeSimData.R"))
+source(file.path(workDir,"npde","R","NpdeData-methods.R"))
+source(file.path(workDir,"npde","R","NpdeRes.R"))
+source(file.path(workDir,"npde","R","NpdeRes-methods.R"))
+source(file.path(workDir,"npde","R","NpdeObject.R"))
+source(file.path(workDir,"npde","R","NpdeObject-methods.R"))
+
+# Computational functions from the package
+source(file.path(workDir,"npde","R","compute_distribution.R"))
+source(file.path(workDir,"npde","R","compute_npde.R"))
+source(file.path(workDir,"npde","R","compute_pd.R"))
+source(file.path(workDir,"npde","R","compute_ploq.R"))
+source(file.path(workDir,"npde","R","mainNpde.R"))
+source(file.path(workDir,"npde","R","npde.R"))
+
+# Plot functions from the package - kept, some changes
+source(file.path(workDir,"npde","R","plotNpde-methods.R"))
+source(file.path(workDir,"npde","R","plotNpde-plotFunctions.R"))
+source(file.path(workDir,"npde","R","plotNpde-binningPI.R")) # renamed from plotNpde-unitFunctionsPI.R
+
+# Scatterplots
+source(file.path(workDir,"npde","R","plotNpde-auxScatter.R")) # replaces plotNpde-unitFunctionsRef.R
+source(file.path(workDir,"npde","R","plotNpde-auxScatterPlot.R"))
+source(file.path(workDir,"npde","R","plotNpde-scatterplot.R")) # replaces plotNpde-meanProf.R
+
+# Distribution plots
+source(file.path(workDir,"npde","R","plotNpde-auxDistPlot.R")) # renamed from plotNpde-unitFunctionsAux.R
+source(file.path(workDir,"npde","R","plotNpde-distributionPlot.R")) # extracted "main" for distribution plots from plotNpde-plotFunctions.R
+  source(file.path(workDir,"npde","R","plotNpde-covplot.R"))
+```
+
+### Run npde
+
+```{r runNpde, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+# Warfarin data, using files on disk
+wbase<-autonpde(namobs=file.path(datDir, "warfarin.tab"),namsim=file.path(fullDatDir, "simwarfarinBase.tab"), iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
+
+wcov<-autonpde(namobs=file.path(datDir, "warfarin.tab"),namsim=file.path(fullDatDir, "simwarfarinCov.tab"), iid=1,ix=2,iy=4,icov=c(3,6:8),namsav="warfBase", units=list(x="hr",y="ug/L", covariates=c("mg","kg","-","yr")))
+```
+
+### Prepare objects 
+
+```{r prepareObsmat, include=FALSE,echo=FALSE,error=FALSE, warning=FALSE,message=FALSE}
+# no covariate
+obs.nocov<-wbase@results@res[,"npde",drop=FALSE]
+obs.nocov$category<-factor("all")
+colnames(obs.nocov)[1]<-"x"
+
+# Covariates
+npdeObject<-wbase
+idobs <- npdeObject["data"]["data"][npdeObject["data"]["not.miss"], npdeObject["data"]["name.group"]]
+plot.opt<-npdeObject["prefs"]
+
+## covariate sex
+obs.sex<-data.frame(x=wbase@results@res[,"npde"], category=paste("sex:", wbase@data@data$sex))
+obs.sex$category <- factor(obs.sex$category)
+
+## covariate weight
+zecov<-wbase@data@data$wt
+lcov<-"Weight:"
+ucov = zecov[match(unique(idobs),idobs)]
+if(is.numeric(ucov) & length(unique(ucov))>plot.opt$ncat){ # Continuous covariatewith more than plot.opt$ncat (default 3)
+  if(plot.opt$ncat!=3) { # 3 categories or less
+    ncat<-plot.opt$ncat
+    seqcat<-seq(0,1,length.out=(ncat+1))
+    zecov.cat<-cut(zecov,breaks=quantile(ucov,seqcat), include.lowest=TRUE, ordered_result=TRUE)
+    nam1<-paste("q",format(seqcat[-(ncat+1)],digits=2),"-q",format(seqcat[-1],digits=2),sep="")
+    namcat<-paste(namcov,nam1,sep=": ")
+    zecov.cat<-factor(zecov.cat, labels=namcat)
+  } else { # if more than 3 categories, split in 3 ranges
+    zecov.cat<-cut(zecov,breaks=quantile(ucov,c(0,0.25,0.75,1)), include.lowest=TRUE, ordered_result=TRUE)
+    namcat<-paste(lcov,c("<Q1","Q1-Q3",">Q3"),sep=": ")
+    zecov.cat<-factor(zecov.cat, labels=namcat)
+  }
+} else { # Categorical covariate defined as factor, or covariate with less than plot.opt$ncat categories
+  namcat<-paste(lcov,unique(ucov), sep=": ")
+  zecov.cat<-paste(lcov, zecov, sep=": ")
+  zecov.cat<-factor(zecov.cat, labels=namcat)
+}
+
+obs.weight<-data.frame(x=wbase@results@res[,"npde"], category=zecov.cat)
+
+# with pd
+obspd.sex<-obs.sex
+obspd.sex$x<-wbase@results@res[,"pd"]
+```
+
+## Debug auxiliary plots

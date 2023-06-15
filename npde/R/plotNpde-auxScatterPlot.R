@@ -7,7 +7,7 @@ aux.npdeplot.boxcov <- function(obsmat, pimat, plot.opt) {
     y.limits = c(plot.opt$ylim[1],plot.opt$ylim[2])  else
       y.limits = c(min(pimat$pinf.lower),max(pimat$psup.upper))
 
-  p<-ggplot(obsmat, aes(x=grp, y=.data$y, group=factor(grp, ordered=TRUE))) + 
+  p<-ggplot(obsmat, aes(x=.data$grp, y=.data$y, group=factor(.data$grp, ordered=TRUE))) + 
     geom_boxplot(varwidth=plot.opt$varwidth, width=plot.opt$boxwidth) +
     theme(plot.title = element_text(hjust = 0.5, size = plot.opt$size.sub),
           axis.title.y = element_text(size = plot.opt$size.ylab),
@@ -23,7 +23,7 @@ aux.npdeplot.boxcov <- function(obsmat, pimat, plot.opt) {
           panel.grid.minor.y = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid))+
     expand_limits(y = 0) +  guides( fill = "none" ) +
     { if(plot.opt$bands) 
-      geom_point(data = pimat, aes(x = grp, y = pmid.median), color=plot.opt$col.ther, alpha = plot.opt$alpha, size=plot.opt$size.pobs)  }+
+      geom_point(data = pimat, aes(x = .data$grp, y = .data$pmid.median), color=plot.opt$col.ther, alpha = plot.opt$alpha, size=plot.opt$size.pobs)  }+
     scale_y_continuous( plot.opt$ylab, limits = y.limits, scales::pretty_breaks(n = plot.opt$breaks.y) ) +
     scale_x_discrete( plot.opt$xlab) +
     {if (plot.opt$main!="") ggtitle(plot.opt$main)}
@@ -105,8 +105,14 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
   #colorYAxis = "black"
 
   # Interpolation data - loop over the covariate
+  if(length(unique(pimat$xcent))<2) { # repeat 
+    needinterpol<-FALSE
+    pimat <- rbind(pimat, pimat)
+    xc1 <- pimat$xcent[1]
+    pimat$xcent <- pimat$xcent*c(0.99, 1.01)
+  } else needinterpol<-TRUE
 
-  if(plot.opt$bands) { # no need to compute if bands are not plotted
+  if(plot.opt$bands & needinterpol) { # no need to compute if bands are not plotted
     plotdatainterpol1<-plotdatainterpol2<-plotdatainterpol3<-NULL
     for (iter in 1:numberCategories){
       icat = as.character(namesCategories[iter])
@@ -147,7 +153,7 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
       box.plot.width = 25
       x.limits = x.limits + c( -box.plot.width , box.plot.width  )*0.5
 
-      p <- ggplot( obsmat, aes( x=.data$x, y=.data$y, fill = factor( grp, ordered=TRUE) ) ) +
+      p <- ggplot( obsmat, aes( x=.data$x, y=.data$y, fill = factor( .data$grp, ordered=TRUE) ) ) +
         # Title and layout
         theme(plot.title = element_text(hjust = 0.5, size = plot.opt$size.sub),
               axis.title.y = element_text(size = plot.opt$size.ylab),
@@ -165,53 +171,53 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
         guides( fill = "none" ) +
         
         # Model predicted and observed percentiles
-        geom_line(data = pimat, mapping = aes(x = xcent, y = obs.median), inherit.aes = FALSE,
-                  linetype = plot.opt$lty.lobs, colour = plot.opt$col.lobs, size = plot.opt$lwd.lobs) +
-        geom_line(data = pimat, mapping = aes(x = xcent, y = obs.sup), inherit.aes = FALSE,
-                  linetype = plot.opt$lty.lobs, colour = plot.opt$col.lobs, size = plot.opt$lwd.lobs) +
-        geom_line(data = pimat, mapping = aes(x = xcent, y = obs.inf), inherit.aes = FALSE,
-                  linetype = plot.opt$lty.lobs, colour = plot.opt$col.lobs, size = plot.opt$lwd.lobs) +
+        geom_line(data = pimat, mapping = aes(x = .data$xcent, y = .data$obs.median), inherit.aes = FALSE,
+                  linetype = plot.opt$lty.lobs, colour = plot.opt$col.lobs, linewidth = plot.opt$lwd.lobs) +
+        geom_line(data = pimat, mapping = aes(x = .data$xcent, y = .data$obs.sup), inherit.aes = FALSE,
+                  linetype = plot.opt$lty.lobs, colour = plot.opt$col.lobs, linewidth = plot.opt$lwd.lobs) +
+        geom_line(data = pimat, mapping = aes(x = .data$xcent, y = .data$obs.inf), inherit.aes = FALSE,
+                  linetype = plot.opt$lty.lobs, colour = plot.opt$col.lobs, linewidth = plot.opt$lwd.lobs) +
         
-        geom_line(data = pimat, mapping = aes(x = xcent, y = pinf.median), inherit.aes = FALSE,
-                  linetype = plot.opt$lty.ther, colour = plot.opt$col.ther, alpha = plot.opt$alpha.ther, size = plot.opt$lwd.ther) +
-        geom_line(data = pimat, mapping = aes(x = xcent, y = pmid.median), inherit.aes = FALSE,
-                  linetype = plot.opt$lty.ther, colour = plot.opt$col.ther, alpha = plot.opt$alpha.ther, size = plot.opt$lwd.ther) +
-        geom_line(data = pimat, mapping = aes(x = xcent, y = psup.median), inherit.aes = FALSE,
-                  linetype = plot.opt$lty.ther, colour = plot.opt$col.ther, alpha = plot.opt$alpha.ther, size = plot.opt$lwd.ther) +
+        geom_line(data = pimat, mapping = aes(x = .data$xcent, y = .data$pinf.median), inherit.aes = FALSE,
+                  linetype = plot.opt$lty.ther, colour = plot.opt$col.ther, alpha = plot.opt$alpha.ther, linewidth = plot.opt$lwd.ther) +
+        geom_line(data = pimat, mapping = aes(x = .data$xcent, y = .data$pmid.median), inherit.aes = FALSE,
+                  linetype = plot.opt$lty.ther, colour = plot.opt$col.ther, alpha = plot.opt$alpha.ther, linewidth = plot.opt$lwd.ther) +
+        geom_line(data = pimat, mapping = aes(x = .data$xcent, y = .data$psup.median), inherit.aes = FALSE,
+                  linetype = plot.opt$lty.ther, colour = plot.opt$col.ther, alpha = plot.opt$alpha.ther, linewidth = plot.opt$lwd.ther) +
         
         # Prediction bands
         { if ( plot.opt$bands == TRUE )
-          geom_ribbon(data = pimat, mapping = aes(x = xcent, y = pmid.lower, ymin = pmid.lower, ymax = pmid.upper),
+          geom_ribbon(data = pimat, mapping = aes(x = .data$xcent, y = .data$pmid.lower, ymin = .data$pmid.lower, ymax = .data$pmid.upper),
                       fill = plot.opt$fill.med, alpha = plot.opt$alpha.med)}  +
         { if ( plot.opt$bands == TRUE )
-          geom_ribbon(data = pimat, mapping = aes(x = xcent, y = pinf.lower, ymin = pinf.lower, ymax = pinf.upper),
+          geom_ribbon(data = pimat, mapping = aes(x = .data$xcent, y = .data$pinf.lower, ymin = .data$pinf.lower, ymax = .data$pinf.upper),
                       fill = plot.opt$fill.bands, alpha = plot.opt$alpha.bands)}  +
         { if ( plot.opt$bands == TRUE )
-          geom_ribbon(data = pimat, mapping = aes(x = xcent, y = psup.lower, ymin = psup.lower, ymax = psup.upper),
+          geom_ribbon(data = pimat, mapping = aes(x = .data$xcent, y = .data$psup.lower, ymin = .data$psup.lower, ymax = .data$psup.upper),
                       fill = plot.opt$fill.bands, alpha = plot.opt$alpha.bands)}  +
         # Boundaries for prediction bands
         { if ( plot.opt$bands == TRUE )
-        geom_line(data = pimat, mapping = aes(x = xcent, y = pinf.lower), inherit.aes = FALSE,
-                  linetype = plot.opt$lty.bands, colour = plot.opt$col.bands, size = plot.opt$lwd.band) }+
+        geom_line(data = pimat, mapping = aes(x = .data$xcent, y = .data$pinf.lower), inherit.aes = FALSE,
+                  linetype = plot.opt$lty.bands, colour = plot.opt$col.bands, linewidth = plot.opt$lwd.band) }+
         { if ( plot.opt$bands == TRUE )
-        geom_line(data = pimat, mapping = aes(x = xcent, y = pinf.upper), inherit.aes = FALSE,
-                  linetype = plot.opt$lty.bands, colour = plot.opt$col.bands, size = plot.opt$lwd.band)}+
+        geom_line(data = pimat, mapping = aes(x = .data$xcent, y = .data$pinf.upper), inherit.aes = FALSE,
+                  linetype = plot.opt$lty.bands, colour = plot.opt$col.bands, linewidth = plot.opt$lwd.band)}+
         { if ( plot.opt$bands == TRUE )
-        geom_line(data = pimat, mapping = aes(x = xcent, y = pmid.lower), inherit.aes = FALSE,
-                  linetype = plot.opt$lty.med, colour = plot.opt$col.med, size = plot.opt$lwd.med)}+
+        geom_line(data = pimat, mapping = aes(x = .data$xcent, y = .data$pmid.lower), inherit.aes = FALSE,
+                  linetype = plot.opt$lty.med, colour = plot.opt$col.med, linewidth = plot.opt$lwd.med)}+
         { if ( plot.opt$bands == TRUE )
-        geom_line(data = pimat, mapping = aes(x = xcent, y = pmid.upper), inherit.aes = FALSE,
-                  linetype = plot.opt$lty.med, colour = plot.opt$col.med, size = plot.opt$lwd.med)}+
+        geom_line(data = pimat, mapping = aes(x = .data$xcent, y = .data$pmid.upper), inherit.aes = FALSE,
+                  linetype = plot.opt$lty.med, colour = plot.opt$col.med, linewidth = plot.opt$lwd.med)}+
         { if ( plot.opt$bands == TRUE )
-        geom_line(data = pimat, mapping = aes(x = xcent, y = psup.lower), inherit.aes = FALSE,
-                  linetype = plot.opt$lty.bands, colour = plot.opt$col.bands, size = plot.opt$lwd.band)}+
+        geom_line(data = pimat, mapping = aes(x = .data$xcent, y = .data$psup.lower), inherit.aes = FALSE,
+                  linetype = plot.opt$lty.bands, colour = plot.opt$col.bands, linewidth = plot.opt$lwd.band)}+
         { if ( plot.opt$bands == TRUE )
-        geom_line(data = pimat, mapping = aes(x = xcent, y = psup.upper), inherit.aes = FALSE,
-                  linetype = plot.opt$lty.bands, colour = plot.opt$col.bands, size = plot.opt$lwd.band)}+
+        geom_line(data = pimat, mapping = aes(x = .data$xcent, y = .data$psup.upper), inherit.aes = FALSE,
+                  linetype = plot.opt$lty.bands, colour = plot.opt$col.bands, linewidth = plot.opt$lwd.band)}+
 
         # plot of data as boxplot
         geom_boxplot(data=obsmat,
-                     aes( x=.data$x, y=.data$y,  fill= factor( grp, ordered=TRUE)), varwidth=plot.opt$varwidth, width=plot.opt$boxwidth)+
+                     aes( x=.data$x, y=.data$y,  fill= factor( .data$grp, ordered=TRUE)), varwidth=plot.opt$varwidth, width=plot.opt$boxwidth)+
 
         scale_fill_manual( values = rep( plot.opt$col.pobs,
                                          length(unique(obsmat$grp)) ) ) +
@@ -221,7 +227,7 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
         scale_x_continuous( plot.opt$xlab, limits = x.limits,scales::pretty_breaks(n = plot.opt$breaks.x ) ) +
 
         # facet wrap over covariate categories
-        facet_wrap(.~factor(category, levels=namesCategories), nrow=1, scales = plot.opt$scales) +
+        facet_wrap(.~factor(.data$category, levels=namesCategories), nrow=1, scales = plot.opt$scales) +
 
         {if(numberCategories==1)
           theme(strip.background = element_blank(), strip.text.x = element_blank())
@@ -233,7 +239,7 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
     } else { # else plot.box=FALSE
 
       # ggplot template
-      p <- ggplot(pimat, aes(x = xcent)) +
+      p <- ggplot(pimat, aes(x = .data$xcent)) +
 
         # theme of the ggplot template
         theme(plot.title = element_text(hjust = 0.5, size = plot.opt$size.sub),
@@ -255,71 +261,71 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
 
         # bands
         { if ( plot.opt$bands == TRUE )
-          geom_ribbon(aes(ymin = pinf.lower, ymax = pinf.upper), fill = plot.opt$fill.bands, alpha = plot.opt$alpha.bands) } +
+          geom_ribbon(aes(ymin = .data$pinf.lower, ymax = .data$pinf.upper), fill = plot.opt$fill.bands, alpha = plot.opt$alpha.bands) } +
         { if ( plot.opt$bands == TRUE )
-          geom_ribbon(aes(ymin = pmid.lower,   ymax = pmid.upper),   fill = plot.opt$fill.med, alpha = plot.opt$alpha.med) } +
+          geom_ribbon(aes(ymin = .data$pmid.lower,   ymax = .data$pmid.upper),   fill = plot.opt$fill.med, alpha = plot.opt$alpha.med) } +
         { if ( plot.opt$bands == TRUE )
-          geom_ribbon(aes(ymin = psup.lower, ymax = psup.upper), fill = plot.opt$fill.bands, alpha = plot.opt$alpha.bands) } +
+          geom_ribbon(aes(ymin = .data$psup.lower, ymax = .data$psup.upper), fill = plot.opt$fill.bands, alpha = plot.opt$alpha.bands) } +
 
         # fill intersection area as outliers
-        { if ( plot.opt$bands == TRUE )
+        { if ( plot.opt$bands == TRUE  & needinterpol)
           geom_ribbon(plotdatainterpol1,
-                      mapping = aes(x = x_area_0.25, ymin = y_area_0.25, ymax = pmin(Y0.025.1, y_area_0.25)),
+                      mapping = aes(x = .data$x_area_0.25, ymin = .data$y_area_0.25, ymax = pmin(.data$Y0.025.1, .data$y_area_0.25)),
                       fill = plot.opt$fill.outliers.bands, alpha = plot.opt$alpha.outliers.bands) } +
 
-        { if ( plot.opt$bands == TRUE )
+        { if ( plot.opt$bands == TRUE  & needinterpol)
           geom_ribbon(plotdatainterpol1,
-                      mapping = aes(x = x_area_0.25, ymin = y_area_0.25, ymax = pmax(Y0.025, y_area_0.25)),
+                      mapping = aes(x = .data$x_area_0.25, ymin = .data$y_area_0.25, ymax = pmax(.data$Y0.025, .data$y_area_0.25)),
                       fill = plot.opt$fill.outliers.bands, alpha = plot.opt$alpha.outliers.bands) } +
 
-        { if ( plot.opt$bands == TRUE )
+        { if ( plot.opt$bands == TRUE  & needinterpol)
           geom_ribbon(plotdatainterpol2,
-                      mapping = aes(x = x_area_0.5, ymin = y_area_0.5,ymax = pmin(Y0.5.1, y_area_0.5)),
+                      mapping = aes(x = .data$x_area_0.5, ymin = .data$y_area_0.5,ymax = pmin(.data$Y0.5.1, .data$y_area_0.5)),
                       fill = plot.opt$fill.outliers.med, alpha = plot.opt$alpha.outliers.med) } +
 
-        { if ( plot.opt$bands == TRUE )
+        { if ( plot.opt$bands == TRUE  & needinterpol)
           geom_ribbon(plotdatainterpol2,
-                      mapping = aes(x = x_area_0.5,ymin = y_area_0.5,ymax = pmax(Y0.5, y_area_0.5)),
+                      mapping = aes(x = .data$x_area_0.5,ymin = .data$y_area_0.5,ymax = pmax(.data$Y0.5, .data$y_area_0.5)),
                       fill = plot.opt$fill.outliers.med, alpha = plot.opt$alpha.outliers.med) } +
 
-        { if ( plot.opt$bands == TRUE )
+        { if ( plot.opt$bands == TRUE  & needinterpol)
           geom_ribbon(plotdatainterpol3,
-                      mapping = aes(x = x_area_0.975, ymin = y_area_0.975, ymax = pmin(Y0.975.1, y_area_0.975)),
+                      mapping = aes(x = .data$x_area_0.975, ymin = .data$y_area_0.975, ymax = pmin(.data$Y0.975.1, .data$y_area_0.975)),
                       fill = plot.opt$fill.outliers.bands, alpha = plot.opt$alpha.outliers.bands) } +
 
-        { if ( plot.opt$bands == TRUE )
+        { if ( plot.opt$bands == TRUE  & needinterpol)
           geom_ribbon(plotdatainterpol3,
-                      mapping = aes(x = x_area_0.975,ymin = y_area_0.975,ymax = pmax(Y0.975, y_area_0.975)),
+                      mapping = aes(x = .data$x_area_0.975,ymin = .data$y_area_0.975,ymax = pmax(.data$Y0.975, .data$y_area_0.975)),
                       fill = plot.opt$fill.outliers.bands, alpha = plot.opt$alpha.outliers.bands) } +
 
         # plot observed and model predicted percentiles
         #{if (plot.opt$type=="l" || plot.opt$type=="b")
-        geom_line(aes(y = obs.inf), linetype = plot.opt$lty.lobs,colour = plot.opt$col.lobs,size = plot.opt$lwd.lobs)+
+        geom_line(aes(y = .data$obs.inf), linetype = plot.opt$lty.lobs,colour = plot.opt$col.lobs,linewidth = plot.opt$lwd.lobs)+
         #  {if (plot.opt$type=="l" || plot.opt$type=="b")
-        geom_line(aes(y = obs.median),  linetype = plot.opt$lty.lobs,colour = plot.opt$col.lobs,size = plot.opt$lwd.lobs)+
+        geom_line(aes(y = .data$obs.median),  linetype = plot.opt$lty.lobs,colour = plot.opt$col.lobs,linewidth = plot.opt$lwd.lobs)+
         # {if (plot.opt$type=="l" || plot.opt$type=="b")
-        geom_line(aes(y = obs.sup),  linetype = plot.opt$lty.lobs,colour = plot.opt$col.lobs,size = plot.opt$lwd.lobs)+
-        geom_line(pimat, mapping = aes(y = pinf.median), linetype = plot.opt$lty.ther, colour = plot.opt$col.ther, alpha = plot.opt$alpha.ther, size = plot.opt$lwd.ther)+
-        geom_line(pimat, mapping = aes(y = pmid.median), linetype = plot.opt$lty.ther, colour = plot.opt$col.ther, alpha = plot.opt$alpha.ther, size = plot.opt$lwd.ther)+
-        geom_line(pimat, mapping = aes(y = psup.median), linetype = plot.opt$lty.ther, colour = plot.opt$col.ther, alpha = plot.opt$alpha.ther, size = plot.opt$lwd.ther)+
+        geom_line(aes(y = .data$obs.sup),  linetype = plot.opt$lty.lobs,colour = plot.opt$col.lobs,linewidth = plot.opt$lwd.lobs)+
+        geom_line(pimat, mapping = aes(y = .data$pinf.median), linetype = plot.opt$lty.ther, colour = plot.opt$col.ther, alpha = plot.opt$alpha.ther, linewidth = plot.opt$lwd.ther)+
+        geom_line(pimat, mapping = aes(y = .data$pmid.median), linetype = plot.opt$lty.ther, colour = plot.opt$col.ther, alpha = plot.opt$alpha.ther, linewidth = plot.opt$lwd.ther)+
+        geom_line(pimat, mapping = aes(y = .data$psup.median), linetype = plot.opt$lty.ther, colour = plot.opt$col.ther, alpha = plot.opt$alpha.ther, linewidth = plot.opt$lwd.ther)+
         
         # Prediction bands
         #{if (plot.opt$type=="l" || plot.opt$type=="b")
-        { if ( plot.opt$bands == TRUE ) geom_line(aes(y = pinf.lower), linetype = plot.opt$lty.bands,colour = plot.opt$col.bands,size = plot.opt$lwd.band) } +#} +
+        { if ( plot.opt$bands == TRUE ) geom_line(aes(y = .data$pinf.lower), linetype = plot.opt$lty.bands,colour = plot.opt$col.bands,linewidth = plot.opt$lwd.band) } +#} +
         #{if (plot.opt$type=="l" || plot.opt$type=="b")
-        { if ( plot.opt$bands == TRUE ) geom_line(aes(y = pinf.upper), linetype = plot.opt$lty.bands,colour = plot.opt$col.bands,size = plot.opt$lwd.band)} +#} +
+        { if ( plot.opt$bands == TRUE ) geom_line(aes(y = .data$pinf.upper), linetype = plot.opt$lty.bands,colour = plot.opt$col.bands,linewidth = plot.opt$lwd.band)} +#} +
         #{if (plot.opt$type=="l" || plot.opt$type=="b")
-        { if ( plot.opt$bands == TRUE ) geom_line(aes(y = pmid.lower), linetype = plot.opt$lty.med,colour = plot.opt$col.med,size = plot.opt$lwd.med)} +#} +
+        { if ( plot.opt$bands == TRUE ) geom_line(aes(y = .data$pmid.lower), linetype = plot.opt$lty.med,colour = plot.opt$col.med,linewidth = plot.opt$lwd.med)} +#} +
         #{if (plot.opt$type=="l" || plot.opt$type=="b")
-        { if ( plot.opt$bands == TRUE ) geom_line(aes(y = pmid.upper), linetype = plot.opt$lty.med,colour = plot.opt$col.med,size = plot.opt$lwd.med)} +#} +
+        { if ( plot.opt$bands == TRUE ) geom_line(aes(y = .data$pmid.upper), linetype = plot.opt$lty.med,colour = plot.opt$col.med,linewidth = plot.opt$lwd.med)} +#} +
         #{if (plot.opt$type=="l" || plot.opt$type=="b")
-        { if ( plot.opt$bands == TRUE ) geom_line(aes(y = psup.lower), linetype = plot.opt$lty.bands,colour = plot.opt$col.bands,size = plot.opt$lwd.band) } +#} +
+        { if ( plot.opt$bands == TRUE ) geom_line(aes(y = .data$psup.lower), linetype = plot.opt$lty.bands,colour = plot.opt$col.bands,linewidth = plot.opt$lwd.band) } +#} +
         #{if (plot.opt$type=="l" || plot.opt$type=="b")
-        { if ( plot.opt$bands == TRUE ) geom_line(aes(y = psup.upper), linetype = plot.opt$lty.bands,colour = plot.opt$col.bands,size = plot.opt$lwd.band)} +#} +
+        { if ( plot.opt$bands == TRUE ) geom_line(aes(y = .data$psup.upper), linetype = plot.opt$lty.bands,colour = plot.opt$col.bands,linewidth = plot.opt$lwd.band)} +#} +
 
         # plot loq
         { if (plot.opt$line.loq & !is.na(loq)) geom_line(aes(y = loq),  
-                colour = plot.opt$col.line.loq,  size = plot.opt$lwd.line.loq, linetype = plot.opt$lty.line.loq)} +
+                colour = plot.opt$col.line.loq,  linewidth = plot.opt$lwd.line.loq, linetype = plot.opt$lty.line.loq)} +
         
         # plot non censored data
         { if ( plot.opt$plot.obs == TRUE )
@@ -350,7 +356,7 @@ aux.npdeplot.scatter <- function(obsmat, pimat, plot.opt) {
         {if (plot.opt$main!="") ggtitle(plot.opt$main)} +
 
         # facet wrap over covariate categories
-        facet_wrap(.~factor(category, levels=namesCategories), nrow=1, scales=plot.opt$scales) +
+        facet_wrap(.~factor(.data$category, levels=namesCategories), nrow=1, scales=plot.opt$scales) +
 
         {if(numberCategories==1)
           theme(strip.background = element_blank(), strip.text.x = element_blank())

@@ -31,17 +31,18 @@ library(testthat)
 library(grid) # grid.arrange
 library(Cairo)
 workDir<-"/home/eco/work/npde/npde30"
+libDir<-"/home/eco/work/npde/compileNpde"
 fullDatDir<-file.path(workDir,"keep","data") # Full data files (some removed from package to decrease size on CRAN)
 knitr::opts_chunk$set(root.dir = workDir)
 docFigs<-file.path(workDir,"latexDoc","figsDev")
-saveDocPlots<-TRUE
+saveDocPlots<-FALSE
 ```
 
 ### Install package in development mode
   
 ```{r devModeInstall}
 dev_mode() # development mode
-install.packages(pkgs=file.path(workDir,"npde_3.1.tar.gz"),repos=NULL)
+install.packages(pkgs=file.path(libDir,"npde_3.3.tar.gz"),repos=NULL)
 library(npde)
 ```
 

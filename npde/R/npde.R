@@ -325,10 +325,5 @@ NULL
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 
 # Avoid problems with named variables in ggplot2 triggering NOTES on CRAN
-# very very bad practice from CRAN as this prevents from checking actual problems with code (=> replace with .data$XXX)
+# very very bad practice from CRAN as this prevents from checking actual problems with code (=> replaced with .data$XXX)
 .x<-NULL # used in logscale by format... can't remove ???
-X2.5.<-X50.<-X97.5.<-Y0.025<-Y0.025.1<-Y0.5<-Y0.5.1<-Y0.975<-Y0.975.1<-NULL
-category<-group<-grp<-lower<-name<-upper<-value<-NULL
-obs.inf<-obs.median<-obs.sup<-pinf.lower<-pinf.median<-pinf.upper<-pmid.lower<-pmid.median<-NULL
-pmid.upper<-psup.lower<-psup.median<-psup.upper<-NULL
-x_area_0.25<-x_area_0.5<-x_area_0.975<-xcent<-y_area_0.25<-y_area_0.5<-y_area_0.975<-NULL

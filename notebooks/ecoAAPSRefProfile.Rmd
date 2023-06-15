@@ -12,11 +12,11 @@ output:
 ## Reference profiles
 
 ${\rm tnpde}_{ij}$ are defined as
-${\rm tnpde}_{ij} = E(ysim^{ref}_{bin(t_{ij})}) + SD(ysim^{ref}_{bin(t_{ij})}) {\rm npde}_{ij}$
+$${\rm tnpde}_{ij} = E(ysim^{ref}_{bin(t_{ij})}) + SD(ysim^{ref}_{bin(t_{ij})}) {\rm npde}_{ij}$$
 where $bin(t_{ij})$ denotes the bin in which lies the time $t_{ij}$ corresponding to ${\rm npde}_{ij}$, and $E(ysim^{ref}_{bin(t_{ij})})$ and $SD(ysim^{ref}_{bin(t_{ij})})$ are respectively the mean and standard deviation of the simulated data in the bin that belong to individuals in the reference group. Therefore, if under the model we expect:
-${\rm npde}_{ij} \sim \mathcal{N}(0,1)$
+$${\rm npde}_{ij} \sim \mathcal{N}(0,1)$$
 then it follows that
-${\rm tnpde}_{ij} \sim \mathcal{N}(E(ysim^{ref}_{bin(t_{ij})}),SD(ysim^{ref}_{bin(t_{ij})}))$
+$${\rm tnpde}_{ij} \sim \mathcal{N}(E(ysim^{ref}_{bin(t_{ij})}),SD(ysim^{ref}_{bin(t_{ij})}))$$
 
 
 ## Setup, loading libraries
@@ -29,15 +29,15 @@ testsDir<-file.path(workDir,"tests","testthat")
 provDir<-file.path(workDir,"kompareCode") # Code change, temporary folder and files (Eco)
 setwd(workDir)
 createDat<-FALSE
-useLib<-FALSE
+useLib<-TRUE
 
-
-if(useLib) library(npde) else {
   library(ggplot2)
   library(gridExtra)
   library(grid)
   library(mclust)
   library(testthat)
+
+if(useLib) library(npde) else {
 # Classes from the package
   source(file.path(workDir,"npde","R","aaa_generics.R"))
   source(file.path(workDir,"npde","R","npdeControl.R"))

@@ -98,7 +98,7 @@ aux.npdeplot.pimat <-function(obsmat, xcent, quantiles=c(0.025, 0.5, 0.975), pi.
   pimat<-data.frame(grp=unlist(bnds$binf[,"grp"]), xcent=xcent[unlist(bnds$binf[,"grp"])])
   pimat$category<-obsmat$category[1]
   for(i in c(1,3,2))
-    pimat<-cbind(pimat, bnds[[i]][,2:4])
+    pimat<-cbind(pimat, bnds[[i]][,2:4, drop=FALSE])
   pimat<-cbind(pimat,matrix(unlist(tapply(obsmat$y,obsmat$grp,quantile,quantiles)), ncol=3, byrow=TRUE))
   colnames(pimat)[4:15]<-c("pinf.lower","pmid.lower","psup.lower","pinf.median", "pmid.median", "psup.median","pinf.upper","pmid.upper","psup.upper","obs.inf","obs.median","obs.sup")
   return(pimat)

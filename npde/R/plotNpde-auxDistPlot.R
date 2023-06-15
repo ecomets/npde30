@@ -75,7 +75,7 @@ aux.npdeplot.hist<-function(obsmat,  plot.opt, distrib="norm", nclass=10, sim.yp
   if(is.null(plot.opt$xlim)) plot.opt$xlim<-c(min(xhist$breaks,na.rm=TRUE), max(xhist$breaks,na.rm=TRUE))
   if(is.null(plot.opt$ylim)) plot.opt$ylim<-c(0, max(c(obshist$value,pimat$upper),na.rm=TRUE))
 
-  p <- ggplot(obsmat, aes(group=category)) +
+  p <- ggplot(obsmat, aes(group=.data$category)) +
     theme(plot.title = element_text(hjust = 0.5, size = plot.opt$size.sub),
           axis.title.x = element_text(size = plot.opt$size.xlab),
           axis.title.y = element_text(size = plot.opt$size.ylab),
@@ -92,23 +92,23 @@ aux.npdeplot.hist<-function(obsmat,  plot.opt, distrib="norm", nclass=10, sim.yp
 
     # Plot bands
     {  if(plot.opt$bands==TRUE)
-      geom_crossbar(data=pimat, aes(x=.data$x, y=median, ymin=lower, ymax=upper),
+      geom_crossbar(data=pimat, aes(x=.data$x, y=.data$median, ymin=.data$lower, ymax=.data$upper),
                     width=diff(xhist$mids)[1],
                     colour = plot.opt$col.ther,
                     fill = plot.opt$fill.bands,
                     alpha = plot.opt$alpha.bands,
                     linetype =  plot.opt$lty.ther,
-                    size = plot.opt$lwd.ther )} +
+                    linewidth = plot.opt$lwd.ther )} +
 
     # Plot observed histograms
-    geom_bar(data=obshist, aes(x=name, y=value),
+    geom_bar(data=obshist, aes(x=.data$name, y=.data$value),
              stat="identity",
              width = diff(xhist$mids)[1],
              colour = plot.opt$col.lobs,
              fill = plot.opt$fill,
              alpha = plot.opt$alpha,
              linetype =  plot.opt$lty,
-             size = plot.opt$lwd ) +
+             linewidth = plot.opt$lwd ) +
     # x-y logscales
     { if (plot.opt$xlog == FALSE)
         scale_x_continuous(plot.opt$xlab,
@@ -131,7 +131,7 @@ aux.npdeplot.hist<-function(obsmat,  plot.opt, distrib="norm", nclass=10, sim.yp
     { if (plot.opt$ylog == TRUE) annotation_logticks(sides = "l")} +
 
     # facet wrap over covariate categories
-    facet_wrap(.~factor(category, levels=namesCategories, ordered=TRUE), nrow=1) +
+    facet_wrap(.~factor(.data$category, levels=namesCategories, ordered=TRUE), nrow=1) +
     {if(numberCategories==1)
       theme(strip.background = element_blank(), strip.text.x = element_blank())
       } +
@@ -218,7 +218,7 @@ aux.npdeplot.dist<-function(obsmat,  plot.opt, dist.type="qqplot", distrib="norm
   if(sum(xmat$cens)>0) hasCens<-1 else hasCens<-0
   if(hasCens) xmat.cens<-xmat[xmat$cens==0,]
 
-  p<-ggplot(xmat, aes(x=.data$y, y=.data$x, group=factor(category))) +
+  p<-ggplot(xmat, aes(x=.data$y, y=.data$x, group=factor(.data$category))) +
     # title and layout
     theme(plot.title = element_text(hjust = 0.5, size = plot.opt$size.sub),
           axis.title.x = element_text(size = plot.opt$size.xlab),
@@ -231,16 +231,16 @@ aux.npdeplot.dist<-function(obsmat,  plot.opt, dist.type="qqplot", distrib="norm
           panel.grid.major.x = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid),
           panel.grid.major.y = element_line(ifelse(plot.opt$grid==TRUE,"grey80","white"),linetype = plot.opt$lty.grid))+
     # PI
-    {if(plot.opt$bands==TRUE) geom_ribbon(data=pimat, aes(x=.data$x, ymin=lower, ymax=upper), linetype = plot.opt$lty.bands,
+    {if(plot.opt$bands==TRUE) geom_ribbon(data=pimat, aes(x=.data$x, ymin=.data$lower, ymax=.data$upper), linetype = plot.opt$lty.bands,
                 colour = plot.opt$col.bands,
                 fill = plot.opt$fill.bands,
-                size = plot.opt$lwd.bands,
+                linewidth = plot.opt$lwd.bands,
                 alpha=plot.opt$alpha.bands) } +
 
-    {if(plot.opt$bands==TRUE) geom_line(data=pimat, aes(x=.data$x, y=median),
+    {if(plot.opt$bands==TRUE) geom_line(data=pimat, aes(x=.data$x, y=.data$median),
                                         linetype = plot.opt$lty.ther,
                                         colour = plot.opt$col.ther,
-                                        size = plot.opt$lwd.ther,
+                                        linewidth = plot.opt$lwd.ther,
                                         alpha=plot.opt$alpha.ther) } +
 
     # Plotting observed ecdf/qqplot
@@ -248,7 +248,7 @@ aux.npdeplot.dist<-function(obsmat,  plot.opt, dist.type="qqplot", distrib="norm
       geom_line(data=xmat, aes(x=.data$y, y=.data$x),
                 colour = plot.opt$col.lobs,
                 linetype = plot.opt$lty.lobs,
-                size = plot.opt$lwd.lobs) } +
+                linewidth = plot.opt$lwd.lobs) } +
 
     {if (plot.opt$type=="p" || plot.opt$type=="b")
       geom_point(xmat.nocens, mapping = aes(x=.data$y, y=.data$x),
@@ -274,7 +274,7 @@ aux.npdeplot.dist<-function(obsmat,  plot.opt, dist.type="qqplot", distrib="norm
     coord_flip(xlim=plot.opt$xlim, ylim=plot.opt$ylim) +
 
     # facet wrap over covariate categories
-    facet_wrap(.~factor(category, levels=namesCategories, ordered=TRUE), nrow=1) +
+    facet_wrap(.~factor(.data$category, levels=namesCategories, ordered=TRUE), nrow=1) +
     {if(numberCategories==1)
       theme(strip.background = element_blank(), strip.text.x = element_blank())
     } +

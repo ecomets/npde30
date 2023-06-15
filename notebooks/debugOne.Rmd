@@ -1,0 +1,141 @@
+---
+title: "Debugging 1 point per subject"
+author: "Emmanuelle Comets"
+date: "04/06/2023"
+output:
+  pdf_document:
+    latex_engine: xelatex
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Where to find the development files of npde (folders npde/R, keep, data)
+workDir<-"/home/eco/work/npde/npde30/notebooks"
+knitr::opts_chunk$set(root.dir = workDir)
+setwd(workDir)
+dir.create("testFiles")
+
+library(npde)
+```
+
+# Theophylline
+
+- computation of npde and npd
+- default plots
+
+```{r theo, echo=FALSE}
+data(theopp)
+data(simtheopp)
+
+# Calling autonpde with dataframes
+x<-autonpde(theopp,simtheopp,1,3,4,boolsave=FALSE)
+plot(x)
+head(x["results"]["res"])
+
+plot(x, plot.type="hist")
+```
+
+# Theophylline 1 point per subject
+
+- computation of npde and npd
+- default plots
+
+```{r theo, echo=FALSE}
+nsuj<-length(unique(theopp$ID))
+nsim <- dim(simtheopp)[1]/dim(theopp)[1]
+
+# Doses + 1 point
+id1<-c(1,cumsum(tapply(theopp$ID, theopp$ID, length))+1)
+id1 <- id1[-c(length(id1))]
+idkeep <- sample(1:10, nsuj, replace=T)
+id2 <- sort(c(id1, id1+idkeep))
+theopp1 <- theopp[id2,]
+idx<- 1:dim(theopp)[1]
+is.idkeep <- idx %in% id2
+
+simtheopp1 <- simtheopp[rep(is.idkeep,nsim),] 
+x<-autonpde(theopp1,simtheopp1,1,3,4,boolsave=FALSE)
+plot(x)
+
+# 1 point
+id1<-c(1,cumsum(tapply(theopp$ID, theopp$ID, length))+1)
+id1 <- id1[-c(length(id1))]
+idkeep <- sample(1:10, nsuj, replace=T)
+id2 <- id1+idkeep
+
+theopp1 <- theopp[id2,]
+idx<- 1:dim(theopp)[1]
+is.idkeep <- idx %in% id2
+
+simtheopp1 <- simtheopp[rep(is.idkeep,nsim),] 
+x<-autonpde(theopp1,simtheopp1,1,3,4,boolsave=FALSE)
+plot(x)
+
+```
+
+# Example from Mehdi
+
+```{r mehdi}
+mehDir <- "/home/eco/work/npde/hotline/mehdi23"
+obsdat <- read.table(file.path(mehDir, "eval_1_1.csv"), sep=",", na=".")
+simdat <- read.table(file.path(mehDir, "ALGHANEM_L2_12.tab"), na=".")
+head(obsdat)
+head(simdat)
+plot(obsdat[,2], obsdat[,5], pch=20)
+dim(obsdat)
+dim(simdat)
+
+yfit <- autonpde(obsdat, simdat, iid=1 , ix=2, iy=5, imdv=6, boolsave=F, units = list(x = "h", y = "mg/L"))
+plot(yfit)
+
+# Scatterplots
+plot(yfit, plot.type="x.scatter")
+npde.plot.scatterplot(yfit, which.x="x", which.y="npde")
+
+# one-dimensional plots - work
+plot(yfit, plot.type="hist")
+plot(yfit, plot.type="ecdf")
+plot(yfit, plot.type="data")
+
+# npde vs pred => works because different values for pred
+plot(yfit, plot.type="pred.scatter")
+plot(yfit, plot.type="pred.scatter", bin.number=2)
+
+# npde vs x => doesn't work because only one value for time...
+plot(yfit, plot.type="x.scatter")
+yfit@data@data[4,3] <- yfit@data@data[8,3] <- 40
+yfit@results@res[4,]
+plot(yfit, plot.type="x.scatter")
+
+# Removing MDV - not the problem
+idx<-(obsdat[,6]==0)
+obsdat2 <- obsdat[idx,]
+nsim<-dim(simdat)[1]/dim(obsdat)[1]
+simdat2<-simdat[rep(idx,nsim),]
+yfit2 <- autonpde(obsdat2, simdat2, iid=1 , ix=2, iy=5, boolsave=F, units = list(x = "h", y = "mg/L"))
+
+# obsmat & pimat
+npdeObject <- yfit2
+plot.opt<-npdeObject@prefs
+
+obsmat <- data.frame(x=npdeObject@data@data[,npdeObject@data@name.predictor])
+obsmat$y <- npdeObject@results@res$npde
+obsmat$cens<-0
+obsmat$category<-'none'
+# test if censored data
+if (length(npdeObject["data"]["icens"])>0) has.cens = TRUE else has.cens = FALSE
+not.miss = npdeObject["data"]["not.miss"] # not.miss : not missing data in the data TRUE/FALSE
+obsmat<-obsmat[not.miss,]
+not.miss2<-NULL
+xbin<-npde.binning(obsmat$x,plot.opt,verbose=TRUE)
+obsmat$grp <- xbin$xgrp
+matbin<-data.frame(grp=1:length(xbin$xcent), xcent=xbin$xcent, binlabel = names(xbin$xcent)) # keep binning matrix
+
+alpha<-0.025
+pimat<-aux.npdeplot.pimat(obsmat, xcent=matbin$xcent , quantiles=c(alpha, 0.5, 1-alpha), pi.size=plot.opt$pi.size, distrib="norm", approx.pi=plot.opt$approx.pi, sim.ypl=NULL)
+```
+
+
+

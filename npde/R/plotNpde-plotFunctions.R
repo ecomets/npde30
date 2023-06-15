@@ -304,17 +304,17 @@ npde.plot.data<-function(npdeObject,...) {
                  size = plot.opt$size.pobs,
                  shape = plot.opt$pch.pobs)  +
 
-      geom_line(aes(group=group),
+      geom_line(aes(group=.data$group),
                 linetype = plot.opt$lty.lobs,
                 color = plot.opt$col.lobs,
-                size = plot.opt$lwd.lobs )+
+                linewidth = plot.opt$lwd.lobs )+
 
       {if(plot.opt$line.loq==TRUE)
 
         geom_hline(dataplot,mapping = aes(yintercept = as.numeric(loq)),
                    linetype = plot.opt$lty.line.loq,
                    color = plot.opt$col.line.loq,
-                   size = plot.opt$lwd.line.loq  )}+
+                   linewidth = plot.opt$lwd.line.loq  )}+
       
       {if(plot.opt$plot.loq ==TRUE)
         geom_point(dataloq_plot,
@@ -374,10 +374,10 @@ npde.plot.data<-function(npdeObject,...) {
                   size = plot.opt$size.pobs,
                   shape = plot.opt$pch.pobs) +
 
-       geom_line(aes(group=group),
+       geom_line(aes(group=.data$group),
                  linetype = plot.opt$lty.lobs,
                  color = plot.opt$col.lobs,
-                 size = plot.opt$lwd.lobs )+
+                 linewidth = plot.opt$lwd.lobs )+
 
        scale_x_continuous(plot.opt$xlab, scales::pretty_breaks(n = plot.opt$breaks.x)) +
        scale_y_continuous(plot.opt$ylab, scales::pretty_breaks(n = plot.opt$breaks.y))

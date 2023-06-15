@@ -54,12 +54,11 @@ library(gridExtra)
 library(grid)
 library(mclust)
 library(testthat)
-#workDir<-"D:/RECHERCHES/_NPDE/Npde-2021/npde30-main"
 workDir<-"/home/eco/work/npde/npde30"
 notesDir<-file.path(workDir,"notebooks")
-datDir<-file.path(workDir,"npde","data")
+datDir<-file.path(workDir,"data")
 fullDatDir<-file.path(workDir,"keep","data") # Full data files (some removed from package to decrease size on CRAN)
-testsDir<-file.path(workDir,"npde","tests","testthat")
+testsDir<-file.path(workDir,"tests","testthat")
 setwd(workDir)
 ```
 

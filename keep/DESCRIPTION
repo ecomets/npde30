@@ -1,7 +1,7 @@
 Package: npde
 Title: Normalised Prediction Distribution Errors for Nonlinear Mixed-Effect Models
-Version: 3.4
-Date: 2023-06-15
+Version: 3.5
+Date: 2024-02-06
 Authors@R: c(person(given = "Emmanuelle",
            family = "Comets",
            role = c("aut", "cre"),
@@ -29,7 +29,7 @@ Encoding: UTF-8
 LazyLoad: yes
 LazyData: yes
 Imports: methods, scales, ggplot2, mclust, grid, gridExtra, rlang
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.2
 Collate: 
     'NpdeSimData.R'
     'NpdeData.R'

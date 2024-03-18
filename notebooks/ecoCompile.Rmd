@@ -1,11 +1,11 @@
 ---
-title: "Package compilation and basic run - current version 3.4"
+title: "Package compilation and basic run - current version 3.5"
 author: "Emmanuelle Comets"
 date: "15/06/2023"
 output:
-  html_document: default
   pdf_document:
     latex_engine: xelatex
+  html_document: default
   word_document: default
 ---
 
@@ -57,6 +57,11 @@ First creation date: **02/02/2021**
 - **June 2023**
   - fixed scatterplot when only one X-value (removed interpolation in this case as was causing the plot to fail)
   - note: the case when this happens within covsplit is **not fixed**
+- **February 2024**
+  - compiler raises notes
+* checking HTML version of manual ... NOTE
+Skipping checking HTML validation: no command 'tidy' found
+Skipping checking math rendering: package 'V8' unavailable
 
 ```{r compilation}
 # Reduce size of viral load simulation data (to 500 simulations) for CRAN
@@ -75,7 +80,7 @@ dir.create(file.path(compilDir,"npde"))
 dir.create(file.path(compilDir,"npde","inst"))
 # File too large
 if(FALSE) {
-  cmd<-paste("cp ", file.path(workDir,"latexDoc","userguide_3_3.pdf")," ", file.path(compilDir,"inst","userguide_npde_3.4.pdf"),sep="")
+  cmd<-paste("cp ", file.path(workDir,"latexDoc","userguide_3_3.pdf")," ", file.path(compilDir,"inst","userguide_npde_3.5.pdf"),sep="")
   system(cmd)
 }
 
@@ -101,13 +106,14 @@ for(ifile in c("CITATION")) {
 setwd(file.path(compilDir,"npde"))
 devtools::document()
 setwd(file.path(compilDir,"npde"))
+#options(encoding = "UTF-8")
 roxygenise()
 ```
 
 ```{r building}
 setwd(compilDir)
 system("R CMD build npde")
-system("R CMD check --as-cran --run-donttest npde_3.4.tar.gz")
+system("R CMD check --as-cran --run-donttest npde_3.5.tar.gz")
 ```
 
 #### npde 3.1
@@ -179,7 +185,7 @@ W  checking for missing documentation entries (346ms)
   
 ```{r devModeInstall}
 dev_mode() # development mode
-install.packages(pkgs=file.path(compilDir,"npde_3.4.tar.gz"),repos=NULL)
+install.packages(pkgs=file.path(compilDir,"npde_3.5.tar.gz"),repos=NULL)
 library(npde)
 library(ggplot2)
 library(gridExtra)

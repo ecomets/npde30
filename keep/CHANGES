@@ -1,3 +1,13 @@
+Version 3.5 - February 2024
+
+o Compilation
+   * fixed the notes raised by the compiler on CRAN
+   * compilation gives additional notes unrelated to my package
+
+* checking HTML version of manual ... NOTE
+Skipping checking HTML validation: no command 'tidy' found
+Skipping checking math rendering: package 'V8' unavailable
+
 Version 3.4 - June 2023
 
 o Bugfixes

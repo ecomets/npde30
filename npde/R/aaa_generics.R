@@ -11,7 +11,7 @@
 #' @aliases read-methods read,NpdeData read,NpdeData-methods
 #' @aliases read,NpdeSimData-methods
 #'
-#' @usage read(object, dat, detect=TRUE, verbose=FALSE, ...)
+#' @usage read(object, dat, detect=TRUE, verbose=FALSE, \dots)
 #'
 #' @param object an object
 #' @param dat a dataframe containing the data to be analysed
@@ -20,7 +20,7 @@
 #' for a NpdeSimData, the required columns should be called idsim, xsim, ysim, representing respectively simulated id, simulated 
 #' predictor and simulated response
 #' @param verbose a boolean; messages are printed if verbose is TRUE (defaults to FALSE)
-#' @param dots additional arguments for compatibility with generic
+#' @param \dots additional arguments for compatibility with generic
 #'
 #' @return an object of class \code{"\linkS4class{NpdeData}"} or \code{"\linkS4class{NpdeSimData}"}
 #' @docType methods

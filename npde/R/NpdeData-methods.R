@@ -51,7 +51,7 @@ setMethod("show","NpdeSimData",
           }
 )
 
-######## read for NpdeData - documentation in aaa_generics.R
+######## read for NpdeData
 # @usage read(object, header, sep, na.strings, detect, verbose)
 
 #' @include aaa_generics.R
@@ -312,6 +312,8 @@ setMethod("read",
 #'
 #' This function is used to create a NpdeData object, representing a longitudinal data structure, and fill it with data from a dataframe or a file on disk
 #'
+#' @name npdeData
+#' 
 #' @usage npdeData(name.data,header=TRUE,sep="",na.strings=c(".","NA"),name.group,
 #' name.predictor, name.response, name.covariates,name.cens,name.miss,name.ipred,
 #' units=list(x="",y="",covariates=c()), detect=TRUE,verbose=FALSE)
@@ -353,7 +355,7 @@ setMethod("read",
 #' @author Emmanuelle Comets <emmanuelle.comets@@bichat.inserm.fr>
 #' @seealso \code{\link{npde}}, \code{\link{autonpde}}
 #' @references K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.
-#' Mentr{\'e}. Metrics for external model evaluation with an application to the
+#' Mentré. Metrics for external model evaluation with an application to the
 #' population pharmacokinetics of gliclazide. \emph{Pharmaceutical Research},
 #' 23:2036--49, 2006.
 #' @keywords models

@@ -19,7 +19,7 @@
 #' messages are printed out, then pd are computed instead and graphs of pd are
 #' plotted so that the user may evaluate why the computation failed.
 #'
-#' @aliases autonpde
+#' @name autonpde
 #' 
 #' @usage autonpde(namobs, namsim, iid, ix, iy, imdv = 0, icens = 0,
 #' icov = 0, iipred = 0, boolsave = TRUE, namsav = "output", type.graph = "eps",

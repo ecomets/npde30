@@ -2,6 +2,7 @@
 # main help file + datasets + censoring method
 
 ############################# help file for main function (autonpde)
+
 #' Normalised prediction distribution errors for nonlinear mixed-effect models
 #'
 #' Routines to compute normalised prediction distribution errors, a metric
@@ -16,7 +17,7 @@
 #' Maintainer: Emmanuelle Comets <emmanuelle.comets@@bichat.inserm.fr>
 #' 
 #' @references K. Brendel, E. Comets, C. Laffont, C. Laveille, and F.
-#' Mentr{\'e}. Metrics for external model evaluation with an application to the
+#' Mentre. Metrics for external model evaluation with an application to the
 #' population pharmacokinetics of gliclazide. \emph{Pharmaceutical Research},
 #' 23:2036--49, 2006.
 #' @references PDF documentation for npde 3.0: \url{https://github.com/ecomets/npde30/blob/main/userguide_npde_3.0.pdf}
@@ -31,8 +32,7 @@
 #' x<-autonpde(theopp,simtheopp,ix="Time",iy="Conc",iid="ID",boolsave=FALSE)
 #' print(x)
 #'
-
-NULL
+"_PACKAGE"
 
 ############################# help files for datasets included with the package
 
